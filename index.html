@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Actividades</title>
+    <title>Plan de Actividad</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -11,155 +11,99 @@
 
 <div class="layout">
 
-    <!-- SIDEBAR SIMPLIFICADO -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <span class="sidebar-icon">📋</span>
-            <h2>Sistema de Actividades</h2>
+            <h2>Plan de Actividad</h2>
         </div>
         <nav class="sidebar-nav">
-            <a href="#" onclick="mostrarLista()" class="nav-link active" id="navLista">
-                📋 Actividades
-            </a>
-            <a href="#" onclick="mostrarFormulario()" class="nav-link" id="navNueva">
-                ➕ Nueva Actividad
+            <a href="#" onclick="nuevoPlan()" class="nav-link active" id="navNuevo">
+                ➕ Nuevo Plan
             </a>
         </nav>
-        <div class="sidebar-footer">
-            <small>v1.0</small>
-        </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
         
-        <!-- LISTA DE ACTIVIDADES -->
-        <div id="listaActividades">
-            <div class="page-header">
-                <h1>📋 Actividades</h1>
-                <button onclick="mostrarFormulario()" class="btn btn-primary">➕ Nueva Actividad</button>
+        <div class="card">
+            <h1>PLAN DE ACTIVIDAD</h1>
+            
+            <!-- Datos generales -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Estaca</label>
+                    <input type="text" id="estaca" class="form-control" placeholder="Nombre de la estaca">
+                </div>
+                <div class="form-group">
+                    <label>Organización</label>
+                    <input type="text" id="organizacion" class="form-control" placeholder="Ej: Hombres Jóvenes">
+                </div>
             </div>
-            <div id="tablaActividades"></div>
-        </div>
-
-        <!-- FORMULARIO -->
-        <div id="formularioActividad" style="display:none;">
-            <div class="card">
-                <h2 id="tituloFormulario">Nueva Actividad</h2>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Código</label>
-                        <input type="text" id="codigo" class="form-control" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Fecha *</label>
-                        <input type="date" id="fecha" class="form-control" required>
-                    </div>
-                </div>
-                
+            
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Organización *</label>
-                    <select id="organizacion" class="form-control" required>
-                        <option value="">Seleccione una organización...</option>
-                        <option>Hombres Jóvenes</option>
-                        <option>Mujeres Jóvenes</option>
-                        <option>Sociedad de Socorro</option>
-                        <option>Primaria</option>
-                        <option>Escuela Dominical</option>
-                        <option>Quórum de Élderes</option>
-                        <option>Barrio</option>
-                        <option>Estaca</option>
-                    </select>
+                    <label>Barrio</label>
+                    <input type="text" id="barrio" class="form-control" placeholder="Nombre del barrio">
                 </div>
-                
                 <div class="form-group">
-                    <label>Nombre de la Actividad *</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ej: Noche de Hogar" required>
+                    <label>Fecha de Actividad</label>
+                    <input type="date" id="fecha" class="form-control">
                 </div>
-                
+            </div>
+
+            <!-- Propósito -->
+            <div class="form-group">
+                <label>PROPÓSITO SAGRADO de la actividad</label>
+                <small style="color:#666;">(para satisfacer las necesidades espirituales y temporales de los participantes)</small>
+                <textarea id="proposito" class="form-control" rows="3" placeholder="Describa el propósito sagrado..."></textarea>
+            </div>
+
+            <!-- Metas -->
+            <h3>META(S):</h3>
+            <div class="metas-grid">
+                <label class="meta-check"><input type="checkbox" value="Fortalecer/apoyar a la familia en aprender/vivir el Evangelio"> Fortalecer/apoyar a la familia en aprender/vivir el Evangelio</label>
+                <label class="meta-check"><input type="checkbox" value="Fortalecer el testimonio y fomentar el progreso personal"> Fortalecer el testimonio y fomentar el progreso personal</label>
+                <label class="meta-check"><input type="checkbox" value="Perfeccionar a los Santos"> Perfeccionar a los Santos</label>
+                <label class="meta-check"><input type="checkbox" value="Proporcionar servicio significativo a otras personas"> Proporcionar servicio significativo a otras personas</label>
+                <label class="meta-check"><input type="checkbox" value="Ofrecer oportunidades de aplicar los principios del Evangelio"> Ofrecer oportunidades de aplicar los principios del Evangelio</label>
+                <label class="meta-check"><input type="checkbox" value="Adquirir/desarrollar aptitudes físicas, sociales, de liderazgo"> Adquirir/desarrollar aptitudes físicas, sociales, de liderazgo</label>
+                <label class="meta-check"><input type="checkbox" value="Fomentar la unidad de los miembros y no miembros"> Fomentar la unidad de los miembros y no miembros</label>
+                <label class="meta-check"><input type="checkbox" value="Proclamar el Evangelio"> Proclamar el Evangelio</label>
+                <label class="meta-check"><input type="checkbox" value="Extender mano de amistad a no miembros, nuevos y menos activos"> Extender mano de amistad a no miembros, nuevos y menos activos</label>
+                <label class="meta-check"><input type="checkbox" value="Redimir a los muertos"> Redimir a los muertos</label>
+            </div>
+
+            <!-- Participación -->
+            <div class="form-group">
+                <label>Total estimado de asistentes (investigadores, conversos, menos activos)</label>
+                <input type="text" id="asistentes" class="form-control" placeholder="Ej: 50 personas">
+            </div>
+
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Propósito</label>
-                    <textarea id="proposito" class="form-control" rows="3" placeholder="Describa el propósito..."></textarea>
+                    <label>Responsables de la actividad</label>
+                    <input type="text" id="responsables" class="form-control" placeholder="Nombres de los responsables">
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Asistentes Estimados</label>
-                        <input type="number" id="asistentes" class="form-control" value="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Responsable Principal</label>
-                        <input type="text" id="responsable" class="form-control" placeholder="Nombre del responsable">
-                    </div>
-                </div>
-
-                <h3>🎯 Metas</h3>
-                <div class="metas-grid">
-                    <label class="meta-check"><input type="checkbox" value="Perfeccionar a los Santos"> Perfeccionar a los Santos</label>
-                    <label class="meta-check"><input type="checkbox" value="Proclamar el Evangelio"> Proclamar el Evangelio</label>
-                    <label class="meta-check"><input type="checkbox" value="Redimir a los Muertos"> Redimir a los Muertos</label>
-                    <label class="meta-check"><input type="checkbox" value="Fortalecer Familias"> Fortalecer Familias</label>
-                    <label class="meta-check"><input type="checkbox" value="Integración"> Integración</label>
-                    <label class="meta-check"><input type="checkbox" value="Servicio"> Servicio</label>
-                    <label class="meta-check"><input type="checkbox" value="Desarrollo Personal"> Desarrollo Personal</label>
-                </div>
-
-                <!-- PRESUPUESTO -->
-                <h3>💰 Presupuesto</h3>
-                <div id="itemsPresupuesto"></div>
-                <button onclick="agregarItemPresupuesto()" class="btn btn-sm btn-secondary">➕ Agregar Item</button>
-                <p class="total-right">
-                    <strong>Total Presupuestado: </strong>
-                    <span id="totalPresupuestoForm">Bs. 0,00</span>
-                </p>
-
-                <!-- GASTOS -->
-                <h3>💳 Gastos Ejecutados</h3>
-                <div id="itemsGastos"></div>
-                <button onclick="agregarItemGasto()" class="btn btn-sm btn-secondary">➕ Agregar Gasto</button>
-                <p class="total-right">
-                    <strong>Total Gastos: </strong>
-                    <span id="totalGastosForm">Bs. 0,00</span>
-                </p>
-
-                <!-- COMPARATIVO -->
-                <div class="comparativo-box">
-                    <h3>📊 Comparativo</h3>
-                    <div class="comp-item">
-                        <span>Presupuesto:</span>
-                        <strong id="compPresupuesto">Bs. 0,00</strong>
-                    </div>
-                    <div class="comp-item">
-                        <span>Ejecutado:</span>
-                        <strong id="compEjecutado">Bs. 0,00</strong>
-                    </div>
-                    <div class="comp-item" id="compDiferencia">
-                        <span>Diferencia:</span>
-                        <strong>Bs. 0,00</strong>
-                    </div>
-                    <div id="compIndicador" class="comp-indicador"></div>
-                </div>
-
                 <div class="form-group">
-                    <label>Estado</label>
-                    <select id="estado" class="form-control">
-                        <option value="borrador">📝 Borrador</option>
-                        <option value="en_revision">🔍 En Revisión</option>
-                        <option value="aprobada">✅ Aprobada</option>
-                        <option value="ejecutada">🚀 Ejecutada</option>
-                        <option value="rendida">💰 Rendida</option>
-                        <option value="cerrada">🔒 Cerrada</option>
-                    </select>
+                    <label>Responsables limpieza capilla</label>
+                    <input type="text" id="limpieza" class="form-control" placeholder="Nombres de responsables de limpieza">
                 </div>
+            </div>
 
-                <div class="form-actions">
-                    <button onclick="guardarActividad()" class="btn btn-success btn-lg">💾 Guardar Actividad</button>
-                    <button onclick="generarPDF()" class="btn btn-danger btn-lg">📄 Generar PDF</button>
-                    <button onclick="cancelarFormulario()" class="btn btn-secondary">Cancelar</button>
-                </div>
-                
-                <input type="hidden" id="editandoId" value="">
+            <!-- Presupuesto -->
+            <h2>💰 PLAN DE PRESUPUESTO (Antes de la actividad)</h2>
+            <h3>GASTOS ANTICIPADOS</h3>
+            
+            <div id="itemsPresupuesto"></div>
+            <button onclick="agregarItem()" class="btn btn-sm btn-secondary">➕ Agregar Item</button>
+            
+            <p class="total-right">
+                <strong>TOTAL de gastos ANTICIPADOS: </strong>
+                <span id="totalPresupuesto">Bs. 0,00</span>
+            </p>
+
+            <div class="form-actions">
+                <button onclick="generarPDF()" class="btn btn-danger btn-lg">📄 Generar PDF</button>
             </div>
         </div>
 
