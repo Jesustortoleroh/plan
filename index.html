@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Actividades</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span style="font-size:30px;">📋</span>
+            <h2>Sistema de Actividades</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" onclick="mostrarPagina('dashboard')" class="nav-link active" id="navDashboard">
+                📊 Dashboard
+            </a>
+            <a href="#" onclick="mostrarPagina('actividades')" class="nav-link" id="navActividades">
+                📋 Actividades
+            </a>
+            <a href="#" onclick="mostrarPagina('reportes')" class="nav-link" id="navReportes">
+                📈 Reportes
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <small style="color:rgba(255,255,255,0.6);">v1.0 - Acceso libre</small>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="pagina">
+            <h1>📊 Dashboard</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-num" id="totalActividades">0</span>
+                    <span>Actividades Totales</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="totalPresupuesto">Bs. 0</span>
+                    <span>Presupuesto Aprobado</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="totalEjecutado">Bs. 0</span>
+                    <span>Gasto Ejecutado</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="totalAhorro">Bs. 0</span>
+                    <span id="labelAhorro">Ahorro</span>
+                </div>
+            </div>
+            
+            <h2>📋 Últimas Actividades</h2>
+            <div id="ultimasActividades"></div>
+            
+            <button onclick="mostrarPagina('actividades')" class="btn btn-primary">Ver Todas las Actividades</button>
+        </div>
+
+        <!-- ACTIVIDADES -->
+        <div id="actividades" class="pagina" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h1>📋 Actividades</h1>
+                <button onclick="mostrarFormulario()" class="btn btn-primary">➕ Nueva Actividad</button>
+            </div>
+
+            <!-- LISTADO -->
+            <div id="listaActividades"></div>
+
+            <!-- FORMULARIO -->
+            <div id="formularioActividad" style="display:none;">
+                <div class="card">
+                    <h2 id="tituloFormulario">Nueva Actividad</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" id="codigo" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha *</label>
+                            <input type="date" id="fecha" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Organización *</label>
+                        <select id="organizacion" class="form-control" required>
+                            <option value="">Seleccione una organización...</option>
+                            <option>Hombres Jóvenes</option>
+                            <option>Mujeres Jóvenes</option>
+                            <option>Sociedad de Socorro</option>
+                            <option>Primaria</option>
+                            <option>Escuela Dominical</option>
+                            <option>Quórum de Élderes</option>
+                            <option>Barrio</option>
+                            <option>Estaca</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nombre de la Actividad *</label>
+                        <input type="text" id="nombre" class="form-control" placeholder="Ej: Noche de Hogar, Actividad Deportiva..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Propósito</label>
+                        <textarea id="proposito" class="form-control" rows="3" placeholder="Describa el propósito de la actividad..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Asistentes Estimados</label>
+                            <input type="number" id="asistentes" class="form-control" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Responsable Principal</label>
+                            <input type="text" id="responsable" class="form-control" placeholder="Nombre del responsable">
+                        </div>
+                    </div>
+
+                    <!-- METAS -->
+                    <h3>🎯 Metas</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px;">
+                        <label class="meta-check"><input type="checkbox" value="Perfeccionar a los Santos"> Perfeccionar a los Santos</label>
+                        <label class="meta-check"><input type="checkbox" value="Proclamar el Evangelio"> Proclamar el Evangelio</label>
+                        <label class="meta-check"><input type="checkbox" value="Redimir a los Muertos"> Redimir a los Muertos</label>
+                        <label class="meta-check"><input type="checkbox" value="Fortalecer Familias"> Fortalecer Familias</label>
+                        <label class="meta-check"><input type="checkbox" value="Integración"> Integración</label>
+                        <label class="meta-check"><input type="checkbox" value="Servicio"> Servicio</label>
+                        <label class="meta-check"><input type="checkbox" value="Desarrollo Personal"> Desarrollo Personal</label>
+                    </div>
+
+                    <!-- PRESUPUESTO -->
+                    <h3>💰 Presupuesto</h3>
+                    <div id="itemsPresupuesto"></div>
+                    <button onclick="agregarItemPresupuesto()" class="btn btn-sm btn-secondary">➕ Agregar Item</button>
+                    <p style="text-align:right;font-size:18px;margin-top:10px;">
+                        <strong>Total Presupuestado: </strong>
+                        <span id="totalPresupuestoForm" style="color:#1a237e;">Bs. 0,00</span>
+                    </p>
+
+                    <!-- GASTOS -->
+                    <h3>💳 Gastos Ejecutados</h3>
+                    <div id="itemsGastos"></div>
+                    <button onclick="agregarItemGasto()" class="btn btn-sm btn-secondary">➕ Agregar Gasto</button>
+                    <p style="text-align:right;font-size:18px;margin-top:10px;">
+                        <strong>Total Gastos: </strong>
+                        <span id="totalGastosForm" style="color:#c62828;">Bs. 0,00</span>
+                    </p>
+
+                    <!-- ESTADO -->
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="estado" class="form-control">
+                            <option value="borrador">📝 Borrador</option>
+                            <option value="en_revision">🔍 En Revisión</option>
+                            <option value="aprobada">✅ Aprobada</option>
+                            <option value="ejecutada">🚀 Ejecutada</option>
+                            <option value="rendida">💰 Rendida</option>
+                            <option value="cerrada">🔒 Cerrada</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex;gap:10px;margin-top:20px;">
+                        <button onclick="guardarActividad()" class="btn btn-success btn-lg">💾 Guardar Actividad</button>
+                        <button onclick="cancelarFormulario()" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                    
+                    <input type="hidden" id="editandoId" value="">
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTES -->
+        <div id="reportes" class="pagina" style="display:none;">
+            <h1>📈 Reportes</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-num" id="rptActividades">0</span>
+                    <span>Total Actividades</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="rptPresupuesto">Bs. 0</span>
+                    <span>Presupuestado</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="rptEjecutado">Bs. 0</span>
+                    <span>Ejecutado</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="rptAhorro">Bs. 0</span>
+                    <span id="rptLabelAhorro">Ahorro</span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button onclick="exportarPDF()" class="btn btn-danger">📄 Generar PDF</button>
+                <button onclick="exportarExcel()" class="btn btn-success">📥 Exportar Excel</button>
+                <button onclick="limpiarDatos()" class="btn btn-warning">🗑️ Limpiar Datos</button>
+            </div>
+
+            <h2 style="margin-top:30px;">📋 Detalle por Actividad</h2>
+            <div id="detalleReporte"></div>
+        </div>
+
+    </main>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
