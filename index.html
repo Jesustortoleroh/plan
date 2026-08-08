@@ -91,27 +91,51 @@
             </div>
 
             <!-- Presupuesto -->
-            <h2>💰 PLAN DE PRESUPUESTO (Antes de la actividad)</h2>
-            <h3>GASTOS ANTICIPADOS</h3>
-            
-            <div class="presupuesto-header">
-                <span>Cantidad</span>
-                <span>Descripción</span>
-                <span>Monto Unitario</span>
-                <span>Subtotal</span>
-                <span></span>
+            <div class="presupuesto-section">
+                <h2>💰 PLAN DE PRESUPUESTO</h2>
+                <p class="presupuesto-subtitle">(Antes de la actividad)</p>
+                <h3>GASTOS ANTICIPADOS</h3>
+                
+                <div class="presupuesto-header">
+                    <div class="col-cantidad">Cantidad</div>
+                    <div class="col-descripcion">Descripción</div>
+                    <div class="col-costo">Costo Unitario (Bs.)</div>
+                    <div class="col-subtotal">Subtotal</div>
+                    <div class="col-eliminar"></div>
+                </div>
+
+                <div id="itemsPresupuesto"></div>
+                
+                <button onclick="agregarItemPresupuesto()" class="btn-agregar-item">
+                    ➕ Agregar Item
+                </button>
+                
+                <div class="presupuesto-total">
+                    <span class="total-label">TOTAL DE GASTOS ANTICIPADOS:</span>
+                    <span class="total-valor" id="totalPresupuestoForm">Bs. 0,00</span>
+                </div>
             </div>
 
-            <div id="itemsPresupuesto"></div>
-            
-            <button onclick="agregarItemPresupuesto()" class="btn btn-sm btn-secondary">
-                ➕ Agregar Item
-            </button>
-            
-            <p class="total-right">
-                <strong>TOTAL de gastos ANTICIPADOS:</strong>
-                <span id="totalPresupuestoForm">Bs. 0,00</span>
-            </p>
+            <!-- ============================================ -->
+            <!-- APROBACIONES Y FIRMAS -->
+            <!-- ============================================ -->
+            <div class="seccion-firmas">
+                <h3>✍️ Aprobaciones y Firmas</h3>
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <label>Nombre del Responsable (Solicitante)</label>
+                        <input type="text" id="firmaResponsable" class="form-control" placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Líder de Organización</label>
+                        <input type="text" id="firmaLider" class="form-control" placeholder="Ej: María García">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Obispo / Presidente</label>
+                        <input type="text" id="firmaObispo" class="form-control" placeholder="Ej: Carlos Rodríguez">
+                    </div>
+                </div>
+            </div>
 
             <div class="form-actions">
                 <button onclick="generarPDF()" class="btn btn-danger btn-lg">📄 Generar PDF</button>

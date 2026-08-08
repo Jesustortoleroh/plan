@@ -96,10 +96,15 @@ function generarPDF() {
                 .total { font-size: 16px; font-weight: bold; text-align: right; padding: 10px; background: #e8eaf6; margin-top: 5px; }
                 ul { margin: 5px 0; padding-left: 20px; }
                 li { font-size: 13px; padding: 2px 0; }
-                .seccion-firmas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
+                
+                /* FIRMAS */
+                .seccion-aprobaciones { margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
+                .firmas-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px; }
                 .firma-item { text-align: center; }
-                .firma-titulo { font-weight: bold; font-size: 11px; color: #666; margin-bottom: 5px; }
-                .firma-nombre { font-size: 13px; border-bottom: 1px solid #333; padding: 5px 0; min-height: 25px; }
+                .firma-titulo { font-weight: bold; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 10px; }
+                .firma-nombre { font-size: 14px; font-weight: 600; color: #1a237e; padding: 5px 0; min-height: 20px; }
+                .firma-linea { border-top: 1px solid #333; width: 100%; margin-top: 25px; }
+                
                 button { background: #1a237e; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 14px; margin: 5px; }
                 @media print { button { display: none; } body { padding: 10px; } }
             </style>
@@ -144,19 +149,24 @@ function generarPDF() {
             </table>
             <p class="total">TOTAL DE GASTOS ANTICIPADOS: Bs. ${total.toFixed(2)}</p>
             
-            <h2>✍️ RESPONSABLES</h2>
-            <div class="seccion-firmas">
-                <div class="firma-item">
-                    <div class="firma-titulo">Responsable (Solicitante)</div>
-                    <div class="firma-nombre">${datos.firmaResponsable || '___________________'}</div>
-                </div>
-                <div class="firma-item">
-                    <div class="firma-titulo">Líder de Organización</div>
-                    <div class="firma-nombre">${datos.firmaLider || '___________________'}</div>
-                </div>
-                <div class="firma-item">
-                    <div class="firma-titulo">Obispo / Presidente</div>
-                    <div class="firma-nombre">${datos.firmaObispo || '___________________'}</div>
+            <div class="seccion-aprobaciones">
+                <h2>✍️ APROBACIONES Y FIRMAS</h2>
+                <div class="firmas-grid">
+                    <div class="firma-item">
+                        <div class="firma-titulo">Responsable (Solicitante)</div>
+                        <div class="firma-nombre">${datos.firmaResponsable || '___________________'}</div>
+                        <div class="firma-linea"></div>
+                    </div>
+                    <div class="firma-item">
+                        <div class="firma-titulo">Líder de Organización</div>
+                        <div class="firma-nombre">${datos.firmaLider || '___________________'}</div>
+                        <div class="firma-linea"></div>
+                    </div>
+                    <div class="firma-item">
+                        <div class="firma-titulo">Obispo / Presidente</div>
+                        <div class="firma-nombre">${datos.firmaObispo || '___________________'}</div>
+                        <div class="firma-linea"></div>
+                    </div>
                 </div>
             </div>
             
