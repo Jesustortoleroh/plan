@@ -12,23 +12,22 @@ function nuevoPlan() {
 // =============================================
 
 function agregarItemPresupuesto(item = {}) {
-    const html = `
+    document.getElementById('itemsPresupuesto').insertAdjacentHTML('beforeend', `
         <div class="item-presupuesto">
-            <input type="number" value="${item.cantidad || 1}" min="0" class="form-control cantidad" placeholder="Cantidad" onchange="calcularTotal()">
-            <input type="text" value="${item.concepto || ''}" class="form-control descripcion" placeholder="Descripción">
-            <input type="number" value="${item.costo || 0}" min="0" step="0.01" class="form-control monto-unitario" placeholder="Monto Unitario" onchange="calcularTotal()">
+            <input type="number" value="${item.cantidad || 1}" min="0" class="cantidad-input" placeholder="0" onchange="calcularTotal()">
+            <input type="text" value="${item.concepto || ''}" class="descripcion-input" placeholder="Descripción del gasto">
+            <input type="number" value="${item.costo || 0}" min="0" step="0.01" class="costo-input" placeholder="0,00" onchange="calcularTotal()">
             <div class="subtotal-item">Bs. ${((item.cantidad || 0) * (item.costo || 0)).toFixed(2)}</div>
-            <button onclick="this.parentElement.remove();calcularTotal();" class="btn btn-danger btn-sm">✕</button>
+            <button onclick="this.parentElement.remove();calcularTotal();" class="btn-eliminar-item">✕</button>
         </div>
-    `;
-    document.getElementById('itemsPresupuesto').insertAdjacentHTML('beforeend', html);
+    `);
 }
 
 function calcularTotal() {
     let total = 0;
     document.querySelectorAll('.item-presupuesto').forEach(row => {
-        const cantidad = parseFloat(row.querySelector('.cantidad').value) || 0;
-        const costo = parseFloat(row.querySelector('.monto-unitario').value) || 0;
+        const cantidad = parseFloat(row.querySelector('.cantidad-input').value) || 0;
+        const costo = parseFloat(row.querySelector('.costo-input').value) || 0;
         const subtotal = cantidad * costo;
         row.querySelector('.subtotal-item').textContent = 'Bs. ' + subtotal.toFixed(2);
         total += subtotal;
@@ -46,12 +45,12 @@ function generarPDF() {
     
     const presupuesto = [];
     document.querySelectorAll('.item-presupuesto').forEach(row => {
-        const concepto = row.querySelector('.descripcion').value.trim();
+        const concepto = row.querySelector('.descripcion-input').value.trim();
         if (concepto) {
             presupuesto.push({
-                cantidad: parseInt(row.querySelector('.cantidad').value) || 0,
+                cantidad: parseInt(row.querySelector('.cantidad-input').value) || 0,
                 concepto: concepto,
-                costo: parseFloat(row.querySelector('.monto-unitario').value) || 0
+                costo: parseFloat(row.querySelector('.costo-input').value) || 0
             });
         }
     });
@@ -66,6 +65,9 @@ function generarPDF() {
         asistentes: document.getElementById('asistentes').value,
         responsables: document.getElementById('responsables').value,
         limpieza: document.getElementById('limpieza').value,
+        firmaResponsable: document.getElementById('firmaResponsable').value,
+        firmaLider: document.getElementById('firmaLider').value,
+        firmaObispo: document.getElementById('firmaObispo').value,
         presupuesto: presupuesto
     };
     
@@ -94,9 +96,10 @@ function generarPDF() {
                 .total { font-size: 16px; font-weight: bold; text-align: right; padding: 10px; background: #e8eaf6; margin-top: 5px; }
                 ul { margin: 5px 0; padding-left: 20px; }
                 li { font-size: 13px; padding: 2px 0; }
-                .firmas { display: flex; justify-content: space-around; margin-top: 50px; }
-                .firma { text-align: center; }
-                .linea { border-top: 1px solid #333; width: 180px; margin: 40px auto 5px; }
+                .seccion-firmas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
+                .firma-item { text-align: center; }
+                .firma-titulo { font-weight: bold; font-size: 11px; color: #666; margin-bottom: 5px; }
+                .firma-nombre { font-size: 13px; border-bottom: 1px solid #333; padding: 5px 0; min-height: 25px; }
                 button { background: #1a237e; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 14px; margin: 5px; }
                 @media print { button { display: none; } body { padding: 10px; } }
             </style>
@@ -132,19 +135,29 @@ function generarPDF() {
             <h2>PLAN DE PRESUPUESTO</h2>
             <h3>GASTOS ANTICIPADOS</h3>
             <table>
-                <thead><tr><th>Cantidad</th><th>Descripción</th><th>Monto Unitario</th><th>Subtotal</th></tr></thead>
+                <thead><tr><th>Cantidad</th><th>Descripción</th><th>Costo Unitario (Bs.)</th><th>Subtotal</th></tr></thead>
                 <tbody>
                     ${presupuesto.map(p => `
                         <tr><td>${p.cantidad}</td><td>${p.concepto}</td><td>Bs. ${p.costo.toFixed(2)}</td><td>Bs. ${(p.cantidad*p.costo).toFixed(2)}</td></tr>
                     `).join('')}
                 </tbody>
             </table>
-            <p class="total">TOTAL de gastos ANTICIPADOS: Bs. ${total.toFixed(2)}</p>
+            <p class="total">TOTAL DE GASTOS ANTICIPADOS: Bs. ${total.toFixed(2)}</p>
             
-            <div class="firmas">
-                <div class="firma"><div class="linea"></div>Responsable</div>
-                <div class="firma"><div class="linea"></div>Líder de Organización</div>
-                <div class="firma"><div class="linea"></div>Obispo/Presidente</div>
+            <h2>✍️ RESPONSABLES</h2>
+            <div class="seccion-firmas">
+                <div class="firma-item">
+                    <div class="firma-titulo">Responsable (Solicitante)</div>
+                    <div class="firma-nombre">${datos.firmaResponsable || '___________________'}</div>
+                </div>
+                <div class="firma-item">
+                    <div class="firma-titulo">Líder de Organización</div>
+                    <div class="firma-nombre">${datos.firmaLider || '___________________'}</div>
+                </div>
+                <div class="firma-item">
+                    <div class="firma-titulo">Obispo / Presidente</div>
+                    <div class="firma-nombre">${datos.firmaObispo || '___________________'}</div>
+                </div>
             </div>
             
             <p style="text-align:center;color:#999;font-size:10px;margin-top:30px;">Generado: ${new Date().toLocaleDateString()}</p>

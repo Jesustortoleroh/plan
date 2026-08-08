@@ -17,7 +17,7 @@
             <h2>Plan de Actividad</h2>
         </div>
         <nav class="sidebar-nav">
-            <a href="#" onclick="nuevoPlan()" class="nav-link active" id="navNuevo">
+            <a href="#" onclick="nuevoPlan()" class="nav-link active">
                 ➕ Nuevo Plan
             </a>
         </nav>
@@ -54,7 +54,7 @@
             <!-- Propósito -->
             <div class="form-group">
                 <label>PROPÓSITO SAGRADO de la actividad</label>
-                <small style="color:#666;">(para satisfacer las necesidades espirituales y temporales de los participantes)</small>
+                <small>(para satisfacer las necesidades espirituales y temporales de los participantes)</small>
                 <textarea id="proposito" class="form-control" rows="3" placeholder="Describa el propósito sagrado..."></textarea>
             </div>
 
@@ -94,12 +94,23 @@
             <h2>💰 PLAN DE PRESUPUESTO (Antes de la actividad)</h2>
             <h3>GASTOS ANTICIPADOS</h3>
             
+            <div class="presupuesto-header">
+                <span>Cantidad</span>
+                <span>Descripción</span>
+                <span>Monto Unitario</span>
+                <span>Subtotal</span>
+                <span></span>
+            </div>
+
             <div id="itemsPresupuesto"></div>
-            <button onclick="agregarItem()" class="btn btn-sm btn-secondary">➕ Agregar Item</button>
+            
+            <button onclick="agregarItemPresupuesto()" class="btn btn-sm btn-secondary">
+                ➕ Agregar Item
+            </button>
             
             <p class="total-right">
-                <strong>TOTAL de gastos ANTICIPADOS: </strong>
-                <span id="totalPresupuesto">Bs. 0,00</span>
+                <strong>TOTAL de gastos ANTICIPADOS:</strong>
+                <span id="totalPresupuestoForm">Bs. 0,00</span>
             </p>
 
             <div class="form-actions">
