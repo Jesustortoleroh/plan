@@ -39,7 +39,7 @@ sistema-actividades/
 │ └── app.js # Lógica y funciones
 └── img/ # Imágenes (opcional)
 
-text
+
 
 ## 🎯 Flujo de una Actividad
 Crear → Planificar → Presupuestar → Aprobar → Ejecutar → Rendir → Cerrar
