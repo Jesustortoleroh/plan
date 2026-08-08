@@ -19,7 +19,7 @@ body {
 }
 
 .layout { display: flex; min-height: 100vh; }
-.main-content { flex: 1; padding: 30px; margin-left: 220px; max-width: 900px; }
+.main-content { flex: 1; padding: 30px; margin-left: 220px; max-width: 950px; }
 
 /* SIDEBAR */
 .sidebar {
@@ -47,18 +47,17 @@ body {
 /* CARD */
 .card { background: white; padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
 .card h1 { color: var(--primary); text-align: center; margin-bottom: 20px; font-size: 22px; }
-.card h2 { color: var(--primary); margin: 20px 0 10px; font-size: 18px; }
+.card h2 { color: var(--primary); margin: 25px 0 10px; font-size: 18px; }
 .card h3 { color: var(--primary); margin: 15px 0 10px; font-size: 14px; }
 
 /* FORM */
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; color: var(--text-light); }
-.form-group small { display: block; margin-bottom: 5px; font-size: 11px; }
+.form-group small { display: block; margin-bottom: 5px; font-size: 11px; color: #666; }
 .form-control { width: 100%; padding: 10px 15px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; }
 .form-control:focus { outline: none; border-color: var(--primary); }
 textarea.form-control { resize: vertical; min-height: 80px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.form-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
 
 /* METAS */
 .metas-grid { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
@@ -70,8 +69,46 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .meta-check:hover { background: #e8eaf6; }
 .meta-check:has(input:checked) { background: #e8eaf6; color: var(--primary); font-weight: 500; border-color: #c5cae9; }
 
+/* PRESUPUESTO */
+.presupuesto-header,
+.item-presupuesto {
+    display: grid;
+    grid-template-columns: 100px 2fr 150px 120px 40px;
+    gap: 12px;
+    align-items: center;
+}
+
+.presupuesto-header {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 10px;
+    padding: 0 5px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.item-presupuesto {
+    margin-bottom: 12px;
+}
+
+.subtotal-item {
+    font-weight: bold;
+    color: var(--primary);
+    text-align: right;
+    font-size: 14px;
+}
+
 /* TOTAL */
-.total-right { text-align: right; font-size: 18px; margin-top: 10px; padding: 15px; background: #e8eaf6; border-radius: 8px; font-weight: bold; }
+.total-right {
+    text-align: right;
+    font-size: 18px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #e8eaf6;
+    border-radius: 8px;
+    font-weight: bold;
+}
 .total-right span { color: var(--primary); }
 
 /* BUTTONS */
@@ -81,9 +118,19 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .btn-danger { background: var(--red); color: white; }
 .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; }
 .btn-lg { padding: 14px 28px; font-size: 16px; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
 
 @media (max-width: 768px) {
     .sidebar { width: 180px; }
     .main-content { margin-left: 180px; padding: 15px; }
     .form-row { grid-template-columns: 1fr; }
+    
+    .presupuesto-header { display: none; }
+    .item-presupuesto {
+        grid-template-columns: 1fr;
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 10px;
+        gap: 8px;
+    }
 }
