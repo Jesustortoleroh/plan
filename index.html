@@ -28,26 +28,49 @@
         <div class="card">
             <h1>PLAN DE ACTIVIDAD</h1>
             
-            <!-- Datos generales -->
-            <div class="form-row">
+            <!-- ============================================ -->
+            <!-- SECCIÓN: INFORMACIÓN DE APROBACIÓN -->
+            <!-- ============================================ -->
+            <div class="aprobacion-card">
+                <div class="aprobacion-header">
+                    <span class="aprobacion-icon">📌</span>
+                    <h2>INFORMACIÓN DE APROBACIÓN</h2>
+                </div>
+                <div class="aprobacion-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Organización *</label>
+                            <input type="text" id="organizacion" class="form-control" placeholder="Ej: Hombres Jóvenes, Sociedad de Socorro">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Actividad *</label>
+                            <input type="date" id="fecha" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Solicitante *</label>
+                            <input type="text" id="solicitante" class="form-control" placeholder="Nombre de quien solicita">
+                        </div>
+                        <div class="form-group">
+                            <label>Obispo / Presidente *</label>
+                            <input type="text" id="obispo" class="form-control" placeholder="Nombre del obispo o presidente">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- DATOS GENERALES -->
+            <!-- ============================================ -->
+            <div class="form-row" style="margin-top:25px;">
                 <div class="form-group">
                     <label>Estaca</label>
                     <input type="text" id="estaca" class="form-control" placeholder="Nombre de la estaca">
                 </div>
                 <div class="form-group">
-                    <label>Organización</label>
-                    <input type="text" id="organizacion" class="form-control" placeholder="Ej: Hombres Jóvenes">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
                     <label>Barrio</label>
                     <input type="text" id="barrio" class="form-control" placeholder="Nombre del barrio">
-                </div>
-                <div class="form-group">
-                    <label>Fecha de Actividad</label>
-                    <input type="date" id="fecha" class="form-control">
                 </div>
             </div>
 
@@ -113,27 +136,6 @@
                 <div class="presupuesto-total">
                     <span class="total-label">TOTAL DE GASTOS ANTICIPADOS:</span>
                     <span class="total-valor" id="totalPresupuestoForm">Bs. 0,00</span>
-                </div>
-            </div>
-
-            <!-- ============================================ -->
-            <!-- APROBACIONES Y FIRMAS -->
-            <!-- ============================================ -->
-            <div class="seccion-firmas">
-                <h3>✍️ Aprobaciones y Firmas</h3>
-                <div class="form-row form-row-3">
-                    <div class="form-group">
-                        <label>Nombre del Responsable (Solicitante)</label>
-                        <input type="text" id="firmaResponsable" class="form-control" placeholder="Ej: Juan Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Líder de Organización</label>
-                        <input type="text" id="firmaLider" class="form-control" placeholder="Ej: María García">
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Obispo / Presidente</label>
-                        <input type="text" id="firmaObispo" class="form-control" placeholder="Ej: Carlos Rodríguez">
-                    </div>
                 </div>
             </div>
 

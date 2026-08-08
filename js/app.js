@@ -6,8 +6,7 @@ function inicializarApp() {
     document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
     agregarItemPresupuesto();
     
-    // Quitar borde rojo al escribir en cualquier campo
-    document.querySelectorAll('input, textarea, select').forEach(el => {
+    document.querySelectorAll('input, textarea').forEach(el => {
         el.addEventListener('input', function() {
             this.style.borderColor = '';
             this.style.boxShadow = '';
@@ -34,7 +33,6 @@ function agregarItemPresupuesto(item = {}) {
         </div>
     `);
     
-    // Agregar evento para quitar borde rojo
     const lastItem = document.querySelector('#itemsPresupuesto .item-presupuesto:last-child');
     lastItem.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', function() {
@@ -67,145 +65,111 @@ function marcarError(elemento) {
     elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function limpiarError(elemento) {
-    elemento.style.borderColor = '';
-    elemento.style.boxShadow = '';
-}
-
 function validarFormulario() {
     
-    // 1. Validar Estaca
-    const estaca = document.getElementById('estaca');
-    if (!estaca.value.trim()) {
-        marcarError(estaca);
-        alert('⚠️ El campo "Estaca" es obligatorio.\n\nPor favor ingrese el nombre de la estaca.');
-        return false;
-    }
-    limpiarError(estaca);
-    
-    // 2. Validar Organización
+    // 1. Organización
     const organizacion = document.getElementById('organizacion');
     if (!organizacion.value.trim()) {
         marcarError(organizacion);
-        alert('⚠️ El campo "Organización" es obligatorio.\n\nPor favor ingrese el nombre de la organización.');
+        alert('⚠️ El campo "Organización" es obligatorio.');
         return false;
     }
-    limpiarError(organizacion);
     
-    // 3. Validar Barrio
-    const barrio = document.getElementById('barrio');
-    if (!barrio.value.trim()) {
-        marcarError(barrio);
-        alert('⚠️ El campo "Barrio" es obligatorio.\n\nPor favor ingrese el nombre del barrio.');
-        return false;
-    }
-    limpiarError(barrio);
-    
-    // 4. Validar Fecha
+    // 2. Fecha
     const fecha = document.getElementById('fecha');
     if (!fecha.value.trim()) {
         marcarError(fecha);
-        alert('⚠️ El campo "Fecha de Actividad" es obligatorio.\n\nPor favor seleccione una fecha.');
+        alert('⚠️ El campo "Fecha de Actividad" es obligatorio.');
         return false;
     }
-    limpiarError(fecha);
     
-    // 5. Validar Propósito
+    // 3. Solicitante
+    const solicitante = document.getElementById('solicitante');
+    if (!solicitante.value.trim()) {
+        marcarError(solicitante);
+        alert('⚠️ El campo "Solicitante" es obligatorio.');
+        return false;
+    }
+    
+    // 4. Obispo / Presidente
+    const obispo = document.getElementById('obispo');
+    if (!obispo.value.trim()) {
+        marcarError(obispo);
+        alert('⚠️ El campo "Obispo / Presidente" es obligatorio.');
+        return false;
+    }
+    
+    // 5. Estaca
+    const estaca = document.getElementById('estaca');
+    if (!estaca.value.trim()) {
+        marcarError(estaca);
+        alert('⚠️ El campo "Estaca" es obligatorio.');
+        return false;
+    }
+    
+    // 6. Barrio
+    const barrio = document.getElementById('barrio');
+    if (!barrio.value.trim()) {
+        marcarError(barrio);
+        alert('⚠️ El campo "Barrio" es obligatorio.');
+        return false;
+    }
+    
+    // 7. Propósito
     const proposito = document.getElementById('proposito');
     if (!proposito.value.trim()) {
         marcarError(proposito);
-        alert('⚠️ El campo "Propósito Sagrado" es obligatorio.\n\nPor favor describa el propósito de la actividad.');
+        alert('⚠️ El campo "Propósito Sagrado" es obligatorio.');
         return false;
     }
-    limpiarError(proposito);
     
-    // 6. Validar Metas (al menos una seleccionada)
+    // 8. Metas
     const metasSeleccionadas = document.querySelectorAll('.meta-check input:checked');
     if (metasSeleccionadas.length === 0) {
-        // Resaltar todas las metas
         document.querySelectorAll('.meta-check').forEach(el => {
             el.style.borderColor = '#c62828';
             el.style.background = '#ffebee';
-            setTimeout(() => {
-                el.style.borderColor = '';
-                el.style.background = '';
-            }, 3000);
+            setTimeout(() => { el.style.borderColor = ''; el.style.background = ''; }, 3000);
         });
         document.querySelector('.metas-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        alert('⚠️ Debe seleccionar al menos una meta de la actividad.\n\nPor favor marque una o más metas.');
+        alert('⚠️ Debe seleccionar al menos una meta de la actividad.');
         return false;
     }
     
-    // 7. Validar Asistentes
+    // 9. Asistentes
     const asistentes = document.getElementById('asistentes');
     if (!asistentes.value.trim()) {
         marcarError(asistentes);
-        alert('⚠️ El campo "Total estimado de asistentes" es obligatorio.\n\nPor favor ingrese la cantidad estimada de asistentes.');
+        alert('⚠️ El campo "Total estimado de asistentes" es obligatorio.');
         return false;
     }
-    limpiarError(asistentes);
     
-    // 8. Validar Responsables de la actividad
+    // 10. Responsables
     const responsables = document.getElementById('responsables');
     if (!responsables.value.trim()) {
         marcarError(responsables);
-        alert('⚠️ El campo "Responsables de la actividad" es obligatorio.\n\nPor favor ingrese los nombres de los responsables.');
+        alert('⚠️ El campo "Responsables de la actividad" es obligatorio.');
         return false;
     }
-    limpiarError(responsables);
     
-    // 9. Validar Responsables de limpieza
+    // 11. Limpieza
     const limpieza = document.getElementById('limpieza');
     if (!limpieza.value.trim()) {
         marcarError(limpieza);
-        alert('⚠️ El campo "Responsables limpieza capilla" es obligatorio.\n\nPor favor ingrese los nombres de los responsables de limpieza.');
+        alert('⚠️ El campo "Responsables limpieza capilla" es obligatorio.');
         return false;
     }
-    limpiarError(limpieza);
     
-    // 10. Validar Nombre del Responsable (Solicitante)
-    const firmaResponsable = document.getElementById('firmaResponsable');
-    if (!firmaResponsable.value.trim()) {
-        marcarError(firmaResponsable);
-        alert('⚠️ El campo "Nombre del Responsable (Solicitante)" es obligatorio.\n\nPor favor ingrese el nombre del responsable.');
-        return false;
-    }
-    limpiarError(firmaResponsable);
-    
-    // 11. Validar Nombre del Líder de Organización
-    const firmaLider = document.getElementById('firmaLider');
-    if (!firmaLider.value.trim()) {
-        marcarError(firmaLider);
-        alert('⚠️ El campo "Nombre del Líder de Organización" es obligatorio.\n\nPor favor ingrese el nombre del líder.');
-        return false;
-    }
-    limpiarError(firmaLider);
-    
-    // 12. Validar Nombre del Obispo / Presidente
-    const firmaObispo = document.getElementById('firmaObispo');
-    if (!firmaObispo.value.trim()) {
-        marcarError(firmaObispo);
-        alert('⚠️ El campo "Nombre del Obispo / Presidente" es obligatorio.\n\nPor favor ingrese el nombre del obispo o presidente.');
-        return false;
-    }
-    limpiarError(firmaObispo);
-    
-    // 13. Validar presupuesto (al menos un item válido)
+    // 12. Presupuesto
     let itemsValidos = 0;
-    const itemsPresupuesto = document.querySelectorAll('.item-presupuesto');
-    
-    itemsPresupuesto.forEach(row => {
+    document.querySelectorAll('.item-presupuesto').forEach(row => {
         const cantidad = parseInt(row.querySelector('.cantidad-input').value) || 0;
         const descripcion = row.querySelector('.descripcion-input').value.trim();
         const costo = parseFloat(row.querySelector('.costo-input').value) || 0;
-        
-        if (cantidad > 0 && descripcion !== '' && costo > 0) {
-            itemsValidos++;
-        }
+        if (cantidad > 0 && descripcion !== '' && costo > 0) itemsValidos++;
     });
     
     if (itemsValidos === 0) {
-        // Resaltar el primer item de presupuesto
         const primerItem = document.querySelector('.item-presupuesto');
         if (primerItem) {
             primerItem.querySelectorAll('input').forEach(input => {
@@ -214,11 +178,10 @@ function validarFormulario() {
             });
             primerItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        alert('⚠️ Debe agregar al menos un gasto anticipado válido.\n\nVerifique que cada item tenga:\n• Cantidad mayor a 0\n• Descripción\n• Costo Unitario mayor a 0');
+        alert('⚠️ Debe agregar al menos un gasto anticipado válido.\n\n• Cantidad mayor a 0\n• Descripción\n• Costo Unitario mayor a 0');
         return false;
     }
     
-    // Si todo está bien
     return true;
 }
 
@@ -228,10 +191,7 @@ function validarFormulario() {
 
 function generarPDF() {
     
-    // Validar antes de generar
-    if (!validarFormulario()) {
-        return;
-    }
+    if (!validarFormulario()) return;
     
     const metas = [];
     document.querySelectorAll('.meta-check input:checked').forEach(cb => metas.push(cb.value));
@@ -241,29 +201,23 @@ function generarPDF() {
         const concepto = row.querySelector('.descripcion-input').value.trim();
         const cantidad = parseInt(row.querySelector('.cantidad-input').value) || 0;
         const costo = parseFloat(row.querySelector('.costo-input').value) || 0;
-        
         if (concepto && cantidad > 0 && costo > 0) {
-            presupuesto.push({
-                cantidad: cantidad,
-                concepto: concepto,
-                costo: costo
-            });
+            presupuesto.push({ cantidad, concepto, costo });
         }
     });
     
     const datos = {
-        estaca: document.getElementById('estaca').value.trim(),
         organizacion: document.getElementById('organizacion').value.trim(),
-        barrio: document.getElementById('barrio').value.trim(),
         fecha: document.getElementById('fecha').value,
+        solicitante: document.getElementById('solicitante').value.trim(),
+        obispo: document.getElementById('obispo').value.trim(),
+        estaca: document.getElementById('estaca').value.trim(),
+        barrio: document.getElementById('barrio').value.trim(),
         proposito: document.getElementById('proposito').value.trim(),
         metas: metas,
         asistentes: document.getElementById('asistentes').value.trim(),
         responsables: document.getElementById('responsables').value.trim(),
         limpieza: document.getElementById('limpieza').value.trim(),
-        firmaResponsable: document.getElementById('firmaResponsable').value.trim(),
-        firmaLider: document.getElementById('firmaLider').value.trim(),
-        firmaObispo: document.getElementById('firmaObispo').value.trim(),
         presupuesto: presupuesto
     };
     
@@ -292,12 +246,17 @@ function generarPDF() {
                 .total { font-size: 16px; font-weight: bold; text-align: right; padding: 10px; background: #e8eaf6; margin-top: 5px; }
                 ul { margin: 5px 0; padding-left: 20px; }
                 li { font-size: 13px; padding: 2px 0; }
-                .seccion-aprobaciones { margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
-                .firmas-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px; }
+                
+                .aprobacion-box { background: #f0f2ff; border: 2px solid #c5cae9; border-radius: 8px; padding: 20px; margin: 15px 0; }
+                .aprobacion-box h2 { margin-top: 0; font-size: 14px; }
+                
+                .firmas-section { margin-top: 30px; }
+                .firmas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 20px; }
                 .firma-item { text-align: center; }
-                .firma-titulo { font-weight: bold; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 10px; }
-                .firma-nombre { font-size: 14px; font-weight: 600; color: #1a237e; padding: 5px 0; min-height: 20px; }
-                .firma-linea { border-top: 1px solid #333; width: 100%; margin-top: 25px; }
+                .firma-nombre { font-size: 16px; font-weight: 700; color: #1a237e; padding: 5px 0; }
+                .firma-linea { border-top: 1px solid #333; width: 100%; margin-top: 30px; }
+                .firma-cargo { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+                
                 button { background: #1a237e; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 14px; margin: 5px; }
                 @media print { button { display: none; } body { padding: 10px; } }
             </style>
@@ -310,11 +269,19 @@ function generarPDF() {
             
             <h1>PLAN DE ACTIVIDAD</h1>
             
+            <div class="aprobacion-box">
+                <h2>📌 DATOS DE APROBACIÓN</h2>
+                <div class="datos">
+                    <div><span class="dato-label">Organización:</span> <span class="dato-valor">${datos.organizacion}</span></div>
+                    <div><span class="dato-label">Fecha:</span> <span class="dato-valor">${datos.fecha}</span></div>
+                    <div><span class="dato-label">Solicitante:</span> <span class="dato-valor">${datos.solicitante}</span></div>
+                    <div><span class="dato-label">Obispo / Presidente:</span> <span class="dato-valor">${datos.obispo}</span></div>
+                </div>
+            </div>
+            
             <div class="datos">
                 <div><span class="dato-label">Estaca:</span> <span class="dato-valor">${datos.estaca}</span></div>
-                <div><span class="dato-label">Organización:</span> <span class="dato-valor">${datos.organizacion}</span></div>
                 <div><span class="dato-label">Barrio:</span> <span class="dato-valor">${datos.barrio}</span></div>
-                <div><span class="dato-label">Fecha:</span> <span class="dato-valor">${datos.fecha}</span></div>
             </div>
             
             <h2>PROPÓSITO SAGRADO</h2>
@@ -342,23 +309,18 @@ function generarPDF() {
             </table>
             <p class="total">TOTAL DE GASTOS ANTICIPADOS: Bs. ${total.toFixed(2)}</p>
             
-            <div class="seccion-aprobaciones">
-                <h2>✍️ APROBACIONES Y FIRMAS</h2>
+            <div class="firmas-section">
+                <h2>✍️ APROBACIONES</h2>
                 <div class="firmas-grid">
                     <div class="firma-item">
-                        <div class="firma-titulo">Responsable (Solicitante)</div>
-                        <div class="firma-nombre">${datos.firmaResponsable}</div>
+                        <div class="firma-nombre">${datos.solicitante}</div>
                         <div class="firma-linea"></div>
+                        <div class="firma-cargo">Solicitante</div>
                     </div>
                     <div class="firma-item">
-                        <div class="firma-titulo">Líder de Organización</div>
-                        <div class="firma-nombre">${datos.firmaLider}</div>
+                        <div class="firma-nombre">${datos.obispo}</div>
                         <div class="firma-linea"></div>
-                    </div>
-                    <div class="firma-item">
-                        <div class="firma-titulo">Obispo / Presidente</div>
-                        <div class="firma-nombre">${datos.firmaObispo}</div>
-                        <div class="firma-linea"></div>
+                        <div class="firma-cargo">Obispo / Presidente</div>
                     </div>
                 </div>
             </div>
