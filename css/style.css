@@ -3,6 +3,8 @@
     --bg: #f5f6fa;
     --white: #fff;
     --border: #ddd;
+    --text: #333;
+    --blue-doc: #0000cc;
 }
 
 * {
@@ -14,38 +16,46 @@
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
+    color: var(--text);
 }
 
-.layout {
-    display: flex;
-}
-
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
+/* MENÚ SUPERIOR */
+.topbar {
     background: var(--primary);
     color: white;
-    padding: 20px;
-    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.sidebar-header {
-    text-align: center;
-    margin-bottom: 25px;
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.sidebar-icon {
-    font-size: 40px;
+.topbar-brand h2 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.topbar-menu {
+    display: flex;
+    gap: 20px;
 }
 
 .nav-link {
-    display: block;
     color: white;
     text-decoration: none;
-    padding: 12px;
+    padding: 8px 16px;
     border-radius: 8px;
-    margin-bottom: 10px;
+    font-weight: 500;
+    transition: background 0.3s;
 }
 
 .nav-link:hover,
@@ -53,16 +63,27 @@ body {
     background: rgba(255, 255, 255, .2);
 }
 
+.hamburger {
+    display: none;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* CONTENEDOR PRINCIPAL */
 .main-content {
-    flex: 1;
-    margin-left: 250px;
-    padding: 25px;
+    max-width: 1200px; /* Limita el ancho para que no se deforme en pantallas gigantes */
+    margin: 0 auto;
+    padding: 30px;
 }
 
 .card {
     background: white;
-    padding: 25px;
+    padding: 40px;
     border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 h1 {
@@ -71,16 +92,124 @@ h1 {
     margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 15px;
+/* ESTILOS ESPECÍFICOS PARA EL DOCUMENTO "PLAN DE ACTIVIDAD" */
+.form-document {
+    font-family: 'Arial', sans-serif; /* Más parecido a documentos impresos */
+    color: black;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
+.document-title {
+    color: black;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin-bottom: 30px;
 }
 
+.label-bold {
+    font-weight: bold;
+}
+
+.label-normal {
+    font-weight: normal;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.text-blue {
+    color: var(--blue-doc);
+}
+
+.mt-large { margin-top: 25px; }
+.mt-small { margin-top: 10px; }
+.mb-line { margin-bottom: 25px; border-bottom: 1px solid black; padding-bottom: 25px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.w-100 { width: 100%; }
+
+.inline-group {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.form-control-line {
+    flex-grow: 1;
+    border: none;
+    border-bottom: 1px solid black;
+    background: transparent;
+    padding: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+.form-control-line:focus {
+    outline: none;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* Checkboxes */
+.checkbox-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 20px;
+}
+.checkbox-list label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* Tabla del Plan */
+.table-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.outline-border { border: 1px solid black; }
+.outline-border-sides { border-left: 1px solid black; border-right: 1px solid black; }
+.border-right { border-right: 1px solid black; }
+.font-bold { font-weight: bold; }
+
+.tabla-plan-header, .item-plan, .tabla-plan-footer {
+    display: grid;
+    grid-template-columns: 120px 1fr 150px 50px; /* El 50px es para el botón eliminar */
+}
+.tabla-plan-header div, .item-plan div, .tabla-plan-footer div {
+    padding: 8px;
+}
+.tabla-plan-header {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid black;
+}
+.item-plan {
+    border-bottom: 1px solid black;
+}
+.item-plan input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    text-align: center;
+}
+.item-plan input.text-left { text-align: left; }
+
+.tabla-plan-footer {
+    background-color: #f9f9f9;
+}
+.span-2 {
+    grid-column: span 2;
+    padding-right: 20px !important;
+}
+
+/* ESTILOS DE LA RENDICIÓN Y ELEMENTOS GENERALES */
+.form-group { margin-bottom: 15px; }
 .form-control {
     width: 100%;
     padding: 10px;
@@ -92,7 +221,7 @@ label {
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 30px;
 }
 
 .aprobacion-card {
@@ -102,53 +231,21 @@ label {
     margin-bottom: 20px;
 }
 
-.aprobacion-header {
-    background: var(--primary);
-    color: white;
-    padding: 15px;
-}
+.aprobacion-header { background: var(--primary); color: white; padding: 15px; }
+.aprobacion-body { padding: 20px; }
+.nota-rendicion { background: #fff8e1; padding: 15px; border-left: 5px solid #ff9800; margin-bottom: 20px; border-radius: 8px; }
 
-.aprobacion-body {
-    padding: 20px;
-}
-
-.nota-rendicion {
-    background: #fff8e1;
-    padding: 15px;
-    border-left: 5px solid #ff9800;
-    margin-bottom: 20px;
-    border-radius: 8px;
-}
-
-.presupuesto-section {
-    margin-top: 20px;
-}
-
-.tabla-rendicion-header,
-.item-rendicion {
+.tabla-rendicion-header, .item-rendicion {
     display: grid;
     grid-template-columns: 130px 2fr 140px 2fr 120px 50px;
     gap: 10px;
     align-items: center;
 }
-
-.tabla-rendicion-header {
-    background: var(--primary);
-    color: white;
-    padding: 10px;
-    border-radius: 8px 8px 0 0;
-    font-size: 0.9rem;
-}
-
-.item-rendicion {
-    background: white;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
+.tabla-rendicion-header { background: var(--primary); color: white; padding: 10px; border-radius: 8px 8px 0 0; font-size: 0.9rem; }
+.item-rendicion { background: white; padding: 10px; border-bottom: 1px solid #eee; }
 
 .btn-agregar-item {
     width: 100%;
-    margin-top: 10px;
     padding: 12px;
     border: none;
     background: #e8eaf6;
@@ -156,121 +253,60 @@ label {
     border-radius: 8px;
     font-weight: 600;
     color: var(--primary);
+    transition: background 0.3s;
 }
+.btn-agregar-item:hover { background: #d0d4f0; }
 
-.presupuesto-total {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
-    background: var(--primary);
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    font-weight: bold;
-}
+.presupuesto-total { display: flex; justify-content: space-between; margin-top: 15px; background: var(--primary); color: white; padding: 15px; border-radius: 8px; font-weight: bold; }
 
-.btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-family: inherit;
-}
+.btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: inherit; margin-left: 10px; transition: opacity 0.3s;}
+.btn:hover { opacity: 0.9; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-secondary { background: #6c757d; color: white; }
 
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-eliminar {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s;
-}
-
-.btn-eliminar:hover {
-    transform: scale(1.1);
-}
-
-.hamburger {
-    display: none;
-}
+.btn-eliminar { background: none; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; color: red;}
+.btn-eliminar:hover { transform: scale(1.2); }
 
 /* Ocultar elementos innecesarios al imprimir */
 @media print {
-    .sidebar, .hamburger, .btn-agregar-item, .btn-eliminar, #btnImprimir {
+    .topbar, .btn-agregar-item, .btn-eliminar, .no-print {
         display: none !important;
     }
-    .main-content {
-        margin-left: 0;
-        padding: 0;
-    }
-    body {
-        background: white;
-    }
-    .card {
-        box-shadow: none;
-        border: none;
-        padding: 0;
+    .main-content { padding: 0; }
+    body { background: white; }
+    .card { box-shadow: none; border: none; padding: 0; }
+    .item-plan input::placeholder { color: transparent; }
+    
+    /* Para que el grid de la tabla de plan no muestre la columna de borrar al imprimir */
+    .tabla-plan-header, .item-plan, .tabla-plan-footer {
+        grid-template-columns: 120px 1fr 150px;
     }
 }
 
 /* Responsividad para móviles */
 @media (max-width: 768px) {
-    .hamburger {
-        display: block;
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        z-index: 1000;
-        background: var(--primary);
-        color: white;
-        border: none;
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        font-size: 24px;
-    }
-
-    .sidebar {
-        transform: translateX(-100%);
-        transition: 0.3s;
-    }
-
-    .sidebar.show {
-        transform: translateX(0);
-    }
-
-    .main-content {
-        margin-left: 0;
-        padding-top: 80px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .tabla-rendicion-header {
-        display: none;
-    }
-
-    .item-rendicion {
-        grid-template-columns: 1fr;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        position: relative;
-    }
+    .topbar { flex-direction: column; align-items: stretch; padding: 10px; }
+    .topbar-brand { justify-content: space-between; }
     
-    .btn-eliminar {
-        position: absolute;
-        top: 10px;
-        right: 10px;
+    .hamburger { display: block; }
+    
+    .topbar-menu {
+        display: none; /* Oculto por defecto en móvil */
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
     }
+    .topbar-menu.show { display: flex; }
+
+    .form-row { grid-template-columns: 1fr; gap: 15px; }
+    .inline-group { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .form-control-line { width: 100%; border-bottom: 1px solid #999; }
+    
+    .tabla-rendicion-header, .tabla-plan-header { display: none; }
+    
+    .item-rendicion, .item-plan { grid-template-columns: 1fr; position: relative; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+    .btn-eliminar { position: absolute; top: 10px; right: 10px; }
+    
+    .tabla-plan-footer { grid-template-columns: 1fr; text-align: center; }
+    .tabla-plan-footer .span-2 { grid-column: span 1; border-right: none; border-bottom: 1px solid #ddd;}
 }

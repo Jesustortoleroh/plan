@@ -3,154 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Política de Seguridad de Contenido (CSP) básica -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';">
     <title>Sistema de Actividades</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
-    <div class="overlay" id="overlay"></div>
+    <!-- MENÚ SUPERIOR (TOPBAR) -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <span class="sidebar-icon">📋</span>
+            <h2>Gestión de Actividades</h2>
+        </div>
+        
+        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
+        
+        <nav id="menuNav" class="topbar-menu">
+            <a href="#" class="nav-link active" data-target="plan">📋 Plan de Actividad</a>
+            <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
+        </nav>
+    </header>
 
-    <div class="layout">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="sidebar-icon">📋</span>
-                <h2>Gestión de Actividades</h2>
-            </div>
-            
-            <nav id="menuNav">
-                <a href="#" class="nav-link active" data-target="plan">📋 Plan de Actividad</a>
-                <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
-            </nav>
-        </aside>
+    <main class="main-content">
+        <!-- SECCIÓN: PLAN DE ACTIVIDAD -->
+        <section id="planSection">
+            <div class="card form-document">
+                <h1 class="document-title"><em>PLAN DE ACTIVIDAD</em></h1>
+                
+                <form id="formPlan">
+                    <!-- Cabecera del Formulario -->
+                    <div class="form-row">
+                        <div class="form-group inline-group">
+                            <label for="pEstaca">Estaca:</label>
+                            <input type="text" id="pEstaca" class="form-control-line" required>
+                        </div>
+                        <div class="form-group inline-group">
+                            <label for="pOrganizacion">Organización:</label>
+                            <input type="text" id="pOrganizacion" class="form-control-line" required>
+                        </div>
+                    </div>
+                    <div class="form-row mb-line">
+                        <div class="form-group inline-group">
+                            <label for="pBarrio">Barrio:</label>
+                            <input type="text" id="pBarrio" class="form-control-line" required>
+                        </div>
+                        <div class="form-group inline-group">
+                            <label for="pFecha">Fecha de actividad:</label>
+                            <input type="date" id="pFecha" class="form-control-line" required>
+                        </div>
+                    </div>
 
-        <main class="main-content">
-            <!-- SECCIÓN: PLAN DE ACTIVIDAD -->
-            <section id="planSection">
-                <div class="card">
-                    <h1>PLAN DE ACTIVIDAD</h1>
-                    <form id="formPlan">
-                        <div class="form-group">
-                            <label for="pOrganizacion">Organización</label>
-                            <input type="text" id="pOrganizacion" class="form-control" required>
+                    <!-- Propósito -->
+                    <div class="form-group mt-large">
+                        <label for="pProposito" class="label-bold">
+                            PROPÓSITO <em class="underline">SAGRADO</em> de la actividad <span class="label-normal">(para satisfacer las necesidades espirituales y temporales de los participantes):</span>
+                        </label>
+                        <textarea id="pProposito" class="form-control-line w-100" rows="2" required></textarea>
+                    </div>
+
+                    <!-- Metas (Checkboxes) -->
+                    <div class="form-group mt-large">
+                        <label class="label-bold">META(S):</label>
+                        <div class="checkbox-list">
+                            <label><input type="checkbox" name="meta" value="1"> Fortalecer/apoyar a la familia en aprender/vivir el Evangelio</label>
+                            <label><input type="checkbox" name="meta" value="2"> Fortalecer el testimonio y fomentar el progreso personal</label>
+                            <label class="text-blue"><input type="checkbox" name="meta" value="3"> Perfeccionar a los Santos</label>
+                            <label><input type="checkbox" name="meta" value="4"> Proporcionar servicio significativo a otras personas</label>
+                            <label><input type="checkbox" name="meta" value="5"> Ofrecer oportunidades de aplicar los principios del Evangelio y sentir apoyo al vivirlos</label>
+                            <label><input type="checkbox" name="meta" value="6"> Adquirir/desarrollar aptitudes físicas, sociales, de liderazgo/comunicación, y de los artes culturales</label>
+                            <label><input type="checkbox" name="meta" value="7"> Fomentar la unidad de los miembros y no miembros (actividades espirituales, culturales, atléticos, sociales)</label>
+                            <label class="text-blue"><input type="checkbox" name="meta" value="8"> Proclamad el Evangelio</label>
+                            <label><input type="checkbox" name="meta" value="9"> Proporcionar oportunidades para extender una mano de amistad a los que no sean miembros, a los que sean miembros nuevos y a los que sean menos activos</label>
+                            <label class="text-blue"><input type="checkbox" name="meta" value="10"> Redimir a los muertos</label>
+                        </div>
+                    </div>
+
+                    <!-- Pie del Formulario -->
+                    <div class="form-group inline-group mt-large">
+                        <label for="pAsistentes" class="label-bold">Total estimado de asistentes (investigadores, conversos, menos activos):</label>
+                        <input type="number" id="pAsistentes" min="0" class="form-control-line">
+                    </div>
+                    <div class="form-group inline-group">
+                        <label for="pResponsables" class="label-bold">Responsables de la actividad:</label>
+                        <input type="text" id="pResponsables" class="form-control-line">
+                    </div>
+                    <div class="form-group inline-group">
+                        <label for="pLimpieza" class="label-bold">Responsables limpieza capilla:</label>
+                        <input type="text" id="pLimpieza" class="form-control-line">
+                    </div>
+
+                    <!-- Tabla de Presupuesto Anticipado -->
+                    <div class="presupuesto-section mt-large document-table-container">
+                        <h2 class="text-center table-title"><em>PLAN DE PRESUPUESTO</em> <span class="label-normal">(<em>Antes</em> de la actividad)</span></h2>
+                        
+                        <div class="tabla-plan-header outline-border">
+                            <div class="text-center font-bold border-right">Cantidad</div>
+                            <div class="text-center font-bold border-right">Descripción (invitaciones, equipos, incentivos, servicios, refrigerio)</div>
+                            <div class="text-center font-bold">Importe</div>
+                            <div class="no-print"></div>
                         </div>
 
+                        <div id="itemsPlan" class="outline-border-sides">
+                            <!-- Filas dinámicas -->
+                        </div>
+
+                        <div class="tabla-plan-footer outline-border">
+                            <div class="text-right font-bold border-right span-2">TOTAL de gastos ANTICIPADOS</div>
+                            <div class="text-center font-bold" id="totalPlan">0,00</div>
+                            <div class="no-print"></div>
+                        </div>
+
+                        <button type="button" class="btn-agregar-item no-print mt-small" id="btnAgregarGastoPlan">
+                            ➕ Agregar Gasto Anticipado
+                        </button>
+                    </div>
+
+                    <div class="action-buttons no-print mt-large text-right">
+                        <button type="button" class="btn btn-secondary" id="btnImprimirPlan">🖨️ Imprimir Plan</button>
+                        <button type="submit" class="btn btn-primary">💾 Guardar Plan en Navegador</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: RENDICIÓN DE CUENTAS (Mantenida igual pero adaptada al nuevo layout ancho) -->
+        <section id="rendicionSection" style="display:none">
+            <div class="card">
+                <h1>RENDICIÓN DE CUENTAS</h1>
+                <div class="aprobacion-card">
+                    <div class="aprobacion-header">
+                        <h2>DATOS DE ACTIVIDAD</h2>
+                    </div>
+                    <div class="aprobacion-body">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="pFecha">Fecha</label>
-                                <input type="date" id="pFecha" class="form-control" required>
+                                <label for="rEstaca">Estaca</label>
+                                <input type="text" id="rEstaca" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="pSolicitante">Solicitante</label>
-                                <input type="text" id="pSolicitante" class="form-control" required>
+                                <label for="rBarrio">Barrio</label>
+                                <input type="text" id="rBarrio" class="form-control">
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="pProposito">Propósito</label>
-                            <textarea id="pProposito" class="form-control" required></textarea>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="rOrganizacion">Organización</label>
+                                <input type="text" id="rOrganizacion" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="rFecha">Fecha</label>
+                                <input type="date" id="rFecha" class="form-control">
+                            </div>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary">Guardar Plan</button>
-                    </form>
+                    </div>
                 </div>
-            </section>
 
-            <!-- SECCIÓN: RENDICIÓN DE CUENTAS -->
-            <section id="rendicionSection" style="display:none">
-                <div class="card">
-                    <h1>RENDICIÓN DE CUENTAS</h1>
-                    <div class="aprobacion-card">
-                        <div class="aprobacion-header">
-                            <h2>DATOS DE ACTIVIDAD</h2>
-                        </div>
-                        <div class="aprobacion-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="rEstaca">Estaca</label>
-                                    <input type="text" id="rEstaca" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="rBarrio">Barrio</label>
-                                    <input type="text" id="rBarrio" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="rOrganizacion">Organización</label>
-                                    <input type="text" id="rOrganizacion" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="rFecha">Fecha</label>
-                                    <input type="date" id="rFecha" class="form-control">
-                                </div>
-                            </div>
-                        </div>
+                <div class="nota-rendicion">
+                    <strong>NOTA:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de 7 días después de concluida la actividad.
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rAsistentes">Total que asistieron</label>
+                        <input type="number" min="0" id="rAsistentes" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="rPagadoA">Pagado a</label>
+                        <input type="text" id="rPagadoA" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rCheque">Cheque Nº</label>
+                        <input type="text" id="rCheque" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="rMonto">Monto recibido</label>
+                        <input type="number" min="0" step="0.01" id="rMonto" class="form-control">
+                    </div>
+                </div>
+
+                <div class="presupuesto-section">
+                    <h2>GASTOS ACTUALES</h2>
+                    <div class="tabla-rendicion-header">
+                        <div>Comprobante</div>
+                        <div>Concepto</div>
+                        <div>Fecha</div>
+                        <div>Proveedor</div>
+                        <div>Monto</div>
+                        <div class="no-print">Acción</div>
                     </div>
 
-                    <div class="nota-rendicion">
-                        <strong>NOTA:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de 7 días después de concluida la actividad.
-                    </div>
+                    <div id="itemsRendicion"></div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="rAsistentes">Total que asistieron</label>
-                            <input type="number" min="0" id="rAsistentes" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="rPagadoA">Pagado a</label>
-                            <input type="text" id="rPagadoA" class="form-control">
-                        </div>
+                    <button type="button" class="btn-agregar-item no-print" id="btnAgregarGasto">
+                        ➕ Agregar Gasto
+                    </button>
+
+                    <div class="presupuesto-total">
+                        <span>TOTAL GASTOS ACTUALES</span>
+                        <span id="totalRendicion">Bs. 0,00</span>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="rCheque">Cheque Nº</label>
-                            <input type="text" id="rCheque" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="rMonto">Monto recibido</label>
-                            <input type="number" min="0" step="0.01" id="rMonto" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="presupuesto-section">
-                        <h2>GASTOS ACTUALES</h2>
-                        <div class="tabla-rendicion-header">
-                            <div>Comprobante</div>
-                            <div>Concepto</div>
-                            <div>Fecha</div>
-                            <div>Proveedor</div>
-                            <div>Monto</div>
-                            <div>Acción</div>
-                        </div>
-
-                        <div id="itemsRendicion"></div>
-
-                        <button type="button" class="btn-agregar-item" id="btnAgregarGasto">
-                            ➕ Agregar Gasto
-                        </button>
-
-                        <div class="presupuesto-total">
-                            <span>TOTAL GASTOS ACTUALES</span>
-                            <span id="totalRendicion">Bs. 0,00</span>
-                        </div>
-                        
-                        <!-- Botón para imprimir / exportar a PDF -->
-                        <div style="margin-top: 20px; text-align: right;">
-                            <button type="button" class="btn btn-primary" id="btnImprimir">
-                                🖨️ Imprimir / Guardar como PDF
-                            </button>
-                        </div>
+                    <div class="action-buttons no-print mt-large text-right">
+                        <button type="button" class="btn btn-primary" id="btnImprimirRendicion">🖨️ Imprimir Rendición</button>
                     </div>
                 </div>
-            </section>
-        </main>
-    </div>
+            </div>
+        </section>
+    </main>
     
     <script src="js/app.js"></script>
 </body>
