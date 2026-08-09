@@ -3,150 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan de Actividad</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Política de Seguridad de Contenido (CSP) para mitigar riesgos XSS -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';">
+    <title>Sistema de Actividades</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Corrección en la ruta del CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
+    <div class="overlay" id="overlay"></div>
 
-<div class="layout">
-
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <span class="sidebar-icon">📋</span>
-            <h2>Plan de Actividad</h2>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="#" onclick="nuevoPlan()" class="nav-link active">
-                ➕ Nuevo Plan
-            </a>
-        </nav>
-    </aside>
-
-    <main class="main-content">
-        
-        <div class="card">
-            <h1>PLAN DE ACTIVIDAD</h1>
+    <div class="layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-icon">📋</span>
+                <h2>Gestión de Actividades</h2>
+            </div>
             
-            <!-- ============================================ -->
-            <!-- SECCIÓN: INFORMACIÓN DE APROBACIÓN -->
-            <!-- ============================================ -->
-            <div class="aprobacion-card">
-                <div class="aprobacion-header">
-                    <span class="aprobacion-icon">📌</span>
-                    <h2>INFORMACIÓN DE APROBACIÓN</h2>
+            <!-- Corrección de los enlaces del menú -->
+            <nav id="menuNav">
+                <a href="#" class="nav-link active" data-target="plan">📋 Plan de Actividad</a>
+                <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- PLAN -->
+            <section id="planSection">
+                <div class="card">
+                    <h1>PLAN DE ACTIVIDAD</h1>
+                    <form id="formPlan">
+                        <div class="form-group">
+                            <label for="pOrganizacion">Organización</label>
+                            <input type="text" id="pOrganizacion" class="form-control" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pFecha">Fecha</label>
+                                <input type="date" id="pFecha" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pSolicitante">Solicitante</label>
+                                <input type="text" id="pSolicitante" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pProposito">Propósito</label>
+                            <textarea id="pProposito" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Plan</button>
+                    </form>
                 </div>
-                <div class="aprobacion-body">
+            </section>
+
+            <!-- RENDICION -->
+            <section id="rendicionSection" style="display:none">
+                <div class="card">
+                    <h1>RENDICIÓN DE CUENTAS</h1>
+                    <div class="aprobacion-card">
+                        <div class="aprobacion-header">
+                            <h2>DATOS DE ACTIVIDAD</h2>
+                        </div>
+                        <div class="aprobacion-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="rEstaca">Estaca</label>
+                                    <input type="text" id="rEstaca" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rBarrio">Barrio</label>
+                                    <input type="text" id="rBarrio" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="rOrganizacion">Organización</label>
+                                    <input type="text" id="rOrganizacion" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rFecha">Fecha</label>
+                                    <input type="date" id="rFecha" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nota-rendicion">
+                        <strong>NOTA:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de 7 días después de concluida la actividad.
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Organización *</label>
-                            <input type="text" id="organizacion" class="form-control" placeholder="Ej: Hombres Jóvenes, Sociedad de Socorro">
+                            <label for="rAsistentes">Total que asistieron</label>
+                            <input type="number" min="0" id="rAsistentes" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Fecha de Actividad *</label>
-                            <input type="date" id="fecha" class="form-control">
+                            <label for="rPagadoA">Pagado a</label>
+                            <input type="text" id="rPagadoA" class="form-control">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Solicitante *</label>
-                            <input type="text" id="solicitante" class="form-control" placeholder="Nombre de quien solicita">
+                            <label for="rCheque">Cheque Nº</label>
+                            <input type="text" id="rCheque" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Obispo / Presidente *</label>
-                            <input type="text" id="obispo" class="form-control" placeholder="Nombre del obispo o presidente">
+                            <label for="rMonto">Monto recibido</label>
+                            <input type="number" min="0" step="0.01" id="rMonto" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="presupuesto-section">
+                        <h2>GASTOS ACTUALES</h2>
+                        <div class="tabla-rendicion-header">
+                            <div>Comprobante</div>
+                            <div>Concepto</div>
+                            <div>Fecha</div>
+                            <div>Proveedor</div>
+                            <div>Monto</div>
+                            <div>Acción</div>
+                        </div>
+
+                        <div id="itemsRendicion"></div>
+
+                        <!-- Eliminado el onclick en línea (mala práctica de seguridad/mantenimiento) -->
+                        <button type="button" class="btn-agregar-item" id="btnAgregarGasto">
+                            ➕ Agregar Gasto
+                        </button>
+
+                        <div class="presupuesto-total">
+                            <span>TOTAL GASTOS ACTUALES</span>
+                            <span id="totalRendicion">Bs. 0,00</span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- ============================================ -->
-            <!-- DATOS GENERALES -->
-            <!-- ============================================ -->
-            <div class="form-row" style="margin-top:25px;">
-                <div class="form-group">
-                    <label>Estaca</label>
-                    <input type="text" id="estaca" class="form-control" placeholder="Nombre de la estaca">
-                </div>
-                <div class="form-group">
-                    <label>Barrio</label>
-                    <input type="text" id="barrio" class="form-control" placeholder="Nombre del barrio">
-                </div>
-            </div>
-
-            <!-- Propósito -->
-            <div class="form-group">
-                <label>PROPÓSITO SAGRADO de la actividad</label>
-                <small>(para satisfacer las necesidades espirituales y temporales de los participantes)</small>
-                <textarea id="proposito" class="form-control" rows="3" placeholder="Describa el propósito sagrado..."></textarea>
-            </div>
-
-            <!-- Metas -->
-            <h3>META(S):</h3>
-            <div class="metas-grid">
-                <label class="meta-check"><input type="checkbox" value="Fortalecer/apoyar a la familia en aprender/vivir el Evangelio"> Fortalecer/apoyar a la familia en aprender/vivir el Evangelio</label>
-                <label class="meta-check"><input type="checkbox" value="Fortalecer el testimonio y fomentar el progreso personal"> Fortalecer el testimonio y fomentar el progreso personal</label>
-                <label class="meta-check"><input type="checkbox" value="Perfeccionar a los Santos"> Perfeccionar a los Santos</label>
-                <label class="meta-check"><input type="checkbox" value="Proporcionar servicio significativo a otras personas"> Proporcionar servicio significativo a otras personas</label>
-                <label class="meta-check"><input type="checkbox" value="Ofrecer oportunidades de aplicar los principios del Evangelio"> Ofrecer oportunidades de aplicar los principios del Evangelio</label>
-                <label class="meta-check"><input type="checkbox" value="Adquirir/desarrollar aptitudes físicas, sociales, de liderazgo"> Adquirir/desarrollar aptitudes físicas, sociales, de liderazgo</label>
-                <label class="meta-check"><input type="checkbox" value="Fomentar la unidad de los miembros y no miembros"> Fomentar la unidad de los miembros y no miembros</label>
-                <label class="meta-check"><input type="checkbox" value="Proclamar el Evangelio"> Proclamar el Evangelio</label>
-                <label class="meta-check"><input type="checkbox" value="Extender mano de amistad a no miembros, nuevos y menos activos"> Extender mano de amistad a no miembros, nuevos y menos activos</label>
-                <label class="meta-check"><input type="checkbox" value="Redimir a los muertos"> Redimir a los muertos</label>
-            </div>
-
-            <!-- Participación -->
-            <div class="form-group">
-                <label>Total estimado de asistentes (investigadores, conversos, menos activos)</label>
-                <input type="text" id="asistentes" class="form-control" placeholder="Ej: 50 personas">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Responsables de la actividad</label>
-                    <input type="text" id="responsables" class="form-control" placeholder="Nombres de los responsables">
-                </div>
-                <div class="form-group">
-                    <label>Responsables limpieza capilla</label>
-                    <input type="text" id="limpieza" class="form-control" placeholder="Nombres de responsables de limpieza">
-                </div>
-            </div>
-
-            <!-- Presupuesto -->
-            <div class="presupuesto-section">
-                <h2>💰 PLAN DE PRESUPUESTO</h2>
-                <p class="presupuesto-subtitle">(Antes de la actividad)</p>
-                <h3>GASTOS ANTICIPADOS</h3>
-                
-                <div class="presupuesto-header">
-                    <div class="col-cantidad">Cantidad</div>
-                    <div class="col-descripcion">Descripción</div>
-                    <div class="col-costo">Costo Unitario (Bs.)</div>
-                    <div class="col-subtotal">Subtotal</div>
-                    <div class="col-eliminar"></div>
-                </div>
-
-                <div id="itemsPresupuesto"></div>
-                
-                <button onclick="agregarItemPresupuesto()" class="btn-agregar-item">
-                    ➕ Agregar Item
-                </button>
-                
-                <div class="presupuesto-total">
-                    <span class="total-label">TOTAL DE GASTOS ANTICIPADOS:</span>
-                    <span class="total-valor" id="totalPresupuestoForm">Bs. 0,00</span>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button onclick="generarPDF()" class="btn btn-danger btn-lg">📄 Generar PDF</button>
-            </div>
-        </div>
-
-    </main>
-</div>
-
-<script src="js/app.js"></script>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Corrección de la etiqueta script -->
+    <script src="js/app.js"></script>
 </body>
 </html>
