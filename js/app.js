@@ -1,4 +1,4 @@
-// Manejo del menú lateral
+// --- MANEJO DEL MENÚ LATERAL ---
 const btnHamburger = document.getElementById("hamburgerBtn");
 const sidebar = document.getElementById("sidebar");
 const navLinks = document.querySelectorAll(".nav-link");
@@ -7,12 +7,16 @@ btnHamburger.addEventListener("click", () => {
     sidebar.classList.toggle("show");
 });
 
-// Navegación segura usando listeners en lugar de atributos onclick en el HTML
 navLinks.forEach(link => {
     link.addEventListener("click", (e) => {
         e.preventDefault();
         const target = e.target.getAttribute("data-target");
         mostrarSeccion(target);
+        
+        // Cierra el menú en móviles después de hacer clic
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove("show");
+        }
     });
 });
 
@@ -29,28 +33,26 @@ function mostrarSeccion(tipo) {
     }
 }
 
-// Lógica de Gastos Dinámicos
+
+// --- MANEJO DE GASTOS DINÁMICOS Y CÁLCULO ---
 const btnAgregarGasto = document.getElementById("btnAgregarGasto");
 const itemsRendicion = document.getElementById("itemsRendicion");
 
-btnAgregarGasto.addEventListener("click", agregarItemRendicion);
-
-function agregarItemRendicion() {
-    // Usamos insertAdjacentHTML para inyectar una plantilla estática de forma segura
+btnAgregarGasto.addEventListener("click", () => {
     const filaTemplate = `
         <div class="item-rendicion">
-            <input type="text" class="form-control comprobante" placeholder="Comprobante" required>
-            <input type="text" class="form-control concepto" placeholder="Concepto" required>
-            <input type="date" class="form-control" required>
-            <input type="text" class="form-control proveedor" placeholder="Proveedor" required>
-            <input type="number" min="0" step="0.01" class="form-control monto" value="0" required>
-            <button type="button" class="btn-eliminar">❌</button>
+            <input type="text" class="form-control comprobante" placeholder="Comprobante">
+            <input type="text" class="form-control concepto" placeholder="Concepto">
+            <input type="date" class="form-control">
+            <input type="text" class="form-control proveedor" placeholder="Proveedor">
+            <input type="number" min="0" step="0.01" class="form-control monto" placeholder="Monto" value="0">
+            <button type="button" class="btn-eliminar" aria-label="Eliminar gasto">❌</button>
         </div>
     `;
     itemsRendicion.insertAdjacentHTML("beforeend", filaTemplate);
-}
+});
 
-// Delegación de eventos: El contenedor padre escucha los eventos de sus hijos dinámicos
+// Delegación de eventos para calcular monto y eliminar filas dinámicas
 itemsRendicion.addEventListener("input", (e) => {
     if (e.target.classList.contains("monto")) {
         calcularTotalRendicion();
@@ -66,8 +68,6 @@ itemsRendicion.addEventListener("click", (e) => {
 
 function calcularTotalRendicion() {
     let total = 0;
-    
-    // Convertir de forma segura evitando valores NaN
     document.querySelectorAll(".monto").forEach(item => {
         const valor = parseFloat(item.value);
         total += isNaN(valor) ? 0 : valor;
@@ -78,3 +78,38 @@ function calcularTotalRendicion() {
         maximumFractionDigits: 2
     });
 }
+
+
+// --- PERSISTENCIA DE DATOS CON LOCALSTORAGE (Solo Frontend) ---
+const formPlan = document.getElementById("formPlan");
+
+formPlan.addEventListener("submit", (e) => {
+    e.preventDefault(); 
+    const planData = {
+        organizacion: document.getElementById("pOrganizacion").value,
+        fecha: document.getElementById("pFecha").value,
+        solicitante: document.getElementById("pSolicitante").value,
+        proposito: document.getElementById("pProposito").value
+    };
+
+    localStorage.setItem("planActividad", JSON.stringify(planData));
+    alert("¡Plan guardado exitosamente en la memoria del navegador!");
+});
+
+// Cargar datos al abrir la página
+document.addEventListener("DOMContentLoaded", () => {
+    const datosGuardados = localStorage.getItem("planActividad");
+    if (datosGuardados) {
+        const planData = JSON.parse(datosGuardados);
+        document.getElementById("pOrganizacion").value = planData.organizacion || "";
+        document.getElementById("pFecha").value = planData.fecha || "";
+        document.getElementById("pSolicitante").value = planData.solicitante || "";
+        document.getElementById("pProposito").value = planData.proposito || "";
+    }
+});
+
+
+// --- EXPORTAR A PDF / IMPRIMIR ---
+document.getElementById("btnImprimir").addEventListener("click", () => {
+    window.print();
+});
