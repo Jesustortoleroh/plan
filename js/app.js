@@ -1,7 +1,7 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 3.1
+ * Versión: 3.2
  */
 
 // ==========================================
@@ -111,7 +111,6 @@ if (propositoTextarea && propositoCount) {
 // ==========================================
 document.addEventListener('input', function(e) {
     if (e.target.matches('.importe, .monto, .monto-formato')) {
-        // Permitir solo números, punto y coma mientras escribe
         let valor = e.target.value.replace(/[^0-9,.]/g, '');
         if (valor !== e.target.value) {
             e.target.value = valor;
@@ -124,7 +123,6 @@ document.addEventListener('blur', function(e) {
         const valor = parseFloat(e.target.value.replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0;
         e.target.value = valor.toFixed(2);
         
-        // Actualizar totales
         if (e.target.classList.contains('importe')) calcularTotalPlan();
         if (e.target.classList.contains('monto')) calcularTotalRendicion();
     }
@@ -167,9 +165,7 @@ function mostrarSugerencias() {
         } else if (elBarrio) {
             elBarrio.style.display = 'none';
         }
-    } catch (e) {
-        // No hay datos guardados
-    }
+    } catch (e) {}
 }
 
 function usarUltimoValor(campoId) {
@@ -185,12 +181,9 @@ function usarUltimoValor(campoId) {
             document.getElementById('pBarrio').value = ultimos.barrio;
             document.getElementById('ultimoBarrio').style.display = 'none';
         }
-    } catch (e) {
-        // Error
-    }
+    } catch (e) {}
 }
 
-// Guardar al salir del campo
 document.getElementById('pEstaca').addEventListener('blur', guardarUltimosValores);
 document.getElementById('pBarrio').addEventListener('blur', guardarUltimosValores);
 document.getElementById('pOrganizacion').addEventListener('change', guardarUltimosValores);
@@ -241,7 +234,7 @@ function agregarFilaPlan(datos = {}) {
 }
 
 // ==========================================
-// 4. 📎 TABLA: RENDICIÓN DE CUENTAS (CON COMPROBANTES)
+// 4. 📎 TABLA: RENDICIÓN DE CUENTAS
 // ==========================================
 const btnAgregarGastoRendicion = document.getElementById('btnAgregarGasto');
 const itemsRendicion = document.getElementById('itemsRendicion');
@@ -386,9 +379,13 @@ function calcularTotalRendicion() {
 }
 
 // ==========================================
-// 7. VALIDACIÓN
+// 7. VALIDACIÓN CON FLASH MESSAGES
 // ==========================================
 function validarPlanActividad() {
+    limpiarFlashMessages();
+    
+    let errores = [];
+    
     const campos = [
         { id: 'pEstaca', nombre: 'Estaca' },
         { id: 'pOrganizacion', nombre: 'Organización' },
@@ -400,40 +397,155 @@ function validarPlanActividad() {
     for (const campo of campos) {
         const el = document.getElementById(campo.id);
         if (!el.value.trim()) {
-            marcarError(el, `El campo "${campo.nombre}" es obligatorio.`);
-            return false;
+            marcarError(el);
+            errores.push(`El campo <strong>${campo.nombre}</strong> es obligatorio.`);
+        } else {
+            limpiarError(el);
         }
-        limpiarError(el);
     }
     
     const metasSeleccionadas = document.querySelectorAll('input[name="meta"]:checked');
     if (metasSeleccionadas.length === 0) {
-        alert('⚠️ Debe seleccionar al menos una meta de la actividad.');
-        document.querySelector('.checkbox-list').scrollIntoView({ behavior: 'smooth' });
+        errores.push('Debe seleccionar al menos una <strong>meta</strong> de la actividad.');
+        const metasCard = document.querySelector('.checkbox-list');
+        if (metasCard) {
+            metasCard.style.border = '2px solid #dc2626';
+            metasCard.style.borderRadius = '8px';
+            metasCard.style.padding = '10px';
+            setTimeout(() => {
+                metasCard.style.border = '';
+                metasCard.style.padding = '';
+            }, 3000);
+        }
+    }
+    
+    if (errores.length > 0) {
+        mostrarFlashMessages(errores, 'error');
+        const primerError = document.querySelector('.form-control[style*="border-color: rgb(220, 38, 38)"]');
+        if (primerError) {
+            primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            primerError.focus();
+        } else if (metasSeleccionadas.length === 0) {
+            document.querySelector('.checkbox-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         return false;
     }
     
     return true;
 }
 
-function marcarError(elemento, mensaje) {
+function marcarError(elemento) {
     elemento.style.borderColor = '#dc2626';
     elemento.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.2)';
     elemento.setAttribute('aria-invalid', 'true');
-    elemento.focus();
-    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    alert('⚠️ ' + mensaje);
+    elemento.style.backgroundColor = '#fef2f2';
+    
+    if (document.body.getAttribute('data-theme') === 'dark') {
+        elemento.style.backgroundColor = '#1a0000';
+    }
 }
 
 function limpiarError(elemento) {
     elemento.style.borderColor = '';
     elemento.style.boxShadow = '';
+    elemento.style.backgroundColor = '';
     elemento.removeAttribute('aria-invalid');
 }
 
+function limpiarFlashMessages() {
+    const existentes = document.querySelectorAll('.flash-message');
+    existentes.forEach(el => el.remove());
+}
+
+function mostrarFlashMessages(mensajes, tipo = 'error') {
+    limpiarFlashMessages();
+    
+    const colores = {
+        error: { bg: '#fef2f2', border: '#ef4444', text: '#dc2626', icon: '⚠️' },
+        success: { bg: '#f0fdf4', border: '#22c55e', text: '#16a34a', icon: '✅' },
+        warning: { bg: '#fffbeb', border: '#f59e0b', text: '#d97706', icon: '⚡' },
+        info: { bg: '#eff6ff', border: '#3b82f6', text: '#2563eb', icon: 'ℹ️' }
+    };
+    
+    const darkColores = {
+        error: { bg: '#1a0000', border: '#991b1b', text: '#f87171', icon: '⚠️' },
+        success: { bg: '#001a00', border: '#166534', text: '#4ade80', icon: '✅' },
+        warning: { bg: '#1a1400', border: '#92400e', text: '#fbbf24', icon: '⚡' },
+        info: { bg: '#001a33', border: '#1e40af', text: '#60a5fa', icon: 'ℹ️' }
+    };
+    
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    const c = isDark ? darkColores[tipo] : colores[tipo];
+    
+    const container = document.createElement('div');
+    container.className = 'flash-message';
+    container.style.cssText = `
+        background: ${c.bg};
+        border-left: 4px solid ${c.border};
+        color: ${c.text};
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        animation: slideDown 0.3s ease;
+        position: relative;
+    `;
+    
+    let html = `<div style="display:flex;align-items:flex-start;gap:12px;">
+        <span style="font-size:20px;">${c.icon}</span>
+        <div style="flex:1;">`;
+    
+    if (mensajes.length === 1) {
+        html += `<p>${mensajes[0]}</p>`;
+    } else {
+        html += `<p style="font-weight:700;margin-bottom:8px;">Se encontraron ${mensajes.length} campos por completar:</p>`;
+        html += '<ul style="margin:0;padding-left:20px;">';
+        mensajes.forEach(msg => {
+            html += `<li style="margin-bottom:4px;">${msg}</li>`;
+        });
+        html += '</ul>';
+    }
+    
+    html += `</div>
+        <button onclick="this.closest('.flash-message').remove()" 
+                style="background:none;border:none;color:${c.text};cursor:pointer;font-size:20px;opacity:0.7;padding:0;line-height:1;"
+                aria-label="Cerrar mensaje">&times;</button>
+    </div>`;
+    
+    container.innerHTML = html;
+    
+    const formPlan = document.getElementById('formPlan');
+    formPlan.insertBefore(container, formPlan.firstChild);
+    
+    setTimeout(() => {
+        if (container.parentElement) {
+            container.style.opacity = '0';
+            container.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => container.remove(), 500);
+        }
+    }, 8000);
+}
+
+function mostrarFlashExito(mensaje) {
+    mostrarFlashMessages([mensaje], 'success');
+}
+
+// Limpiar errores al escribir
 document.addEventListener('input', function(e) {
-    if (e.target.matches('input:not(.importe):not(.monto):not(.monto-formato), textarea, select')) {
+    if (e.target.matches('input, textarea, select')) {
         limpiarError(e.target);
+    }
+});
+
+// Limpiar errores al marcar checkbox
+document.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="checkbox"]')) {
+        const metasCard = document.querySelector('.checkbox-list');
+        if (metasCard) {
+            metasCard.style.border = '';
+            metasCard.style.borderRadius = '';
+            metasCard.style.padding = '';
+        }
     }
 });
 
@@ -464,10 +576,10 @@ formPlan.addEventListener('submit', (e) => {
 
         localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(planData));
         guardarUltimosValores();
-        alert('✅ ¡Plan guardado exitosamente en la memoria del navegador!');
+        mostrarFlashExito('✅ ¡Plan guardado exitosamente en la memoria del navegador!');
     } catch (error) {
         console.error('Error al guardar:', error);
-        alert('❌ Error al guardar. Verifique el espacio disponible.');
+        mostrarFlashMessages(['❌ Error al guardar. Verifique el espacio disponible.'], 'error');
     }
 });
 
@@ -528,7 +640,7 @@ if (btnEliminarDatos) {
                 propositoCount.textContent = `0/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
                 propositoCount.style.color = '';
             }
-            alert('✅ Datos eliminados exitosamente.');
+            mostrarFlashExito('✅ Datos eliminados exitosamente.');
         }
     });
 }
@@ -563,7 +675,7 @@ function imprimirPlan(imprimirAutomatico = true) {
     
     const ventana = window.open('', '_blank', 'width=900,height=700');
     if (!ventana) {
-        alert('⚠️ Permite ventanas emergentes para generar el PDF.');
+        mostrarFlashMessages(['⚠️ Permite ventanas emergentes para generar el PDF.'], 'warning');
         return;
     }
     
@@ -698,7 +810,7 @@ function imprimirRendicion(imprimirAutomatico = true) {
     
     const ventana = window.open('', '_blank', 'width=900,height=700');
     if (!ventana) {
-        alert('⚠️ Permite ventanas emergentes para generar el PDF.');
+        mostrarFlashMessages(['⚠️ Permite ventanas emergentes para generar el PDF.'], 'warning');
         return;
     }
     

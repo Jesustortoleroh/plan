@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 3.1
+   Versión: 3.2
    ============================================= */
 
 /* ============================================= */
@@ -31,6 +31,9 @@
     --color-danger-hover: #b91c1c;
     --color-danger-bg: #fef2f2;
     --color-danger-border: #ef4444;
+    --color-info: #2563eb;
+    --color-info-bg: #eff6ff;
+    --color-info-border: #3b82f6;
     --color-gold: #b8860b;
     --color-gold-light: #fffbeb;
     
@@ -76,6 +79,9 @@
     --color-danger-hover: #fca5a5;
     --color-danger-bg: #1a0000;
     --color-danger-border: #991b1b;
+    --color-info: #60a5fa;
+    --color-info-bg: #001a33;
+    --color-info-border: #1e40af;
     --color-gold: #fbbf24;
     --color-gold-light: #1a1400;
     
@@ -821,6 +827,24 @@ textarea {
 }
 
 /* ============================================= */
+/* FLASH MESSAGES                                */
+/* ============================================= */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flash-message {
+    animation: slideDown 0.3s ease;
+}
+
+/* ============================================= */
 /* IMPRESIÓN                                     */
 /* ============================================= */
 @media print {
@@ -834,7 +858,8 @@ textarea {
     .char-count,
     .mobile-label,
     .sugerencia-texto,
-    .archivo-comprobante {
+    .archivo-comprobante,
+    .flash-message {
         display: none !important;
     }
     
@@ -985,6 +1010,7 @@ textarea {
     .btn-agregar-item { padding: 14px; font-size: 15px; margin-top: 5px; }
     .nota-rendicion { font-size: 13px; padding: 12px 15px; }
     .sugerencia-texto { font-size: 12px; }
+    .flash-message { margin: 0 5px 15px; font-size: 13px; }
 }
 
 /* ============================================= */
