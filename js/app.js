@@ -1,5 +1,6 @@
 /**
  * SISTEMA DE ACTIVIDADES
+ * Iglesia de Jesucristo de los Santos de los Últimos Días
  * Versión: 2.0
  */
 
@@ -81,34 +82,26 @@ btnAgregarGastoPlan.addEventListener('click', () => {
 
 function agregarFilaPlan(datos = {}) {
     const fila = document.createElement('div');
-    fila.className = 'item-plan';
+    fila.className = 'item-rendicion';
+    fila.style.gridTemplateColumns = '100px 1fr 140px 50px';
     
-    // Sanitizar datos
     const cantidad = sanitizarNumero(datos.cantidad, 0);
     const concepto = sanitizarTexto(datos.concepto || '');
     const importe = sanitizarNumero(datos.importe, 0);
     
     fila.innerHTML = `
-        <div class="border-right">
-            <input type="number" min="0" max="9999" value="${cantidad}" 
-                   class="cantidad form-control-line" placeholder="Cant." 
-                   aria-label="Cantidad">
-        </div>
-        <div class="border-right">
-            <input type="text" value="${concepto}" 
-                   class="descripcion form-control-line text-left" 
-                   placeholder="Descripción del gasto" maxlength="200" 
-                   aria-label="Descripción">
-        </div>
-        <div>
-            <input type="number" min="0" step="0.01" value="${importe}" 
-                   class="importe form-control-line" placeholder="0.00" 
-                   aria-label="Importe">
-        </div>
-        <div class="no-print text-center">
-            <button type="button" class="btn-eliminar" 
-                    aria-label="Eliminar gasto" title="Eliminar">❌</button>
-        </div>
+        <input type="number" min="0" max="9999" value="${cantidad}" 
+               class="form-control cantidad" placeholder="Cant." 
+               aria-label="Cantidad">
+        <input type="text" value="${concepto}" 
+               class="form-control descripcion" 
+               placeholder="Descripción del gasto" maxlength="200" 
+               aria-label="Descripción">
+        <input type="number" min="0" step="0.01" value="${importe}" 
+               class="form-control importe" placeholder="0.00" 
+               aria-label="Importe">
+        <button type="button" class="btn-eliminar no-print" 
+                aria-label="Eliminar gasto" title="Eliminar">❌</button>
     `;
     itemsPlan.appendChild(fila);
 }
@@ -126,6 +119,7 @@ btnAgregarGastoRendicion.addEventListener('click', () => {
 function agregarFilaRendicion(datos = {}) {
     const fila = document.createElement('div');
     fila.className = 'item-rendicion';
+    fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
     
     fila.innerHTML = `
         <input type="text" class="form-control comprobante" 
@@ -154,8 +148,8 @@ function agregarFilaRendicion(datos = {}) {
 function sanitizarTexto(texto) {
     if (!texto) return '';
     return texto
-        .replace(/[<>]/g, '')  // Eliminar etiquetas HTML
-        .replace(/['"]/g, '')  // Eliminar comillas
+        .replace(/[<>]/g, '')
+        .replace(/['"]/g, '')
         .trim()
         .substring(0, 500);
 }
@@ -175,7 +169,7 @@ itemsPlan.addEventListener('input', (e) => {
 itemsPlan.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-eliminar')) {
         if (confirm('¿Eliminar este gasto anticipado?')) {
-            e.target.closest('.item-plan').remove();
+            e.target.closest('.item-rendicion').remove();
             calcularTotalPlan();
         }
     }
@@ -196,10 +190,10 @@ itemsRendicion.addEventListener('click', (e) => {
 
 function calcularTotalPlan() {
     let total = 0;
-    document.querySelectorAll('.importe').forEach(item => {
+    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
         total += sanitizarNumero(item.value, 0);
     });
-    document.getElementById('totalPlan').textContent = total.toLocaleString('es-VE', { 
+    document.getElementById('totalPlan').textContent = 'Bs. ' + total.toLocaleString('es-VE', { 
         minimumFractionDigits: 2, 
         maximumFractionDigits: 2 
     });
@@ -207,7 +201,7 @@ function calcularTotalPlan() {
 
 function calcularTotalRendicion() {
     let total = 0;
-    document.querySelectorAll('.monto').forEach(item => {
+    document.querySelectorAll('#itemsRendicion .monto').forEach(item => {
         total += sanitizarNumero(item.value, 0);
     });
     document.getElementById('totalRendicion').textContent = 'Bs. ' + total.toLocaleString('es-VE', { 
@@ -237,7 +231,6 @@ function validarPlanActividad() {
         limpiarError(el);
     }
     
-    // Validar metas
     const metasSeleccionadas = document.querySelectorAll('input[name="meta"]:checked');
     if (metasSeleccionadas.length === 0) {
         alert('⚠️ Debe seleccionar al menos una meta de la actividad.');
@@ -249,19 +242,18 @@ function validarPlanActividad() {
 }
 
 function marcarError(elemento, mensaje) {
-    elemento.style.borderBottom = '2px solid #c62828';
-    elemento.style.backgroundColor = '#fff5f5';
+    elemento.style.borderColor = '#c62828';
+    elemento.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.2)';
     elemento.focus();
     elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
     alert('⚠️ ' + mensaje);
 }
 
 function limpiarError(elemento) {
-    elemento.style.borderBottom = '';
-    elemento.style.backgroundColor = '';
+    elemento.style.borderColor = '';
+    elemento.style.boxShadow = '';
 }
 
-// Limpiar errores al escribir
 document.addEventListener('input', function(e) {
     if (e.target.matches('input, textarea, select')) {
         limpiarError(e.target);
@@ -301,7 +293,6 @@ formPlan.addEventListener('submit', (e) => {
     }
 });
 
-// Cargar datos al abrir la página
 document.addEventListener('DOMContentLoaded', () => {
     try {
         const datosGuardados = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -325,7 +316,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (planData.obispo) document.getElementById('pObispo').value = planData.obispo;
         }
         
-        // Agregar primera fila de presupuesto si no hay
+        // Fecha por defecto
+        if (!document.getElementById('pFecha').value) {
+            document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
+        }
+        if (!document.getElementById('rFecha').value) {
+            document.getElementById('rFecha').value = new Date().toISOString().split('T')[0];
+        }
+        
+        // Agregar primera fila si no hay
         if (itemsPlan && itemsPlan.children.length === 0) {
             agregarFilaPlan();
         }
@@ -337,17 +336,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // 9. IMPRESIÓN / PDF
 // ==========================================
+
+// Plan de Actividad - Imprimir
 document.getElementById('btnImprimirPlan').addEventListener('click', () => {
     if (validarPlanActividad()) {
-        imprimirPlan();
+        imprimirPlan(true);
     }
 });
 
-document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
-    imprimirRendicion();
+// Plan de Actividad - Descargar PDF
+document.getElementById('btnDescargarPDFPlan').addEventListener('click', () => {
+    if (validarPlanActividad()) {
+        imprimirPlan(false);
+    }
 });
 
-function imprimirPlan() {
+// Rendición - Imprimir
+document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
+    imprimirRendicion(true);
+});
+
+// Rendición - Descargar PDF
+document.getElementById('btnDescargarPDFRendicion').addEventListener('click', () => {
+    imprimirRendicion(false);
+});
+
+function imprimirPlan(imprimirAutomatico = true) {
     const datos = recolectarDatosPlan();
     const total = calcularTotalPlanImpresion();
     
@@ -363,6 +377,12 @@ function imprimirPlan() {
                 @page { size: letter; margin: 10mm; }
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; line-height: 1.3; }
+                .no-print-btns { text-align: center; margin-bottom: 10pt; }
+                .no-print-btns button { 
+                    background: #1a237e; color: white; border: none; 
+                    padding: 8px 20px; border-radius: 5px; cursor: pointer; 
+                    font-size: 12px; margin: 3px; 
+                }
                 .header { text-align: center; margin-bottom: 8pt; }
                 .header h1 { font-size: 14pt; text-transform: uppercase; margin-bottom: 2pt; }
                 .header p { font-size: 9pt; color: #555; }
@@ -385,10 +405,15 @@ function imprimirPlan() {
                 .firma { text-align: center; width: 40%; }
                 .firma-linea { border-top: 1px solid #000; margin-top: 20pt; }
                 .firma-texto { font-size: 8pt; margin-top: 2pt; }
-                @media print { body { padding: 0; } }
+                @media print { body { padding: 0; } .no-print-btns { display: none; } }
             </style>
         </head>
         <body>
+            <div class="no-print-btns">
+                <button onclick="window.print()">🖨️ Imprimir</button>
+                <button onclick="window.close()">❌ Cerrar</button>
+            </div>
+            
             <div class="header">
                 <h1>PLAN DE ACTIVIDAD</h1>
                 <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
@@ -460,10 +485,13 @@ function imprimirPlan() {
     `);
     
     ventana.document.close();
-    setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
+    
+    if (imprimirAutomatico) {
+        setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
+    }
 }
 
-function imprimirRendicion() {
+function imprimirRendicion(imprimirAutomatico = true) {
     const datos = recolectarDatosRendicion();
     let total = 0;
     datos.gastos.forEach(g => total += g.monto);
@@ -480,6 +508,12 @@ function imprimirRendicion() {
                 @page { size: letter; margin: 10mm; }
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; }
+                .no-print-btns { text-align: center; margin-bottom: 10pt; }
+                .no-print-btns button { 
+                    background: #1a237e; color: white; border: none; 
+                    padding: 8px 20px; border-radius: 5px; cursor: pointer; 
+                    font-size: 12px; margin: 3px; 
+                }
                 .header { text-align: center; margin-bottom: 8pt; }
                 .header h1 { font-size: 14pt; margin-bottom: 2pt; }
                 .header p { font-size: 9pt; color: #555; }
@@ -496,10 +530,15 @@ function imprimirRendicion() {
                 .firma { text-align: center; }
                 .firma-linea { border-top: 1px solid #000; width: 120pt; margin: 20pt auto 0; }
                 .firma-texto { font-size: 8pt; margin-top: 2pt; }
-                @media print { body { padding: 0; } }
+                @media print { body { padding: 0; } .no-print-btns { display: none; } }
             </style>
         </head>
         <body>
+            <div class="no-print-btns">
+                <button onclick="window.print()">🖨️ Imprimir</button>
+                <button onclick="window.close()">❌ Cerrar</button>
+            </div>
+            
             <div class="header">
                 <h1>RENDICIÓN DE CUENTAS</h1>
                 <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
@@ -544,7 +583,10 @@ function imprimirRendicion() {
     `);
     
     ventana.document.close();
-    setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
+    
+    if (imprimirAutomatico) {
+        setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
+    }
 }
 
 // ==========================================
@@ -557,7 +599,7 @@ function recolectarDatosPlan() {
     });
     
     const presupuesto = [];
-    document.querySelectorAll('.item-plan').forEach(row => {
+    document.querySelectorAll('#itemsPlan .item-rendicion').forEach(row => {
         const cantidad = row.querySelector('.cantidad')?.value || '';
         const descripcion = row.querySelector('.descripcion')?.value || '';
         const importe = sanitizarNumero(row.querySelector('.importe')?.value, 0);
@@ -584,7 +626,7 @@ function recolectarDatosPlan() {
 
 function recolectarDatosRendicion() {
     const gastos = [];
-    document.querySelectorAll('.item-rendicion').forEach(row => {
+    document.querySelectorAll('#itemsRendicion .item-rendicion').forEach(row => {
         const inputs = row.querySelectorAll('input');
         gastos.push({
             comprobante: sanitizarTexto(inputs[0].value),
@@ -610,7 +652,7 @@ function recolectarDatosRendicion() {
 
 function calcularTotalPlanImpresion() {
     let total = 0;
-    document.querySelectorAll('.item-plan .importe').forEach(item => {
+    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
         total += sanitizarNumero(item.value, 0);
     });
     return total;
