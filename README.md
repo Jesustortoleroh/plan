@@ -1,35 +1,38 @@
-# 📋 Sistema de Actividades
+# 📋 Plan de Actividad y Rendición de Cuentas
 
-Sistema para crear actividades, elaborar presupuestos, registrar gastos y generar PDF.
+**La Iglesia de Jesucristo de los Santos de los Últimos Días**
 
-## 🚀 Cómo usar
+---
 
-1. Abre `index.html` en tu navegador
-2. Listo. No necesitas instalar nada
 
 ## ✨ Funciones
 
-- Crear, editar y eliminar actividades
-- Elaborar presupuestos
-- Registrar gastos
-- Ver comparativo presupuesto vs ejecutado
-- Generar PDF de cada actividad
-- Datos guardados en el navegador
+- 📋 Plan de Actividad con presupuesto
+- 💰 Rendición de Cuentas con gastos
+- 📄 Generar PDF en una sola página
+- 🖨️ Imprimir directamente
+- 💾 Guardar en el navegador
+- 🗑️ Eliminar datos guardados
+- 📱 Funciona en celular
 
-## 📁 Archivos
-├── index.html
-├── css/
-│ └── style.css
-├── js/
-│ └── app.js
-└── README.md
-
+---
 
 ## 💻 Tecnologías
 
-HTML, CSS, JavaScript, localStorage
+HTML | CSS | JavaScript | localStorage
+
+---
+
+## 📁 Archivos
+
+├── index.html
+├── css/style.css
+├── js/app.js
+└── README.md
+
+
+---
 
 ## 📄 Licencia
 
-Uso libre
-
+Uso libre institucional
