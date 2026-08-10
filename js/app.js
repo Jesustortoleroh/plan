@@ -462,7 +462,7 @@ function imprimirPlan(imprimirAutomatico = true) {
             
             <div class="header">
                 <h1>PLAN DE ACTIVIDAD</h1>
-                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
+                <p>La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
             </div>
             
             <div class="fila">
@@ -587,7 +587,7 @@ function imprimirRendicion(imprimirAutomatico = true) {
             
             <div class="header">
                 <h1>RENDICIÓN DE CUENTAS</h1>
-                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
+                <p>La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
             </div>
             
             <div class="fila">
