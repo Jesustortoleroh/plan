@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 3.2
+   Versión: 3.3
    ============================================= */
 
 /* ============================================= */
@@ -358,7 +358,7 @@ textarea:focus-visible {
 }
 
 /* ============================================= */
-/* SELECT - CORREGIDO                            */
+/* SELECT                                        */
 /* ============================================= */
 select.form-control,
 select {
@@ -400,34 +400,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
     opacity: 1;
     background: var(--color-surface-hover);
-}
-
-/* ============================================= */
-/* INPUT FILE (COMPROBANTES)                     */
-/* ============================================= */
-input[type="file"] {
-    font-size: 12px;
-    padding: 6px;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-}
-
-input[type="file"]::file-selector-button {
-    background: var(--color-primary-light);
-    color: var(--color-primary);
-    border: 1px solid var(--color-primary-medium);
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    margin-right: 8px;
-    transition: all 0.15s ease;
-}
-
-input[type="file"]::file-selector-button:hover {
-    background: var(--color-primary-medium);
 }
 
 /* ============================================= */
@@ -517,7 +489,7 @@ textarea {
 }
 
 /* ============================================= */
-/* CHECKBOXES - ESTILO MODERNO                   */
+/* CHECKBOXES                                    */
 /* ============================================= */
 .checkbox-list {
     display: flex;
@@ -607,7 +579,7 @@ textarea {
 }
 
 /* ============================================= */
-/* NOTA DE RENDICIÓN (ALERTA)                    */
+/* NOTA DE RENDICIÓN                             */
 /* ============================================= */
 .nota-rendicion {
     background: var(--color-warning-bg);
@@ -716,33 +688,16 @@ textarea {
     transform: translateY(0);
 }
 
-.btn-primary {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-}
+.btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 .btn-primary:hover { background: var(--color-primary-hover); }
 
-.btn-secondary {
-    background: var(--color-surface);
-    color: var(--color-text);
-    border-color: var(--color-border);
-}
-.btn-secondary:hover {
-    background: var(--color-surface-hover);
-    border-color: var(--color-border-hover);
-}
+.btn-secondary { background: var(--color-surface); color: var(--color-text); border-color: var(--color-border); }
+.btn-secondary:hover { background: var(--color-surface-hover); border-color: var(--color-border-hover); }
 
-.btn-success {
-    background: var(--color-success);
-    color: white;
-}
+.btn-success { background: var(--color-success); color: white; }
 .btn-success:hover { background: var(--color-success-hover); }
 
-.btn-danger {
-    background: var(--color-danger);
-    color: white;
-}
+.btn-danger { background: var(--color-danger); color: white; }
 .btn-danger:hover { background: var(--color-danger-hover); }
 
 .btn-agregar-item {
@@ -830,14 +785,8 @@ textarea {
 /* FLASH MESSAGES                                */
 /* ============================================= */
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .flash-message {
@@ -858,16 +807,11 @@ textarea {
     .char-count,
     .mobile-label,
     .sugerencia-texto,
-    .archivo-comprobante,
     .flash-message {
         display: none !important;
     }
     
-    body {
-        background: white !important;
-        color: #000 !important;
-    }
-    
+    body { background: white !important; color: #000 !important; }
     .main-content { padding: 0; max-width: 100%; margin: 0; }
     .card { box-shadow: none; border: none; padding: 0; border-radius: 0; }
     .institutional-header { border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
@@ -900,28 +844,12 @@ textarea {
 /* RESPONSIVE MÓVIL                              */
 /* ============================================= */
 @media (max-width: 768px) {
-    .topbar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 10px 15px;
-    }
-    
+    .topbar { flex-direction: column; align-items: stretch; padding: 10px 15px; }
     .topbar-brand { justify-content: space-between; }
     .hamburger { display: block; }
+    .theme-toggle { position: absolute; top: 12px; right: 60px; }
     
-    .theme-toggle {
-        position: absolute;
-        top: 12px;
-        right: 60px;
-    }
-    
-    .topbar-menu {
-        display: none;
-        flex-direction: column;
-        gap: 5px;
-        margin-top: 10px;
-    }
-    
+    .topbar-menu { display: none; flex-direction: column; gap: 5px; margin-top: 10px; }
     .topbar-menu.show { display: flex; }
     .nav-link { padding: 10px 15px; }
     .main-content { padding: 15px 10px; }
@@ -942,53 +870,23 @@ textarea {
         box-shadow: var(--shadow-sm);
     }
     
-    .mobile-label {
-        display: block;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 3px;
-    }
-    
+    .mobile-label { display: block; font-size: 12px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
     .input-wrapper { width: 100%; }
     
-    .input-wrapper input,
-    .input-wrapper input[type="file"] {
-        width: 100%;
-        min-height: 46px;
-        font-size: 16px;
-        padding: 12px 14px;
-        border: 1.5px solid var(--color-border);
-        border-radius: var(--radius-md);
-        background: var(--color-surface);
-        font-family: inherit;
-        color: var(--color-text);
+    .input-wrapper input {
+        width: 100%; min-height: 46px; font-size: 16px; padding: 12px 14px;
+        border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+        background: var(--color-surface); font-family: inherit; color: var(--color-text);
     }
     
-    .input-wrapper input:focus {
-        border-color: var(--color-border-focus);
-        box-shadow: 0 0 0 2px rgba(92,107,192,0.15);
-        outline: none;
-    }
+    .input-wrapper input:focus { border-color: var(--color-border-focus); box-shadow: 0 0 0 2px rgba(92,107,192,0.15); outline: none; }
     
     .btn-eliminar {
-        width: 100%;
-        min-height: 46px;
-        border-radius: var(--radius-md);
-        background: var(--color-danger-bg);
-        color: var(--color-danger);
-        font-size: 14px;
-        font-weight: 600;
-        border: 1px solid var(--color-danger-border);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition: all 0.15s ease;
-        margin-top: 2px;
+        width: 100%; min-height: 46px; border-radius: var(--radius-md);
+        background: var(--color-danger-bg); color: var(--color-danger);
+        font-size: 14px; font-weight: 600; border: 1px solid var(--color-danger-border);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        gap: 6px; transition: all 0.15s ease; margin-top: 2px;
     }
     
     .btn-eliminar:hover { background: var(--color-danger); color: white; }
@@ -1028,12 +926,10 @@ textarea {
 }
 
 /* ============================================= */
-/* ACCESIBILIDAD - REDUCCIÓN DE MOVIMIENTO       */
+/* ACCESIBILIDAD                                 */
 /* ============================================= */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
     }

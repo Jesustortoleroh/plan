@@ -1,7 +1,7 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 3.2
+ * Versión: 3.3
  */
 
 // ==========================================
@@ -234,7 +234,7 @@ function agregarFilaPlan(datos = {}) {
 }
 
 // ==========================================
-// 4. 📎 TABLA: RENDICIÓN DE CUENTAS
+// 4. TABLA: RENDICIÓN DE CUENTAS
 // ==========================================
 const btnAgregarGastoRendicion = document.getElementById('btnAgregarGasto');
 const itemsRendicion = document.getElementById('itemsRendicion');
@@ -246,10 +246,9 @@ btnAgregarGastoRendicion.addEventListener('click', () => {
 function agregarFilaRendicion(datos = {}) {
     const fila = document.createElement('div');
     fila.className = 'item-rendicion';
-    fila.style.gridTemplateColumns = '70px 1.2fr 90px 1fr 90px 55px 45px';
+    fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
     
     const monto = datos.monto ? parseFloat(datos.monto).toFixed(2) : '0.00';
-    const nombreArchivo = datos.archivo || '';
     
     fila.innerHTML = `
         <div class="input-wrapper">
@@ -280,15 +279,6 @@ function agregarFilaRendicion(datos = {}) {
             <input type="text" class="monto" 
                    value="${monto}" 
                    placeholder="0.00" aria-label="Monto" inputmode="decimal">
-        </div>
-        <div class="input-wrapper no-print">
-            <label class="mobile-label">Comprobante</label>
-            <input type="file" class="archivo-comprobante" 
-                   accept=".jpg,.jpeg,.png,.pdf" 
-                   aria-label="Archivo comprobante" 
-                   style="font-size:10px;padding:3px;"
-                   title="${nombreArchivo || 'Adjuntar factura'}">
-            ${nombreArchivo ? `<small style="font-size:9px;color:var(--color-success);display:block;">✓ ${nombreArchivo}</small>` : ''}
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
@@ -530,14 +520,12 @@ function mostrarFlashExito(mensaje) {
     mostrarFlashMessages([mensaje], 'success');
 }
 
-// Limpiar errores al escribir
 document.addEventListener('input', function(e) {
     if (e.target.matches('input, textarea, select')) {
         limpiarError(e.target);
     }
 });
 
-// Limpiar errores al marcar checkbox
 document.addEventListener('change', function(e) {
     if (e.target.matches('input[type="checkbox"]')) {
         const metasCard = document.querySelector('.checkbox-list');
@@ -948,15 +936,13 @@ function recolectarDatosRendicion() {
         const fecha = row.querySelector('.fecha-gasto')?.value || '';
         const proveedor = row.querySelector('.proveedor')?.value || '';
         const monto = row.querySelector('.monto')?.value || '0';
-        const archivo = row.querySelector('.archivo-comprobante');
         
         gastos.push({
             comprobante: sanitizarTexto(comprobante),
             concepto: sanitizarTexto(concepto),
             fecha: fecha,
             proveedor: sanitizarTexto(proveedor),
-            monto: sanitizarNumero(monto, 0),
-            archivo: archivo?.files[0]?.name || ''
+            monto: sanitizarNumero(monto, 0)
         });
     });
     
