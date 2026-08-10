@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 2.2
+   Versión: 2.3
    ============================================= */
 
 :root {
@@ -317,6 +317,23 @@ textarea.form-control {
     flex-shrink: 0;
 }
 
+/* Categorías de metas */
+.meta-categoria {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 13px;
+    padding: 10px 0 5px 0;
+    margin-top: 8px;
+    border-top: 1px solid var(--primary-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.meta-categoria:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
 /* ============================================= */
 /* NOTA DE RENDICIÓN                             */
 /* ============================================= */
@@ -532,6 +549,7 @@ textarea.form-control {
     .presupuesto-total { padding: 10px 15px; font-size: 12pt; }
     .presupuesto-total span:last-child { font-size: 14pt; }
     .checkbox-list label { font-size: 9pt; padding: 3px 5px; }
+    .meta-categoria { font-size: 10pt; padding: 6px 0 3px 0; }
     .nota-rendicion { font-size: 9pt; padding: 8px 12px; }
     
     @page { size: letter; margin: 8mm; }
@@ -665,6 +683,7 @@ textarea.form-control {
     
     /* Checkboxes */
     .checkbox-list label { font-size: 14px; padding: 10px 12px; }
+    .meta-categoria { font-size: 13px; }
     
     /* Botón agregar */
     .btn-agregar-item { padding: 14px; font-size: 15px; margin-top: 5px; }
@@ -689,6 +708,7 @@ textarea.form-control {
     }
     
     .mobile-label { font-size: 11px; }
+    .meta-categoria { font-size: 12px; }
     
     .btn { font-size: 14px; padding: 12px 16px; }
     .btn-eliminar::before { font-size: 13px; }
