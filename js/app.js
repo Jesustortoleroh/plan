@@ -1,8 +1,32 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 2.2
+ * Versión: 2.4
  */
+
+// ==========================================
+// 0. MODO OSCURO
+// ==========================================
+const themeToggle = document.getElementById('themeToggle');
+
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+    if (themeToggle) themeToggle.textContent = '☀️';
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = '☀️';
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeToggle.textContent = '🌙';
+        }
+    });
+}
 
 // ==========================================
 // CONFIGURACIÓN Y CONSTANTES
@@ -462,7 +486,7 @@ function imprimirPlan(imprimirAutomatico = true) {
             
             <div class="header">
                 <h1>PLAN DE ACTIVIDAD</h1>
-                <p>La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
+                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
             </div>
             
             <div class="fila">
@@ -587,7 +611,7 @@ function imprimirRendicion(imprimirAutomatico = true) {
             
             <div class="header">
                 <h1>RENDICIÓN DE CUENTAS</h1>
-                <p>La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
+                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
             </div>
             
             <div class="fila">

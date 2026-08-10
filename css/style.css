@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 2.3
+   Versión: 2.4
    ============================================= */
 
 :root {
@@ -108,6 +108,21 @@ body {
     font-size: 26px;
     cursor: pointer;
     padding: 5px 10px;
+}
+
+/* Botón de tema */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: transform 0.3s;
+    color: white;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.2);
 }
 
 /* ============================================= */
@@ -523,6 +538,7 @@ textarea.form-control {
     .btn-eliminar,
     .no-print,
     .hamburger,
+    .theme-toggle,
     .action-buttons,
     .char-count,
     .mobile-label {
@@ -571,6 +587,12 @@ textarea.form-control {
     .topbar-brand { justify-content: space-between; }
     .hamburger { display: block; }
     
+    .theme-toggle {
+        position: absolute;
+        top: 12px;
+        right: 60px;
+    }
+    
     .topbar-menu {
         display: none;
         flex-direction: column;
@@ -584,9 +606,7 @@ textarea.form-control {
     .card { padding: 20px 15px; }
     .form-row { grid-template-columns: 1fr; gap: 10px; }
 
-    /* ============================================ */
-    /* GASTOS - TARJETA CON ETIQUETAS VISIBLES      */
-    /* ============================================ */
+    /* GASTOS - TARJETA CON ETIQUETAS VISIBLES */
     .tabla-rendicion-header { display: none; }
     
     .item-rendicion {
@@ -601,7 +621,6 @@ textarea.form-control {
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     
-    /* Mostrar etiquetas en móvil */
     .mobile-label {
         display: block;
         font-size: 12px;
@@ -612,12 +631,8 @@ textarea.form-control {
         margin-bottom: 3px;
     }
     
-    /* Cada wrapper ocupa 100% */
-    .input-wrapper {
-        width: 100%;
-    }
+    .input-wrapper { width: 100%; }
     
-    /* Inputs dentro de los wrappers */
     .input-wrapper input {
         width: 100%;
         min-height: 46px;
@@ -635,12 +650,8 @@ textarea.form-control {
         outline: none;
     }
     
-    .input-wrapper input::placeholder {
-        color: #bbb;
-        font-size: 14px;
-    }
+    .input-wrapper input::placeholder { color: #bbb; font-size: 14px; }
     
-    /* Botón eliminar */
     .btn-eliminar {
         width: 100%;
         min-height: 46px;
@@ -663,32 +674,19 @@ textarea.form-control {
     .btn-eliminar { font-size: 0; }
     .btn-eliminar::before { content: '🗑 Eliminar gasto'; font-size: 14px; }
     
-    /* Botones de acción */
     .action-buttons { flex-direction: column; gap: 8px; }
     .action-buttons .btn { width: 100%; justify-content: center; padding: 14px; font-size: 16px; }
-    
-    /* Totales */
     .presupuesto-total { flex-direction: column; text-align: center; gap: 8px; padding: 15px; }
     .presupuesto-total span:last-child { font-size: 22px; }
-    
-    /* Tarjetas */
     .aprobacion-body { padding: 15px; }
     .aprobacion-header { padding: 12px 15px; }
     .aprobacion-header h2 { font-size: 13px; }
-    
-    /* Formularios */
     .form-control { font-size: 16px; padding: 12px 14px; }
     select.form-control { font-size: 16px; padding: 12px 35px 12px 14px; }
     textarea.form-control { font-size: 16px; padding: 12px 14px; }
-    
-    /* Checkboxes */
     .checkbox-list label { font-size: 14px; padding: 10px 12px; }
     .meta-categoria { font-size: 13px; }
-    
-    /* Botón agregar */
     .btn-agregar-item { padding: 14px; font-size: 15px; margin-top: 5px; }
-    
-    /* Nota */
     .nota-rendicion { font-size: 13px; padding: 12px 15px; }
 }
 
@@ -698,18 +696,139 @@ textarea.form-control {
 @media (max-width: 400px) {
     .institutional-header h1 { font-size: 1.2rem; }
     .card { padding: 15px 10px; }
-    
     .item-rendicion { padding: 10px; gap: 8px; }
-    
-    .input-wrapper input {
-        font-size: 14px;
-        min-height: 44px;
-        padding: 10px 12px;
-    }
-    
+    .input-wrapper input { font-size: 14px; min-height: 44px; padding: 10px 12px; }
     .mobile-label { font-size: 11px; }
     .meta-categoria { font-size: 12px; }
-    
     .btn { font-size: 14px; padding: 12px 16px; }
     .btn-eliminar::before { font-size: 13px; }
+}
+
+/* ============================================= */
+/* MODO OSCURO                                   */
+/* ============================================= */
+body.dark-mode {
+    --primary: #283593;
+    --primary-light: #1a237e;
+    --primary-medium: #3949ab;
+    --bg: #121212;
+    --white: #1e1e1e;
+    --border: #333;
+    --text: #e0e0e0;
+    --text-light: #aaa;
+    --text-muted: #777;
+    --shadow: 0 2px 10px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 15px rgba(0,0,0,0.4);
+    background: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .card {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .aprobacion-body {
+    background: #252525;
+}
+
+body.dark-mode .item-rendicion {
+    background: #1e1e1e;
+    border-bottom-color: #333;
+}
+
+body.dark-mode .item-rendicion:hover {
+    background: #252525;
+}
+
+body.dark-mode .item-rendicion input {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-control {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .checkbox-list label:hover {
+    background: #2a2a2a;
+}
+
+body.dark-mode .nota-rendicion {
+    background: #2a2000;
+    color: #ccc;
+}
+
+body.dark-mode .btn-agregar-item {
+    background: #252525;
+    border-color: #444;
+}
+
+body.dark-mode .btn-agregar-item:hover {
+    background: #333;
+}
+
+body.dark-mode .tabla-rendicion-header {
+    background: #283593;
+}
+
+body.dark-mode .presupuesto-total {
+    background: #283593;
+}
+
+body.dark-mode .institutional-header {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .aprobacion-card {
+    border-color: #3949ab;
+}
+
+body.dark-mode .aprobacion-header {
+    background: #283593;
+}
+
+body.dark-mode .topbar {
+    background: #1a1a2e;
+}
+
+body.dark-mode .btn-eliminar {
+    color: #777;
+}
+
+body.dark-mode .btn-eliminar:hover {
+    background: #3a1a1a;
+}
+
+body.dark-mode .checkbox-list input[type="checkbox"] {
+    accent-color: #5c6bc0;
+}
+
+body.dark-mode select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
+
+body.dark-mode .theme-toggle {
+    color: #ffd600;
+}
+
+body.dark-mode .meta-categoria {
+    color: #7986cb;
+    border-top-color: #3949ab;
+}
+
+body.dark-mode .btn-secondary {
+    background: #444;
+}
+
+body.dark-mode .btn-secondary:hover {
+    background: #555;
+}
+
+body.dark-mode .presupuesto-section h2,
+body.dark-mode .presupuesto-section h3 {
+    color: #7986cb !important;
 }
