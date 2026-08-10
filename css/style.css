@@ -1,6 +1,6 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
-   Iglesia de Jesucristo de los Santos de los Últimos Días
+   La Iglesia de Jesucristo de los Santos de los Últimos Días
    Versión: 2.0
    ============================================= */
 
@@ -424,6 +424,15 @@ textarea.form-control {
 
 .btn-success:hover {
     background: #1b5e20;
+}
+
+.btn-danger {
+    background: var(--red);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b71c1c;
 }
 
 .btn-agregar-item {

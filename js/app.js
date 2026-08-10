@@ -1,6 +1,6 @@
 /**
  * SISTEMA DE ACTIVIDADES
- * Iglesia de Jesucristo de los Santos de los Últimos Días
+ * La Iglesia de Jesucristo de los Santos de los Últimos Días
  * Versión: 2.0
  */
 
@@ -332,6 +332,38 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error al cargar datos:', error);
     }
 });
+
+// ==========================================
+// 8.5 BOTÓN ELIMINAR DATOS GUARDADOS
+// ==========================================
+const btnEliminarDatos = document.getElementById('btnEliminarDatos');
+
+if (btnEliminarDatos) {
+    btnEliminarDatos.addEventListener('click', () => {
+        if (confirm('⚠️ ¿Está seguro de eliminar todos los datos guardados?\n\nEsta acción no se puede deshacer.')) {
+            // Eliminar del localStorage
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+            
+            // Limpiar formulario
+            document.getElementById('formPlan').reset();
+            
+            // Limpiar presupuesto
+            document.getElementById('itemsPlan').innerHTML = '';
+            agregarFilaPlan();
+            
+            // Resetear fecha
+            document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
+            
+            // Resetear contador
+            if (propositoCount) {
+                propositoCount.textContent = `0/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
+                propositoCount.style.color = '#666';
+            }
+            
+            alert('✅ Datos eliminados exitosamente.');
+        }
+    });
+}
 
 // ==========================================
 // 9. IMPRESIÓN / PDF
