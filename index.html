@@ -6,12 +6,13 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
     <meta name="description" content="Sistema de Planificación y Rendición de Actividades - Iglesia de Jesucristo de los Santos de los Últimos Días">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1a237e">
     <title>Plan de Actividad - La Iglesia de Jesucristo SUD</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-theme="light">
 
     <!-- ============================================ -->
     <!-- MENÚ SUPERIOR (TOPBAR)                       -->
@@ -25,13 +26,13 @@
             </div>
         </div>
         
-        <div style="display:flex;align-items:center;gap:5px;">
-            <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Modo oscuro">🌙</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Alternar modo oscuro">🌙</button>
             <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
         </div>
         
         <nav id="menuNav" class="topbar-menu">
-            <a href="#" class="nav-link active" data-target="plan">📋 Plan de Actividad</a>
+            <a href="#" class="nav-link active" data-target="plan" aria-current="page">📋 Plan de Actividad</a>
             <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
         </nav>
     </header>
@@ -53,7 +54,7 @@
                     <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
                 </div>
                 
-                <form id="formPlan" autocomplete="off">
+                <form id="formPlan" autocomplete="off" novalidate>
                     
                     <!-- Datos Generales -->
                     <div class="aprobacion-card">
@@ -213,11 +214,11 @@
 
                     <!-- Presupuesto -->
                     <div class="presupuesto-section">
-                        <h2 style="color: var(--primary); text-align: center; margin: 20px 0 5px;">
+                        <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 5px;">
                             💰 PLAN DE PRESUPUESTO 
                             <span style="font-weight: normal; font-size: 14px;">(Antes de la actividad)</span>
                         </h2>
-                        <h3 style="color: var(--primary); font-size: 14px; margin-bottom: 10px; text-align: center;">
+                        <h3 style="color: var(--color-primary); font-size: 14px; margin-bottom: 10px; text-align: center;">
                             GASTOS ANTICIPADOS
                         </h3>
                         
@@ -351,7 +352,7 @@
 
                 <!-- Gastos actuales -->
                 <div class="presupuesto-section">
-                    <h2 style="color: var(--primary); text-align: center; margin: 20px 0 10px;">
+                    <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 10px;">
                         💳 GASTOS ACTUALES
                     </h2>
                     

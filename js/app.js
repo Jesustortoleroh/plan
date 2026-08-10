@@ -1,29 +1,35 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 2.4
+ * Versión: 3.0 - Profesional
  */
 
 // ==========================================
-// 0. MODO OSCURO
+// 0. MODO OSCURO (data-theme)
 // ==========================================
 const themeToggle = document.getElementById('themeToggle');
 
+// Cargar tema guardado
 if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode');
+    document.body.setAttribute('data-theme', 'dark');
     if (themeToggle) themeToggle.textContent = '☀️';
+} else {
+    document.body.setAttribute('data-theme', 'light');
+    if (themeToggle) themeToggle.textContent = '🌙';
 }
 
 if (themeToggle) {
     themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
         
-        if (document.body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-            themeToggle.textContent = '☀️';
-        } else {
+        if (isDark) {
+            document.body.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
             themeToggle.textContent = '🌙';
+        } else {
+            document.body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.textContent = '☀️';
         }
     });
 }
@@ -35,7 +41,7 @@ const CONFIG = {
     MAX_CARACTERES_PROPOSITO: 500,
     MAX_ASISTENTES: 9999,
     DELAY_IMPRESION: 500,
-    STORAGE_KEY: 'planActividad_SUD_v2'
+    STORAGE_KEY: 'planActividad_SUD_v3'
 };
 
 // ==========================================
@@ -47,6 +53,13 @@ const navLinks = document.querySelectorAll('.nav-link');
 
 btnHamburger.addEventListener('click', () => {
     topbarMenu.classList.toggle('show');
+});
+
+// Cerrar menú al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.topbar') && topbarMenu.classList.contains('show')) {
+        topbarMenu.classList.remove('show');
+    }
 });
 
 navLinks.forEach(link => {
@@ -85,11 +98,11 @@ if (propositoTextarea && propositoCount) {
         propositoCount.textContent = `${length}/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
         
         if (length > CONFIG.MAX_CARACTERES_PROPOSITO) {
-            propositoCount.style.color = '#c62828';
+            propositoCount.style.color = '#dc2626';
         } else if (length > CONFIG.MAX_CARACTERES_PROPOSITO * 0.8) {
-            propositoCount.style.color = '#ff9800';
+            propositoCount.style.color = '#d97706';
         } else {
-            propositoCount.style.color = '#666';
+            propositoCount.style.color = '';
         }
     });
 }
@@ -117,21 +130,21 @@ function agregarFilaPlan(datos = {}) {
         <div class="input-wrapper">
             <label class="mobile-label">Cantidad</label>
             <input type="number" min="0" max="9999" value="${cantidad}" 
-                   class="form-control cantidad" placeholder="Cant." 
-                   aria-label="Cantidad">
+                   class="cantidad" placeholder="Cant." 
+                   aria-label="Cantidad" inputmode="numeric">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Descripción del gasto</label>
             <input type="text" value="${concepto}" 
-                   class="form-control descripcion" 
+                   class="descripcion" 
                    placeholder="Descripción del gasto" maxlength="200" 
                    aria-label="Descripción del gasto">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Importe</label>
             <input type="number" min="0" step="0.01" value="${importe}" 
-                   class="form-control importe" placeholder="0.00" 
-                   aria-label="Importe">
+                   class="importe" placeholder="0.00" 
+                   aria-label="Importe" inputmode="decimal">
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
@@ -157,32 +170,32 @@ function agregarFilaRendicion(datos = {}) {
     fila.innerHTML = `
         <div class="input-wrapper">
             <label class="mobile-label">Comprobante</label>
-            <input type="text" class="form-control comprobante" 
+            <input type="text" class="comprobante" 
                    value="${sanitizarTexto(datos.comprobante || '')}" 
                    placeholder="Comprobante" maxlength="50" aria-label="Comprobante">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Concepto</label>
-            <input type="text" class="form-control concepto" 
+            <input type="text" class="concepto" 
                    value="${sanitizarTexto(datos.concepto || '')}" 
                    placeholder="Concepto" maxlength="200" aria-label="Concepto">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Fecha</label>
-            <input type="date" class="form-control" 
+            <input type="date" class="fecha-gasto" 
                    value="${datos.fecha || ''}" aria-label="Fecha">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Proveedor</label>
-            <input type="text" class="form-control proveedor" 
+            <input type="text" class="proveedor" 
                    value="${sanitizarTexto(datos.proveedor || '')}" 
                    placeholder="Proveedor" maxlength="100" aria-label="Proveedor">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Monto</label>
-            <input type="number" min="0" step="0.01" class="form-control monto" 
+            <input type="number" min="0" step="0.01" class="monto" 
                    value="${sanitizarNumero(datos.monto, 0)}" 
-                   placeholder="0.00" aria-label="Monto">
+                   placeholder="0.00" aria-label="Monto" inputmode="decimal">
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
@@ -223,6 +236,14 @@ itemsPlan.addEventListener('click', (e) => {
     }
 });
 
+// Soporte para teclado en botones eliminar
+itemsPlan.addEventListener('keydown', (e) => {
+    if (e.target.classList.contains('btn-eliminar') && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        e.target.click();
+    }
+});
+
 itemsRendicion.addEventListener('input', (e) => {
     if (e.target.classList.contains('monto')) calcularTotalRendicion();
 });
@@ -233,6 +254,13 @@ itemsRendicion.addEventListener('click', (e) => {
             e.target.closest('.item-rendicion').remove();
             calcularTotalRendicion();
         }
+    }
+});
+
+itemsRendicion.addEventListener('keydown', (e) => {
+    if (e.target.classList.contains('btn-eliminar') && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        e.target.click();
     }
 });
 
@@ -290,8 +318,9 @@ function validarPlanActividad() {
 }
 
 function marcarError(elemento, mensaje) {
-    elemento.style.borderColor = '#c62828';
-    elemento.style.boxShadow = '0 0 0 3px rgba(198,40,40,0.2)';
+    elemento.style.borderColor = '#dc2626';
+    elemento.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.2)';
+    elemento.setAttribute('aria-invalid', 'true');
     elemento.focus();
     elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
     alert('⚠️ ' + mensaje);
@@ -300,6 +329,7 @@ function marcarError(elemento, mensaje) {
 function limpiarError(elemento) {
     elemento.style.borderColor = '';
     elemento.style.boxShadow = '';
+    elemento.removeAttribute('aria-invalid');
 }
 
 document.addEventListener('input', function(e) {
@@ -396,7 +426,7 @@ if (btnEliminarDatos) {
             document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
             if (propositoCount) {
                 propositoCount.textContent = `0/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
-                propositoCount.style.color = '#666';
+                propositoCount.style.color = '';
             }
             alert('✅ Datos eliminados exitosamente.');
         }
@@ -407,26 +437,22 @@ if (btnEliminarDatos) {
 // 9. IMPRESIÓN / PDF
 // ==========================================
 
-// Plan de Actividad - Imprimir
 document.getElementById('btnImprimirPlan').addEventListener('click', () => {
     if (validarPlanActividad()) {
         imprimirPlan(true);
     }
 });
 
-// Plan de Actividad - Descargar PDF
 document.getElementById('btnDescargarPDFPlan').addEventListener('click', () => {
     if (validarPlanActividad()) {
         imprimirPlan(false);
     }
 });
 
-// Rendición - Imprimir
 document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
     imprimirRendicion(true);
 });
 
-// Rendición - Descargar PDF
 document.getElementById('btnDescargarPDFRendicion').addEventListener('click', () => {
     imprimirRendicion(false);
 });
@@ -436,6 +462,10 @@ function imprimirPlan(imprimirAutomatico = true) {
     const total = calcularTotalPlanImpresion();
     
     const ventana = window.open('', '_blank', 'width=900,height=700');
+    if (!ventana) {
+        alert('⚠️ Permite ventanas emergentes para generar el PDF.');
+        return;
+    }
     
     ventana.document.write(`
         <!DOCTYPE html>
@@ -567,6 +597,10 @@ function imprimirRendicion(imprimirAutomatico = true) {
     datos.gastos.forEach(g => total += g.monto);
     
     const ventana = window.open('', '_blank', 'width=900,height=700');
+    if (!ventana) {
+        alert('⚠️ Permite ventanas emergentes para generar el PDF.');
+        return;
+    }
     
     ventana.document.write(`
         <!DOCTYPE html>
