@@ -1,7 +1,7 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 3.0 - Profesional
+ * Versión: 3.1
  */
 
 // ==========================================
@@ -9,7 +9,6 @@
 // ==========================================
 const themeToggle = document.getElementById('themeToggle');
 
-// Cargar tema guardado
 if (localStorage.getItem('theme') === 'dark') {
     document.body.setAttribute('data-theme', 'dark');
     if (themeToggle) themeToggle.textContent = '☀️';
@@ -41,7 +40,8 @@ const CONFIG = {
     MAX_CARACTERES_PROPOSITO: 500,
     MAX_ASISTENTES: 9999,
     DELAY_IMPRESION: 500,
-    STORAGE_KEY: 'planActividad_SUD_v3'
+    STORAGE_KEY: 'planActividad_SUD_v3',
+    ULTIMOS_KEY: 'ultimosValores_SUD'
 };
 
 // ==========================================
@@ -55,7 +55,6 @@ btnHamburger.addEventListener('click', () => {
     topbarMenu.classList.toggle('show');
 });
 
-// Cerrar menú al hacer click fuera
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.topbar') && topbarMenu.classList.contains('show')) {
         topbarMenu.classList.remove('show');
@@ -108,6 +107,95 @@ if (propositoTextarea && propositoCount) {
 }
 
 // ==========================================
+// 2.5 💰 FORMATEO DE MONEDA AUTOMÁTICO
+// ==========================================
+document.addEventListener('input', function(e) {
+    if (e.target.matches('.importe, .monto, .monto-formato')) {
+        // Permitir solo números, punto y coma mientras escribe
+        let valor = e.target.value.replace(/[^0-9,.]/g, '');
+        if (valor !== e.target.value) {
+            e.target.value = valor;
+        }
+    }
+});
+
+document.addEventListener('blur', function(e) {
+    if (e.target.matches('.importe, .monto, .monto-formato')) {
+        const valor = parseFloat(e.target.value.replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0;
+        e.target.value = valor.toFixed(2);
+        
+        // Actualizar totales
+        if (e.target.classList.contains('importe')) calcularTotalPlan();
+        if (e.target.classList.contains('monto')) calcularTotalRendicion();
+    }
+}, true);
+
+// ==========================================
+// 2.6 🔤 AUTOCOMPLETAR BARRIO/ESTACA
+// ==========================================
+function guardarUltimosValores() {
+    const ultimos = {
+        estaca: document.getElementById('pEstaca').value.trim(),
+        barrio: document.getElementById('pBarrio').value.trim(),
+        organizacion: document.getElementById('pOrganizacion').value,
+        fecha: new Date().toISOString()
+    };
+    localStorage.setItem(CONFIG.ULTIMOS_KEY, JSON.stringify(ultimos));
+    mostrarSugerencias();
+}
+
+function mostrarSugerencias() {
+    try {
+        const ultimos = JSON.parse(localStorage.getItem(CONFIG.ULTIMOS_KEY));
+        if (!ultimos) return;
+        
+        const elEstaca = document.getElementById('ultimaEstaca');
+        const elBarrio = document.getElementById('ultimoBarrio');
+        const inputEstaca = document.getElementById('pEstaca');
+        const inputBarrio = document.getElementById('pBarrio');
+        
+        if (elEstaca && ultimos.estaca && !inputEstaca.value) {
+            elEstaca.textContent = '📌 Usar último: ' + ultimos.estaca;
+            elEstaca.style.display = 'block';
+        } else if (elEstaca) {
+            elEstaca.style.display = 'none';
+        }
+        
+        if (elBarrio && ultimos.barrio && !inputBarrio.value) {
+            elBarrio.textContent = '📌 Usar último: ' + ultimos.barrio;
+            elBarrio.style.display = 'block';
+        } else if (elBarrio) {
+            elBarrio.style.display = 'none';
+        }
+    } catch (e) {
+        // No hay datos guardados
+    }
+}
+
+function usarUltimoValor(campoId) {
+    try {
+        const ultimos = JSON.parse(localStorage.getItem(CONFIG.ULTIMOS_KEY));
+        if (!ultimos) return;
+        
+        if (campoId === 'pEstaca' && ultimos.estaca) {
+            document.getElementById('pEstaca').value = ultimos.estaca;
+            document.getElementById('ultimaEstaca').style.display = 'none';
+        }
+        if (campoId === 'pBarrio' && ultimos.barrio) {
+            document.getElementById('pBarrio').value = ultimos.barrio;
+            document.getElementById('ultimoBarrio').style.display = 'none';
+        }
+    } catch (e) {
+        // Error
+    }
+}
+
+// Guardar al salir del campo
+document.getElementById('pEstaca').addEventListener('blur', guardarUltimosValores);
+document.getElementById('pBarrio').addEventListener('blur', guardarUltimosValores);
+document.getElementById('pOrganizacion').addEventListener('change', guardarUltimosValores);
+
+// ==========================================
 // 3. TABLA: PLAN DE PRESUPUESTO
 // ==========================================
 const btnAgregarGastoPlan = document.getElementById('btnAgregarGastoPlan');
@@ -124,7 +212,7 @@ function agregarFilaPlan(datos = {}) {
     
     const cantidad = sanitizarNumero(datos.cantidad, 0);
     const concepto = sanitizarTexto(datos.concepto || '');
-    const importe = sanitizarNumero(datos.importe, 0);
+    const importe = datos.importe ? parseFloat(datos.importe).toFixed(2) : '0.00';
     
     fila.innerHTML = `
         <div class="input-wrapper">
@@ -142,7 +230,7 @@ function agregarFilaPlan(datos = {}) {
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Importe</label>
-            <input type="number" min="0" step="0.01" value="${importe}" 
+            <input type="text" value="${importe}" 
                    class="importe" placeholder="0.00" 
                    aria-label="Importe" inputmode="decimal">
         </div>
@@ -153,7 +241,7 @@ function agregarFilaPlan(datos = {}) {
 }
 
 // ==========================================
-// 4. TABLA: RENDICIÓN DE CUENTAS
+// 4. 📎 TABLA: RENDICIÓN DE CUENTAS (CON COMPROBANTES)
 // ==========================================
 const btnAgregarGastoRendicion = document.getElementById('btnAgregarGasto');
 const itemsRendicion = document.getElementById('itemsRendicion');
@@ -165,14 +253,17 @@ btnAgregarGastoRendicion.addEventListener('click', () => {
 function agregarFilaRendicion(datos = {}) {
     const fila = document.createElement('div');
     fila.className = 'item-rendicion';
-    fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
+    fila.style.gridTemplateColumns = '70px 1.2fr 90px 1fr 90px 55px 45px';
+    
+    const monto = datos.monto ? parseFloat(datos.monto).toFixed(2) : '0.00';
+    const nombreArchivo = datos.archivo || '';
     
     fila.innerHTML = `
         <div class="input-wrapper">
             <label class="mobile-label">Comprobante</label>
             <input type="text" class="comprobante" 
                    value="${sanitizarTexto(datos.comprobante || '')}" 
-                   placeholder="Comprobante" maxlength="50" aria-label="Comprobante">
+                   placeholder="FAC-001" maxlength="50" aria-label="Comprobante">
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Concepto</label>
@@ -193,9 +284,18 @@ function agregarFilaRendicion(datos = {}) {
         </div>
         <div class="input-wrapper">
             <label class="mobile-label">Monto</label>
-            <input type="number" min="0" step="0.01" class="monto" 
-                   value="${sanitizarNumero(datos.monto, 0)}" 
+            <input type="text" class="monto" 
+                   value="${monto}" 
                    placeholder="0.00" aria-label="Monto" inputmode="decimal">
+        </div>
+        <div class="input-wrapper no-print">
+            <label class="mobile-label">Comprobante</label>
+            <input type="file" class="archivo-comprobante" 
+                   accept=".jpg,.jpeg,.png,.pdf" 
+                   aria-label="Archivo comprobante" 
+                   style="font-size:10px;padding:3px;"
+                   title="${nombreArchivo || 'Adjuntar factura'}">
+            ${nombreArchivo ? `<small style="font-size:9px;color:var(--color-success);display:block;">✓ ${nombreArchivo}</small>` : ''}
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
@@ -216,7 +316,7 @@ function sanitizarTexto(texto) {
 }
 
 function sanitizarNumero(valor, defecto = 0) {
-    const num = parseFloat(valor);
+    const num = parseFloat(String(valor).replace(/[^0-9,.-]/g, '').replace(',', '.'));
     return isNaN(num) || num < 0 ? defecto : num;
 }
 
@@ -236,7 +336,6 @@ itemsPlan.addEventListener('click', (e) => {
     }
 });
 
-// Soporte para teclado en botones eliminar
 itemsPlan.addEventListener('keydown', (e) => {
     if (e.target.classList.contains('btn-eliminar') && (e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault();
@@ -333,7 +432,7 @@ function limpiarError(elemento) {
 }
 
 document.addEventListener('input', function(e) {
-    if (e.target.matches('input, textarea, select')) {
+    if (e.target.matches('input:not(.importe):not(.monto):not(.monto-formato), textarea, select')) {
         limpiarError(e.target);
     }
 });
@@ -364,6 +463,7 @@ formPlan.addEventListener('submit', (e) => {
         };
 
         localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(planData));
+        guardarUltimosValores();
         alert('✅ ¡Plan guardado exitosamente en la memoria del navegador!');
     } catch (error) {
         console.error('Error al guardar:', error);
@@ -394,7 +494,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (planData.obispo) document.getElementById('pObispo').value = planData.obispo;
         }
         
-        // Fecha por defecto
         if (!document.getElementById('pFecha').value) {
             document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
         }
@@ -402,10 +501,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('rFecha').value = new Date().toISOString().split('T')[0];
         }
         
-        // Agregar primera fila si no hay
         if (itemsPlan && itemsPlan.children.length === 0) {
             agregarFilaPlan();
         }
+        
+        mostrarSugerencias();
     } catch (error) {
         console.error('Error al cargar datos:', error);
     }
@@ -731,13 +831,20 @@ function recolectarDatosPlan() {
 function recolectarDatosRendicion() {
     const gastos = [];
     document.querySelectorAll('#itemsRendicion .item-rendicion').forEach(row => {
-        const inputs = row.querySelectorAll('input');
+        const comprobante = row.querySelector('.comprobante')?.value || '';
+        const concepto = row.querySelector('.concepto')?.value || '';
+        const fecha = row.querySelector('.fecha-gasto')?.value || '';
+        const proveedor = row.querySelector('.proveedor')?.value || '';
+        const monto = row.querySelector('.monto')?.value || '0';
+        const archivo = row.querySelector('.archivo-comprobante');
+        
         gastos.push({
-            comprobante: sanitizarTexto(inputs[0].value),
-            concepto: sanitizarTexto(inputs[1].value),
-            fecha: inputs[2].value,
-            proveedor: sanitizarTexto(inputs[3].value),
-            monto: sanitizarNumero(inputs[4].value, 0)
+            comprobante: sanitizarTexto(comprobante),
+            concepto: sanitizarTexto(concepto),
+            fecha: fecha,
+            proveedor: sanitizarTexto(proveedor),
+            monto: sanitizarNumero(monto, 0),
+            archivo: archivo?.files[0]?.name || ''
         });
     });
     

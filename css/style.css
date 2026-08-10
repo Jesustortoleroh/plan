@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 3.0 - Profesional
+   Versión: 3.1
    ============================================= */
 
 /* ============================================= */
@@ -397,6 +397,51 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* ============================================= */
+/* INPUT FILE (COMPROBANTES)                     */
+/* ============================================= */
+input[type="file"] {
+    font-size: 12px;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+}
+
+input[type="file"]::file-selector-button {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-medium);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 8px;
+    transition: all 0.15s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: var(--color-primary-medium);
+}
+
+/* ============================================= */
+/* SUGERENCIA AUTOCOMPLETAR                      */
+/* ============================================= */
+.sugerencia-texto {
+    display: block;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    margin-top: var(--space-xs);
+    transition: color 0.15s ease;
+}
+
+.sugerencia-texto:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* ============================================= */
 /* TEXTAREA                                      */
 /* ============================================= */
 textarea.form-control,
@@ -583,7 +628,6 @@ textarea {
 
 .tabla-rendicion-header {
     display: grid;
-    grid-template-columns: 110px 1.5fr 110px 1.5fr 110px 50px;
     gap: var(--space-sm);
     align-items: center;
     background: var(--color-primary);
@@ -602,7 +646,6 @@ textarea {
 
 .item-rendicion {
     display: grid;
-    grid-template-columns: 110px 1.5fr 110px 1.5fr 110px 50px;
     gap: var(--space-sm);
     align-items: center;
     background: var(--color-surface);
@@ -789,7 +832,9 @@ textarea {
     .theme-toggle,
     .action-buttons,
     .char-count,
-    .mobile-label {
+    .mobile-label,
+    .sugerencia-texto,
+    .archivo-comprobante {
         display: none !important;
     }
     
@@ -884,7 +929,8 @@ textarea {
     
     .input-wrapper { width: 100%; }
     
-    .input-wrapper input {
+    .input-wrapper input,
+    .input-wrapper input[type="file"] {
         width: 100%;
         min-height: 46px;
         font-size: 16px;
@@ -938,6 +984,7 @@ textarea {
     .meta-categoria { font-size: 13px; }
     .btn-agregar-item { padding: 14px; font-size: 15px; margin-top: 5px; }
     .nota-rendicion { font-size: 13px; padding: 12px 15px; }
+    .sugerencia-texto { font-size: 12px; }
 }
 
 /* ============================================= */
