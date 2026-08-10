@@ -1,7 +1,7 @@
 /* =============================================
    SISTEMA DE ACTIVIDADES
    La Iglesia de Jesucristo de los Santos de los Últimos Días
-   Versión: 2.0
+   Versión: 2.1
    ============================================= */
 
 :root {
@@ -691,50 +691,220 @@ textarea.form-control {
         gap: 10px;
     }
     
+    /* ============================================ */
+    /* GASTOS ANTICIPADOS - DISEÑO MÓVIL MEJORADO   */
+    /* ============================================ */
+    
+    /* Ocultar encabezados de tabla */
     .tabla-rendicion-header {
         display: none;
     }
     
+    /* Cada item de gasto como tarjeta */
     .item-rendicion {
-        grid-template-columns: 1fr;
-        position: relative;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px;
         border: 1px solid #ddd;
         padding: 15px;
         border-radius: var(--radius-sm);
-        margin-bottom: 10px;
-        gap: 8px;
+        margin-bottom: 12px;
+        background: #fafbff;
+        position: relative;
     }
     
+    /* Orden de los campos */
+    .item-rendicion input.descripcion,
+    .item-rendicion input[placeholder*="Descripción"],
+    .item-rendicion input[placeholder*="Concepto"] {
+        order: 1;
+        width: 100%;
+        min-height: 70px;
+        font-size: 16px;
+        padding: 14px;
+    }
+    
+    /* Fila de monto y cantidad */
+    .item-rendicion::after {
+        content: '';
+        order: 2;
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .item-rendicion input.importe,
+    .item-rendicion input.monto {
+        order: 2;
+        width: 48%;
+        font-size: 16px;
+        padding: 14px;
+    }
+    
+    .item-rendicion input.cantidad {
+        order: 3;
+        width: 48%;
+        align-self: flex-start;
+        font-size: 16px;
+        padding: 14px;
+    }
+    
+    /* Fila de monto + cantidad juntos */
+    .item-rendicion .monto-cantidad-row {
+        order: 2;
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    /* Inputs generales en móvil */
     .item-rendicion input {
-        text-align: left;
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        min-height: 48px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: white;
     }
     
+    .item-rendicion input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+    }
+    
+    /* Campos de rendición */
+    .item-rendicion input.comprobante {
+        order: 0;
+    }
+    
+    .item-rendicion input.concepto {
+        order: 1;
+        min-height: 70px;
+    }
+    
+    .item-rendicion input[type="date"] {
+        order: 3;
+    }
+    
+    .item-rendicion input.proveedor {
+        order: 4;
+    }
+    
+    .item-rendicion input.monto {
+        order: 5;
+    }
+    
+    /* Botón eliminar */
     .btn-eliminar {
-        position: absolute;
-        top: 8px;
-        right: 8px;
+        order: 99;
+        align-self: flex-end;
+        width: auto;
+        height: auto;
+        padding: 10px 20px;
+        border-radius: 6px;
+        background: var(--red-light);
+        color: var(--red);
+        font-size: 14px;
+        font-weight: 600;
     }
     
+    .btn-eliminar:hover {
+        background: var(--red);
+        color: white;
+    }
+    
+    /* ============================================ */
+    /* BOTONES DE ACCIÓN                            */
+    /* ============================================ */
     .action-buttons {
         flex-direction: column;
+        gap: 8px;
     }
     
     .action-buttons .btn {
         width: 100%;
         justify-content: center;
+        padding: 14px;
+        font-size: 16px;
     }
     
+    /* ============================================ */
+    /* TOTALES                                      */
+    /* ============================================ */
     .presupuesto-total {
         flex-direction: column;
         text-align: center;
-        gap: 5px;
+        gap: 8px;
+        padding: 15px;
     }
     
+    .presupuesto-total span:last-child {
+        font-size: 22px;
+    }
+    
+    /* ============================================ */
+    /* TARJETAS                                     */
+    /* ============================================ */
     .aprobacion-body {
         padding: 15px;
     }
+    
+    .aprobacion-header {
+        padding: 12px 15px;
+    }
+    
+    .aprobacion-header h2 {
+        font-size: 13px;
+    }
+    
+    /* ============================================ */
+    /* FORMULARIOS                                  */
+    /* ============================================ */
+    .form-control {
+        font-size: 16px;
+        padding: 12px 14px;
+    }
+    
+    select.form-control {
+        font-size: 16px;
+        padding: 12px 35px 12px 14px;
+    }
+    
+    textarea.form-control {
+        font-size: 16px;
+        padding: 12px 14px;
+    }
+    
+    /* ============================================ */
+    /* CHECKBOXES                                   */
+    /* ============================================ */
+    .checkbox-list label {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
+    /* ============================================ */
+    /* BOTÓN AGREGAR ITEM                           */
+    /* ============================================ */
+    .btn-agregar-item {
+        padding: 14px;
+        font-size: 15px;
+        margin-top: 5px;
+    }
+    
+    /* ============================================ */
+    /* NOTA DE RENDICIÓN                            */
+    /* ============================================ */
+    .nota-rendicion {
+        font-size: 13px;
+        padding: 12px 15px;
+    }
 }
 
+/* ============================================= */
+/* MÓVIL PEQUEÑO (≤400px)                       */
+/* ============================================= */
 @media (max-width: 400px) {
     .institutional-header h1 {
         font-size: 1.2rem;
@@ -742,5 +912,31 @@ textarea.form-control {
     
     .card {
         padding: 15px 10px;
+    }
+    
+    .item-rendicion {
+        padding: 12px;
+    }
+    
+    .item-rendicion input {
+        font-size: 14px;
+        min-height: 44px;
+        padding: 12px;
+    }
+    
+    .item-rendicion input.descripcion,
+    .item-rendicion input[placeholder*="Descripción"],
+    .item-rendicion input[placeholder*="Concepto"] {
+        min-height: 60px;
+    }
+    
+    .btn {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+    
+    .btn-eliminar {
+        padding: 8px 16px;
+        font-size: 13px;
     }
 }
