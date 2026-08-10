@@ -1,7 +1,7 @@
 /**
  * SISTEMA DE ACTIVIDADES
  * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 2.0
+ * Versión: 2.2
  */
 
 // ==========================================
@@ -90,16 +90,25 @@ function agregarFilaPlan(datos = {}) {
     const importe = sanitizarNumero(datos.importe, 0);
     
     fila.innerHTML = `
-        <input type="number" min="0" max="9999" value="${cantidad}" 
-               class="form-control cantidad" placeholder="Cant." 
-               aria-label="Cantidad">
-        <input type="text" value="${concepto}" 
-               class="form-control descripcion" 
-               placeholder="Descripción del gasto" maxlength="200" 
-               aria-label="Descripción">
-        <input type="number" min="0" step="0.01" value="${importe}" 
-               class="form-control importe" placeholder="0.00" 
-               aria-label="Importe">
+        <div class="input-wrapper">
+            <label class="mobile-label">Cantidad</label>
+            <input type="number" min="0" max="9999" value="${cantidad}" 
+                   class="form-control cantidad" placeholder="Cant." 
+                   aria-label="Cantidad">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Descripción del gasto</label>
+            <input type="text" value="${concepto}" 
+                   class="form-control descripcion" 
+                   placeholder="Descripción del gasto" maxlength="200" 
+                   aria-label="Descripción del gasto">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Importe</label>
+            <input type="number" min="0" step="0.01" value="${importe}" 
+                   class="form-control importe" placeholder="0.00" 
+                   aria-label="Importe">
+        </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
     `;
@@ -122,20 +131,35 @@ function agregarFilaRendicion(datos = {}) {
     fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
     
     fila.innerHTML = `
-        <input type="text" class="form-control comprobante" 
-               value="${sanitizarTexto(datos.comprobante || '')}" 
-               placeholder="Comprobante" maxlength="50" aria-label="Comprobante">
-        <input type="text" class="form-control concepto" 
-               value="${sanitizarTexto(datos.concepto || '')}" 
-               placeholder="Concepto" maxlength="200" aria-label="Concepto">
-        <input type="date" class="form-control" 
-               value="${datos.fecha || ''}" aria-label="Fecha">
-        <input type="text" class="form-control proveedor" 
-               value="${sanitizarTexto(datos.proveedor || '')}" 
-               placeholder="Proveedor" maxlength="100" aria-label="Proveedor">
-        <input type="number" min="0" step="0.01" class="form-control monto" 
-               value="${sanitizarNumero(datos.monto, 0)}" 
-               placeholder="0.00" aria-label="Monto">
+        <div class="input-wrapper">
+            <label class="mobile-label">Comprobante</label>
+            <input type="text" class="form-control comprobante" 
+                   value="${sanitizarTexto(datos.comprobante || '')}" 
+                   placeholder="Comprobante" maxlength="50" aria-label="Comprobante">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Concepto</label>
+            <input type="text" class="form-control concepto" 
+                   value="${sanitizarTexto(datos.concepto || '')}" 
+                   placeholder="Concepto" maxlength="200" aria-label="Concepto">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Fecha</label>
+            <input type="date" class="form-control" 
+                   value="${datos.fecha || ''}" aria-label="Fecha">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Proveedor</label>
+            <input type="text" class="form-control proveedor" 
+                   value="${sanitizarTexto(datos.proveedor || '')}" 
+                   placeholder="Proveedor" maxlength="100" aria-label="Proveedor">
+        </div>
+        <div class="input-wrapper">
+            <label class="mobile-label">Monto</label>
+            <input type="number" min="0" step="0.01" class="form-control monto" 
+                   value="${sanitizarNumero(datos.monto, 0)}" 
+                   placeholder="0.00" aria-label="Monto">
+        </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar">❌</button>
     `;
@@ -341,25 +365,15 @@ const btnEliminarDatos = document.getElementById('btnEliminarDatos');
 if (btnEliminarDatos) {
     btnEliminarDatos.addEventListener('click', () => {
         if (confirm('⚠️ ¿Está seguro de eliminar todos los datos guardados?\n\nEsta acción no se puede deshacer.')) {
-            // Eliminar del localStorage
             localStorage.removeItem(CONFIG.STORAGE_KEY);
-            
-            // Limpiar formulario
             document.getElementById('formPlan').reset();
-            
-            // Limpiar presupuesto
             document.getElementById('itemsPlan').innerHTML = '';
             agregarFilaPlan();
-            
-            // Resetear fecha
             document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
-            
-            // Resetear contador
             if (propositoCount) {
                 propositoCount.textContent = `0/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
                 propositoCount.style.color = '#666';
             }
-            
             alert('✅ Datos eliminados exitosamente.');
         }
     });
