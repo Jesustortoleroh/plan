@@ -48,7 +48,6 @@
         <section id="planSection">
             <div class="card">
                 
-                <!-- Encabezado institucional -->
                 <div class="institutional-header">
                     <h1>PLAN DE ACTIVIDAD</h1>
                     <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
@@ -67,7 +66,7 @@
                                     <label for="pEstaca">Estaca</label>
                                     <input type="text" id="pEstaca" class="form-control" 
                                            placeholder="Nombre de la estaca" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimaEstaca" onclick="usarUltimoValor('pEstaca')" style="display:none;cursor:pointer;color:var(--color-text-secondary);margin-top:4px;"></small>
+                                    <small class="sugerencia-texto" id="ultimaEstaca" onclick="usarUltimoValor('pEstaca')" style="display:none;cursor:pointer;margin-top:4px;"></small>
                                 </div>
                                 <div class="form-group">
                                     <label for="pOrganizacion">Organización</label>
@@ -97,7 +96,7 @@
                                     <label for="pBarrio">Barrio</label>
                                     <input type="text" id="pBarrio" class="form-control" 
                                            placeholder="Nombre del barrio" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimoBarrio" onclick="usarUltimoValor('pBarrio')" style="display:none;cursor:pointer;color:var(--color-text-secondary);margin-top:4px;"></small>
+                                    <small class="sugerencia-texto" id="ultimoBarrio" onclick="usarUltimoValor('pBarrio')" style="display:none;cursor:pointer;margin-top:4px;"></small>
                                 </div>
                                 <div class="form-group">
                                     <label for="pFecha">Fecha de actividad</label>
@@ -350,7 +349,7 @@
                         💳 GASTOS ACTUALES
                     </h2>
                     
-                    <div class="tabla-rendicion-header">
+                    <div class="tabla-rendicion-header" style="grid-template-columns: 110px 1.5fr 110px 1.5fr 110px 50px;">
                         <div>Comprobante</div>
                         <div>Concepto</div>
                         <div>Fecha</div>
