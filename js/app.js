@@ -1,968 +1,586 @@
-/**
- * SISTEMA DE ACTIVIDADES
- * La Iglesia de Jesucristo de los Santos de los Últimos Días
- * Versión: 3.3
- */
+// ============================================================
+//  GASTOS - FUNCIONALIDAD DINÁMICA COMPLETA
+// ============================================================
 
-// ==========================================
-// 0. MODO OSCURO (data-theme)
-// ==========================================
-const themeToggle = document.getElementById('themeToggle');
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
 
-if (localStorage.getItem('theme') === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.textContent = '☀️';
-} else {
-    document.body.setAttribute('data-theme', 'light');
-    if (themeToggle) themeToggle.textContent = '🌙';
-}
+    // ===== ELEMENTOS DEL DOM =====
+    const gastosBody = document.getElementById('gastosBody');
+    const agregarBtn = document.getElementById('agregarGasto');
+    const gastosForm = document.getElementById('gastosForm');
+    const gastoCount = document.getElementById('gastoCount');
+    const themeToggle = document.getElementById('themeToggle');
 
-if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        const isDark = document.body.getAttribute('data-theme') === 'dark';
+    // ===== VARIABLES GLOBALES =====
+    let contadorFilas = document.querySelectorAll('.gasto-row').length;
+    let toastTimeout = null;
+
+    // ============================================================
+    //  FUNCIÓN: AGREGAR GASTO
+    // ============================================================
+    agregarBtn.addEventListener('click', function() {
+        contadorFilas++;
         
-        if (isDark) {
-            document.body.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            themeToggle.textContent = '🌙';
-        } else {
-            document.body.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-            themeToggle.textContent = '☀️';
-        }
-    });
-}
-
-// ==========================================
-// CONFIGURACIÓN Y CONSTANTES
-// ==========================================
-const CONFIG = {
-    MAX_CARACTERES_PROPOSITO: 500,
-    MAX_ASISTENTES: 9999,
-    DELAY_IMPRESION: 500,
-    STORAGE_KEY: 'planActividad_SUD_v3',
-    ULTIMOS_KEY: 'ultimosValores_SUD'
-};
-
-// ==========================================
-// 1. NAVEGACIÓN Y MENÚ SUPERIOR
-// ==========================================
-const btnHamburger = document.getElementById('hamburgerBtn');
-const topbarMenu = document.getElementById('menuNav');
-const navLinks = document.querySelectorAll('.nav-link');
-
-btnHamburger.addEventListener('click', () => {
-    topbarMenu.classList.toggle('show');
-});
-
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.topbar') && topbarMenu.classList.contains('show')) {
-        topbarMenu.classList.remove('show');
-    }
-});
-
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = e.target.getAttribute('data-target');
-        mostrarSeccion(target);
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.className = 'gasto-row';
+        nuevaFila.dataset.id = contadorFilas;
         
-        if (window.innerWidth <= 768) {
-            topbarMenu.classList.remove('show');
-        }
-    });
-});
-
-function mostrarSeccion(tipo) {
-    document.getElementById('planSection').style.display = tipo === 'plan' ? 'block' : 'none';
-    document.getElementById('rendicionSection').style.display = tipo === 'rendicion' ? 'block' : 'none';
-    
-    navLinks.forEach(link => link.classList.remove('active'));
-    if (tipo === 'plan') {
-        navLinks[0].classList.add('active');
-    } else {
-        navLinks[1].classList.add('active');
-    }
-}
-
-// ==========================================
-// 2. CONTADOR DE CARACTERES (PROPÓSITO)
-// ==========================================
-const propositoTextarea = document.getElementById('pProposito');
-const propositoCount = document.getElementById('propositoCount');
-
-if (propositoTextarea && propositoCount) {
-    propositoTextarea.addEventListener('input', () => {
-        const length = propositoTextarea.value.length;
-        propositoCount.textContent = `${length}/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
+        nuevaFila.innerHTML = `
+            <td>
+                <input type="text" 
+                       id="comprobante_${contadorFilas}" 
+                       name="comprobante_${contadorFilas}"
+                       placeholder="Ej: FAC-00${contadorFilas}" 
+                       aria-label="Número de comprobante" 
+                       autocomplete="off"
+                       required>
+            </td>
+            <td>
+                <input type="text" 
+                       id="concepto_${contadorFilas}" 
+                       name="concepto_${contadorFilas}"
+                       placeholder="Ej: Nuevo concepto" 
+                       aria-label="Concepto del gasto" 
+                       autocomplete="off"
+                       required>
+            </td>
+            <td>
+                <input type="date" 
+                       id="fecha_${contadorFilas}" 
+                       name="fecha_${contadorFilas}"
+                       aria-label="Fecha del gasto" 
+                       required>
+            </td>
+            <td>
+                <input type="text" 
+                       id="proveedor_${contadorFilas}" 
+                       name="proveedor_${contadorFilas}"
+                       placeholder="Ej: Nuevo proveedor" 
+                       aria-label="Nombre del proveedor" 
+                       autocomplete="off"
+                       required>
+            </td>
+            <td>
+                <input type="number" 
+                       id="monto_${contadorFilas}" 
+                       name="monto_${contadorFilas}"
+                       placeholder="0.00" 
+                       step="0.01" 
+                       min="0" 
+                       aria-label="Monto del gasto" 
+                       required>
+            </td>
+            <td>
+                <button type="button" 
+                        class="btn-eliminar" 
+                        aria-label="Eliminar este gasto" 
+                        onclick="eliminarGasto(this)">
+                    ✕
+                </button>
+            </td>
+        `;
         
-        if (length > CONFIG.MAX_CARACTERES_PROPOSITO) {
-            propositoCount.style.color = '#dc2626';
-        } else if (length > CONFIG.MAX_CARACTERES_PROPOSITO * 0.8) {
-            propositoCount.style.color = '#d97706';
-        } else {
-            propositoCount.style.color = '';
-        }
-    });
-}
-
-// ==========================================
-// 2.5 💰 FORMATEO DE MONEDA AUTOMÁTICO
-// ==========================================
-document.addEventListener('input', function(e) {
-    if (e.target.matches('.importe, .monto, .monto-formato')) {
-        let valor = e.target.value.replace(/[^0-9,.]/g, '');
-        if (valor !== e.target.value) {
-            e.target.value = valor;
-        }
-    }
-});
-
-document.addEventListener('blur', function(e) {
-    if (e.target.matches('.importe, .monto, .monto-formato')) {
-        const valor = parseFloat(e.target.value.replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0;
-        e.target.value = valor.toFixed(2);
+        gastosBody.appendChild(nuevaFila);
+        actualizarContador();
         
-        if (e.target.classList.contains('importe')) calcularTotalPlan();
-        if (e.target.classList.contains('monto')) calcularTotalRendicion();
-    }
-}, true);
-
-// ==========================================
-// 2.6 🔤 AUTOCOMPLETAR BARRIO/ESTACA
-// ==========================================
-function guardarUltimosValores() {
-    const ultimos = {
-        estaca: document.getElementById('pEstaca').value.trim(),
-        barrio: document.getElementById('pBarrio').value.trim(),
-        organizacion: document.getElementById('pOrganizacion').value,
-        fecha: new Date().toISOString()
-    };
-    localStorage.setItem(CONFIG.ULTIMOS_KEY, JSON.stringify(ultimos));
-    mostrarSugerencias();
-}
-
-function mostrarSugerencias() {
-    try {
-        const ultimos = JSON.parse(localStorage.getItem(CONFIG.ULTIMOS_KEY));
-        if (!ultimos) return;
-        
-        const elEstaca = document.getElementById('ultimaEstaca');
-        const elBarrio = document.getElementById('ultimoBarrio');
-        const inputEstaca = document.getElementById('pEstaca');
-        const inputBarrio = document.getElementById('pBarrio');
-        
-        if (elEstaca && ultimos.estaca && !inputEstaca.value) {
-            elEstaca.textContent = '📌 Usar último: ' + ultimos.estaca;
-            elEstaca.style.display = 'block';
-        } else if (elEstaca) {
-            elEstaca.style.display = 'none';
-        }
-        
-        if (elBarrio && ultimos.barrio && !inputBarrio.value) {
-            elBarrio.textContent = '📌 Usar último: ' + ultimos.barrio;
-            elBarrio.style.display = 'block';
-        } else if (elBarrio) {
-            elBarrio.style.display = 'none';
-        }
-    } catch (e) {}
-}
-
-function usarUltimoValor(campoId) {
-    try {
-        const ultimos = JSON.parse(localStorage.getItem(CONFIG.ULTIMOS_KEY));
-        if (!ultimos) return;
-        
-        if (campoId === 'pEstaca' && ultimos.estaca) {
-            document.getElementById('pEstaca').value = ultimos.estaca;
-            document.getElementById('ultimaEstaca').style.display = 'none';
-        }
-        if (campoId === 'pBarrio' && ultimos.barrio) {
-            document.getElementById('pBarrio').value = ultimos.barrio;
-            document.getElementById('ultimoBarrio').style.display = 'none';
-        }
-    } catch (e) {}
-}
-
-document.getElementById('pEstaca').addEventListener('blur', guardarUltimosValores);
-document.getElementById('pBarrio').addEventListener('blur', guardarUltimosValores);
-document.getElementById('pOrganizacion').addEventListener('change', guardarUltimosValores);
-
-// ==========================================
-// 3. TABLA: PLAN DE PRESUPUESTO
-// ==========================================
-const btnAgregarGastoPlan = document.getElementById('btnAgregarGastoPlan');
-const itemsPlan = document.getElementById('itemsPlan');
-
-btnAgregarGastoPlan.addEventListener('click', () => {
-    agregarFilaPlan();
-});
-
-function agregarFilaPlan(datos = {}) {
-    const fila = document.createElement('div');
-    fila.className = 'item-rendicion';
-    fila.style.gridTemplateColumns = '100px 1fr 140px 50px';
-    
-    const cantidad = sanitizarNumero(datos.cantidad, 0);
-    const concepto = sanitizarTexto(datos.concepto || '');
-    const importe = datos.importe ? parseFloat(datos.importe).toFixed(2) : '0.00';
-    
-    fila.innerHTML = `
-        <div class="input-wrapper">
-            <label class="mobile-label">Cantidad</label>
-            <input type="number" min="0" max="9999" value="${cantidad}" 
-                   class="cantidad" placeholder="Cant." 
-                   aria-label="Cantidad" inputmode="numeric">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Descripción del gasto</label>
-            <input type="text" value="${concepto}" 
-                   class="descripcion" 
-                   placeholder="Descripción del gasto" maxlength="200" 
-                   aria-label="Descripción del gasto">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Importe</label>
-            <input type="text" value="${importe}" 
-                   class="importe" placeholder="0.00" 
-                   aria-label="Importe" inputmode="decimal">
-        </div>
-        <button type="button" class="btn-eliminar no-print" 
-                aria-label="Eliminar gasto" title="Eliminar">❌</button>
-    `;
-    itemsPlan.appendChild(fila);
-}
-
-// ==========================================
-// 4. TABLA: RENDICIÓN DE CUENTAS
-// ==========================================
-const btnAgregarGastoRendicion = document.getElementById('btnAgregarGasto');
-const itemsRendicion = document.getElementById('itemsRendicion');
-
-btnAgregarGastoRendicion.addEventListener('click', () => {
-    agregarFilaRendicion();
-});
-
-function agregarFilaRendicion(datos = {}) {
-    const fila = document.createElement('div');
-    fila.className = 'item-rendicion';
-    fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
-    
-    const monto = datos.monto ? parseFloat(datos.monto).toFixed(2) : '0.00';
-    
-    fila.innerHTML = `
-        <div class="input-wrapper">
-            <label class="mobile-label">Comprobante</label>
-            <input type="text" class="comprobante" 
-                   value="${sanitizarTexto(datos.comprobante || '')}" 
-                   placeholder="FAC-001" maxlength="50" aria-label="Comprobante">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Concepto</label>
-            <input type="text" class="concepto" 
-                   value="${sanitizarTexto(datos.concepto || '')}" 
-                   placeholder="Concepto" maxlength="200" aria-label="Concepto">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Fecha</label>
-            <input type="date" class="fecha-gasto" 
-                   value="${datos.fecha || ''}" aria-label="Fecha">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Proveedor</label>
-            <input type="text" class="proveedor" 
-                   value="${sanitizarTexto(datos.proveedor || '')}" 
-                   placeholder="Proveedor" maxlength="100" aria-label="Proveedor">
-        </div>
-        <div class="input-wrapper">
-            <label class="mobile-label">Monto</label>
-            <input type="text" class="monto" 
-                   value="${monto}" 
-                   placeholder="0.00" aria-label="Monto" inputmode="decimal">
-        </div>
-        <button type="button" class="btn-eliminar no-print" 
-                aria-label="Eliminar gasto" title="Eliminar">❌</button>
-    `;
-    itemsRendicion.appendChild(fila);
-}
-
-// ==========================================
-// 5. UTILIDADES DE SANITIZACIÓN
-// ==========================================
-function sanitizarTexto(texto) {
-    if (!texto) return '';
-    return texto
-        .replace(/[<>]/g, '')
-        .replace(/['"]/g, '')
-        .trim()
-        .substring(0, 500);
-}
-
-function sanitizarNumero(valor, defecto = 0) {
-    const num = parseFloat(String(valor).replace(/[^0-9,.-]/g, '').replace(',', '.'));
-    return isNaN(num) || num < 0 ? defecto : num;
-}
-
-// ==========================================
-// 6. ELIMINACIÓN Y CÁLCULOS
-// ==========================================
-itemsPlan.addEventListener('input', (e) => {
-    if (e.target.classList.contains('importe')) calcularTotalPlan();
-});
-
-itemsPlan.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn-eliminar')) {
-        if (confirm('¿Eliminar este gasto anticipado?')) {
-            e.target.closest('.item-rendicion').remove();
-            calcularTotalPlan();
-        }
-    }
-});
-
-itemsPlan.addEventListener('keydown', (e) => {
-    if (e.target.classList.contains('btn-eliminar') && (e.key === 'Enter' || e.key === ' ')) {
-        e.preventDefault();
-        e.target.click();
-    }
-});
-
-itemsRendicion.addEventListener('input', (e) => {
-    if (e.target.classList.contains('monto')) calcularTotalRendicion();
-});
-
-itemsRendicion.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn-eliminar')) {
-        if (confirm('¿Eliminar este gasto?')) {
-            e.target.closest('.item-rendicion').remove();
-            calcularTotalRendicion();
-        }
-    }
-});
-
-itemsRendicion.addEventListener('keydown', (e) => {
-    if (e.target.classList.contains('btn-eliminar') && (e.key === 'Enter' || e.key === ' ')) {
-        e.preventDefault();
-        e.target.click();
-    }
-});
-
-function calcularTotalPlan() {
-    let total = 0;
-    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
-        total += sanitizarNumero(item.value, 0);
-    });
-    document.getElementById('totalPlan').textContent = 'Bs. ' + total.toLocaleString('es-VE', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
-    });
-}
-
-function calcularTotalRendicion() {
-    let total = 0;
-    document.querySelectorAll('#itemsRendicion .monto').forEach(item => {
-        total += sanitizarNumero(item.value, 0);
-    });
-    document.getElementById('totalRendicion').textContent = 'Bs. ' + total.toLocaleString('es-VE', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
-    });
-}
-
-// ==========================================
-// 7. VALIDACIÓN CON FLASH MESSAGES
-// ==========================================
-function validarPlanActividad() {
-    limpiarFlashMessages();
-    
-    let errores = [];
-    
-    const campos = [
-        { id: 'pEstaca', nombre: 'Estaca' },
-        { id: 'pOrganizacion', nombre: 'Organización' },
-        { id: 'pBarrio', nombre: 'Barrio' },
-        { id: 'pFecha', nombre: 'Fecha de actividad' },
-        { id: 'pProposito', nombre: 'Propósito Sagrado' }
-    ];
-    
-    for (const campo of campos) {
-        const el = document.getElementById(campo.id);
-        if (!el.value.trim()) {
-            marcarError(el);
-            errores.push(`El campo <strong>${campo.nombre}</strong> es obligatorio.`);
-        } else {
-            limpiarError(el);
-        }
-    }
-    
-    const metasSeleccionadas = document.querySelectorAll('input[name="meta"]:checked');
-    if (metasSeleccionadas.length === 0) {
-        errores.push('Debe seleccionar al menos una <strong>meta</strong> de la actividad.');
-        const metasCard = document.querySelector('.checkbox-list');
-        if (metasCard) {
-            metasCard.style.border = '2px solid #dc2626';
-            metasCard.style.borderRadius = '8px';
-            metasCard.style.padding = '10px';
+        // Enfocar el primer input de la nueva fila
+        const primerInput = nuevaFila.querySelector('input');
+        if (primerInput) {
             setTimeout(() => {
-                metasCard.style.border = '';
-                metasCard.style.padding = '';
-            }, 3000);
+                primerInput.focus();
+                primerInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+        }
+        
+        // Mostrar notificación
+        mostrarNotificacion('Nuevo gasto agregado', 'success');
+    });
+
+    // ============================================================
+    //  FUNCIÓN: ELIMINAR GASTO
+    // ============================================================
+    window.eliminarGasto = function(btn) {
+        const fila = btn.closest('tr');
+        const totalFilas = document.querySelectorAll('.gasto-row').length;
+        
+        // Validar que no sea la última fila
+        if (totalFilas <= 1) {
+            mostrarNotificacion('Debe haber al menos un gasto', 'warning');
+            btn.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 300);
+            return;
+        }
+        
+        // Confirmar eliminación
+        if (confirm('¿Estás seguro de eliminar este gasto?')) {
+            fila.style.animation = 'fadeOut 0.3s ease';
+            fila.classList.add('removing');
+            
+            setTimeout(() => {
+                fila.remove();
+                actualizarContador();
+                mostrarNotificacion('Gasto eliminado correctamente', 'success');
+                
+                // Re-indexar IDs
+                reindexarFilas();
+            }, 300);
+        }
+    };
+
+    // ============================================================
+    //  FUNCIÓN: REINDEXAR FILAS
+    // ============================================================
+    function reindexarFilas() {
+        const filas = document.querySelectorAll('.gasto-row');
+        filas.forEach((fila, index) => {
+            const nuevoId = index + 1;
+            fila.dataset.id = nuevoId;
+            
+            const inputs = fila.querySelectorAll('input');
+            const ids = ['comprobante', 'concepto', 'fecha', 'proveedor', 'monto'];
+            
+            inputs.forEach((input, i) => {
+                if (i < ids.length) {
+                    input.id = `${ids[i]}_${nuevoId}`;
+                    input.name = `${ids[i]}_${nuevoId}`;
+                }
+            });
+            
+            // Actualizar placeholder del comprobante
+            const comprobanteInput = inputs[0];
+            if (comprobanteInput) {
+                comprobanteInput.placeholder = `Ej: FAC-00${nuevoId}`;
+            }
+        });
+    }
+
+    // ============================================================
+    //  FUNCIÓN: ACTUALIZAR CONTADOR
+    // ============================================================
+    function actualizarContador() {
+        const total = document.querySelectorAll('.gasto-row').length;
+        const texto = total === 1 ? 'gasto' : 'gastos';
+        gastoCount.textContent = `${total} ${texto}`;
+        
+        // Animación sutil
+        gastoCount.style.animation = 'none';
+        setTimeout(() => {
+            gastoCount.style.animation = 'pulse 0.3s ease';
+        }, 10);
+    }
+
+    // ============================================================
+    //  FUNCIÓN: VALIDAR FORMULARIO
+    // ============================================================
+    function validarFormulario(form) {
+        const inputs = form.querySelectorAll('input[required]');
+        let isValid = true;
+        let firstInvalid = null;
+        
+        inputs.forEach(input => {
+            // Remover estilos de error previos
+            input.style.borderColor = '';
+            
+            // Validar campo vacío
+            if (!input.value.trim()) {
+                isValid = false;
+                input.style.borderColor = 'var(--danger)';
+                if (!firstInvalid) firstInvalid = input;
+            }
+            
+            // Validar formato de número
+            if (input.type === 'number' && input.value.trim()) {
+                const valor = parseFloat(input.value);
+                if (isNaN(valor) || valor < 0) {
+                    isValid = false;
+                    input.style.borderColor = 'var(--danger)';
+                    if (!firstInvalid) firstInvalid = input;
+                }
+            }
+            
+            // Validar fecha
+            if (input.type === 'date' && input.value.trim()) {
+                const fecha = new Date(input.value);
+                if (isNaN(fecha.getTime())) {
+                    isValid = false;
+                    input.style.borderColor = 'var(--danger)';
+                    if (!firstInvalid) firstInvalid = input;
+                }
+            }
+        });
+        
+        if (!isValid && firstInvalid) {
+            firstInvalid.focus();
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        return { isValid, firstInvalid };
+    }
+
+    // ============================================================
+    //  FUNCIÓN: RECOPILAR DATOS
+    // ============================================================
+    function recopilarDatos() {
+        const gastos = [];
+        const filas = document.querySelectorAll('.gasto-row');
+        
+        filas.forEach((fila, index) => {
+            const inputs = fila.querySelectorAll('input');
+            if (inputs.length >= 5) {
+                const comprobante = inputs[0].value.trim();
+                const concepto = inputs[1].value.trim();
+                const fecha = inputs[2].value.trim();
+                const proveedor = inputs[3].value.trim();
+                const monto = parseFloat(inputs[4].value) || 0;
+                
+                gastos.push({
+                    id: index + 1,
+                    comprobante: comprobante || 'Sin comprobante',
+                    concepto: concepto || 'Sin concepto',
+                    fecha: fecha || new Date().toISOString().split('T')[0],
+                    proveedor: proveedor || 'Sin proveedor',
+                    monto: monto
+                });
+            }
+        });
+        
+        return gastos;
+    }
+
+    // ============================================================
+    //  FUNCIÓN: GUARDAR GASTOS
+    // ============================================================
+    gastosForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar formulario
+        const { isValid, firstInvalid } = validarFormulario(this);
+        
+        if (!isValid) {
+            mostrarNotificacion('Por favor, complete todos los campos correctamente', 'error');
+            return;
+        }
+        
+        // Recopilar datos
+        const gastos = recopilarDatos();
+        
+        // Guardar en localStorage
+        try {
+            localStorage.setItem('gastos', JSON.stringify(gastos));
+        } catch (error) {
+            console.error('Error al guardar en localStorage:', error);
+        }
+        
+        // Mostrar éxito
+        console.log('📊 Gastos guardados:', gastos);
+        mostrarNotificacion(`✅ ${gastos.length} gastos guardados correctamente`, 'success');
+        
+        // Disparar evento personalizado
+        const event = new CustomEvent('gastosGuardados', {
+            detail: { gastos }
+        });
+        document.dispatchEvent(event);
+    });
+
+    // ============================================================
+    //  FUNCIÓN: CARGAR GASTOS GUARDADOS
+    // ============================================================
+    function cargarGastosGuardados() {
+        try {
+            const data = localStorage.getItem('gastos');
+            if (!data) return false;
+            
+            const gastos = JSON.parse(data);
+            if (!Array.isArray(gastos) || gastos.length === 0) return false;
+            
+            // Limpiar tabla actual
+            gastosBody.innerHTML = '';
+            
+            // Crear filas con los datos guardados
+            gastos.forEach((gasto, index) => {
+                const fila = document.createElement('tr');
+                fila.className = 'gasto-row';
+                fila.dataset.id = index + 1;
+                
+                fila.innerHTML = `
+                    <td>
+                        <input type="text" 
+                               id="comprobante_${index + 1}" 
+                               name="comprobante_${index + 1}"
+                               value="${escapeHTML(gasto.comprobante || '')}"
+                               placeholder="Ej: FAC-00${index + 1}" 
+                               aria-label="Número de comprobante" 
+                               autocomplete="off"
+                               required>
+                    </td>
+                    <td>
+                        <input type="text" 
+                               id="concepto_${index + 1}" 
+                               name="concepto_${index + 1}"
+                               value="${escapeHTML(gasto.concepto || '')}"
+                               placeholder="Ej: Concepto" 
+                               aria-label="Concepto del gasto" 
+                               autocomplete="off"
+                               required>
+                    </td>
+                    <td>
+                        <input type="date" 
+                               id="fecha_${index + 1}" 
+                               name="fecha_${index + 1}"
+                               value="${escapeHTML(gasto.fecha || '')}"
+                               aria-label="Fecha del gasto" 
+                               required>
+                    </td>
+                    <td>
+                        <input type="text" 
+                               id="proveedor_${index + 1}" 
+                               name="proveedor_${index + 1}"
+                               value="${escapeHTML(gasto.proveedor || '')}"
+                               placeholder="Ej: Proveedor" 
+                               aria-label="Nombre del proveedor" 
+                               autocomplete="off"
+                               required>
+                    </td>
+                    <td>
+                        <input type="number" 
+                               id="monto_${index + 1}" 
+                               name="monto_${index + 1}"
+                               value="${gasto.monto || ''}"
+                               placeholder="0.00" 
+                               step="0.01" 
+                               min="0" 
+                               aria-label="Monto del gasto" 
+                               required>
+                    </td>
+                    <td>
+                        <button type="button" 
+                                class="btn-eliminar" 
+                                aria-label="Eliminar este gasto" 
+                                onclick="eliminarGasto(this)">
+                            ✕
+                        </button>
+                    </td>
+                `;
+                
+                gastosBody.appendChild(fila);
+            });
+            
+            contadorFilas = gastos.length;
+            actualizarContador();
+            return true;
+        } catch (error) {
+            console.error('Error al cargar gastos guardados:', error);
+            return false;
         }
     }
-    
-    if (errores.length > 0) {
-        mostrarFlashMessages(errores, 'error');
-        const primerError = document.querySelector('.form-control[style*="border-color: rgb(220, 38, 38)"]');
-        if (primerError) {
-            primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            primerError.focus();
-        } else if (metasSeleccionadas.length === 0) {
-            document.querySelector('.checkbox-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // ============================================================
+    //  FUNCIÓN: ESCAPE HTML (seguridad)
+    // ============================================================
+    function escapeHTML(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // ============================================================
+    //  FUNCIÓN: NOTIFICACIONES
+    // ============================================================
+    function mostrarNotificacion(mensaje, tipo = 'info') {
+        // Eliminar notificación anterior
+        const existing = document.querySelector('.toast-notification');
+        if (existing) {
+            existing.style.animation = 'slideDown 0.3s ease';
+            setTimeout(() => existing.remove(), 300);
         }
-        return false;
+        
+        if (toastTimeout) {
+            clearTimeout(toastTimeout);
+            toastTimeout = null;
+        }
+        
+        // Crear nueva notificación
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${tipo}`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'polite');
+        toast.textContent = mensaje;
+        
+        document.body.appendChild(toast);
+        
+        // Auto-cerrar después de 4 segundos
+        toastTimeout = setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.animation = 'slideDown 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                    toastTimeout = null;
+                }, 300);
+            }
+        }, 4000);
     }
-    
-    return true;
-}
 
-function marcarError(elemento) {
-    elemento.style.borderColor = '#dc2626';
-    elemento.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.2)';
-    elemento.setAttribute('aria-invalid', 'true');
-    elemento.style.backgroundColor = '#fef2f2';
-    
-    if (document.body.getAttribute('data-theme') === 'dark') {
-        elemento.style.backgroundColor = '#1a0000';
+    // ============================================================
+    //  FUNCIÓN: TOGGLE TEMA
+    // ============================================================
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Actualizar ícono del botón
+        themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌓';
+        
+        // Mostrar notificación
+        mostrarNotificacion(
+            `Tema ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`,
+            'info'
+        );
     }
-}
 
-function limpiarError(elemento) {
-    elemento.style.borderColor = '';
-    elemento.style.boxShadow = '';
-    elemento.style.backgroundColor = '';
-    elemento.removeAttribute('aria-invalid');
-}
+    // ============================================================
+    //  EVENTOS Y CONFIGURACIÓN INICIAL
+    // ============================================================
+    
+    // 1. Cargar tema guardado
+    (function cargarTema() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const html = document.documentElement;
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌓';
+    })();
 
-function limpiarFlashMessages() {
-    const existentes = document.querySelectorAll('.flash-message');
-    existentes.forEach(el => el.remove());
-}
+    // 2. Evento del toggle de tema
+    themeToggle.addEventListener('click', toggleTheme);
 
-function mostrarFlashMessages(mensajes, tipo = 'error') {
-    limpiarFlashMessages();
-    
-    const colores = {
-        error: { bg: '#fef2f2', border: '#ef4444', text: '#dc2626', icon: '⚠️' },
-        success: { bg: '#f0fdf4', border: '#22c55e', text: '#16a34a', icon: '✅' },
-        warning: { bg: '#fffbeb', border: '#f59e0b', text: '#d97706', icon: '⚡' },
-        info: { bg: '#eff6ff', border: '#3b82f6', text: '#2563eb', icon: 'ℹ️' }
-    };
-    
-    const darkColores = {
-        error: { bg: '#1a0000', border: '#991b1b', text: '#f87171', icon: '⚠️' },
-        success: { bg: '#001a00', border: '#166534', text: '#4ade80', icon: '✅' },
-        warning: { bg: '#1a1400', border: '#92400e', text: '#fbbf24', icon: '⚡' },
-        info: { bg: '#001a33', border: '#1e40af', text: '#60a5fa', icon: 'ℹ️' }
-    };
-    
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    const c = isDark ? darkColores[tipo] : colores[tipo];
-    
-    const container = document.createElement('div');
-    container.className = 'flash-message';
-    container.style.cssText = `
-        background: ${c.bg};
-        border-left: 4px solid ${c.border};
-        color: ${c.text};
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        animation: slideDown 0.3s ease;
-        position: relative;
+    // 3. Cargar gastos guardados (si existen)
+    const cargados = cargarGastosGuardados();
+    if (!cargados) {
+        // Si no hay datos guardados, mantener las filas de ejemplo
+        contadorFilas = document.querySelectorAll('.gasto-row').length;
+        actualizarContador();
+    }
+
+    // 4. Evento para tecla Escape (cerrar notificaciones)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const toast = document.querySelector('.toast-notification');
+            if (toast) {
+                toast.style.animation = 'slideDown 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
+    });
+
+    // 5. Evento para limpiar validación al escribir
+    document.addEventListener('input', function(e) {
+        if (e.target.closest('.gastos-table') && e.target.tagName === 'INPUT') {
+            e.target.style.borderColor = '';
+        }
+    });
+
+    // ============================================================
+    //  INYECTAR ESTILOS ADICIONALES
+    // ============================================================
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        @keyframes fadeOut {
+            from { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+            to { 
+                opacity: 0; 
+                transform: translateX(20px); 
+            }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        @keyframes slideDown {
+            from { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+            to { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .gasto-row.removing {
+            animation: fadeOut 0.3s ease forwards;
+        }
     `;
-    
-    let html = `<div style="display:flex;align-items:flex-start;gap:12px;">
-        <span style="font-size:20px;">${c.icon}</span>
-        <div style="flex:1;">`;
-    
-    if (mensajes.length === 1) {
-        html += `<p>${mensajes[0]}</p>`;
-    } else {
-        html += `<p style="font-weight:700;margin-bottom:8px;">Se encontraron ${mensajes.length} campos por completar:</p>`;
-        html += '<ul style="margin:0;padding-left:20px;">';
-        mensajes.forEach(msg => {
-            html += `<li style="margin-bottom:4px;">${msg}</li>`;
-        });
-        html += '</ul>';
-    }
-    
-    html += `</div>
-        <button onclick="this.closest('.flash-message').remove()" 
-                style="background:none;border:none;color:${c.text};cursor:pointer;font-size:20px;opacity:0.7;padding:0;line-height:1;"
-                aria-label="Cerrar mensaje">&times;</button>
-    </div>`;
-    
-    container.innerHTML = html;
-    
-    const formPlan = document.getElementById('formPlan');
-    formPlan.insertBefore(container, formPlan.firstChild);
-    
-    setTimeout(() => {
-        if (container.parentElement) {
-            container.style.opacity = '0';
-            container.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => container.remove(), 500);
-        }
-    }, 8000);
-}
+    document.head.appendChild(style);
 
-function mostrarFlashExito(mensaje) {
-    mostrarFlashMessages([mensaje], 'success');
-}
-
-document.addEventListener('input', function(e) {
-    if (e.target.matches('input, textarea, select')) {
-        limpiarError(e.target);
-    }
-});
-
-document.addEventListener('change', function(e) {
-    if (e.target.matches('input[type="checkbox"]')) {
-        const metasCard = document.querySelector('.checkbox-list');
-        if (metasCard) {
-            metasCard.style.border = '';
-            metasCard.style.borderRadius = '';
-            metasCard.style.padding = '';
-        }
-    }
-});
-
-// ==========================================
-// 8. LOCALSTORAGE (GUARDADO SEGURO)
-// ==========================================
-const formPlan = document.getElementById('formPlan');
-
-formPlan.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    if (!validarPlanActividad()) return;
-    
-    try {
-        const planData = {
-            estaca: sanitizarTexto(document.getElementById('pEstaca').value),
-            barrio: sanitizarTexto(document.getElementById('pBarrio').value),
-            organizacion: document.getElementById('pOrganizacion').value,
-            fecha: document.getElementById('pFecha').value,
-            proposito: sanitizarTexto(document.getElementById('pProposito').value),
-            asistentes: sanitizarNumero(document.getElementById('pAsistentes').value),
-            responsables: sanitizarTexto(document.getElementById('pResponsables').value),
-            limpieza: sanitizarTexto(document.getElementById('pLimpieza').value),
-            solicitante: sanitizarTexto(document.getElementById('pSolicitante').value),
-            obispo: sanitizarTexto(document.getElementById('pObispo').value),
-            guardado: new Date().toISOString()
-        };
-
-        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(planData));
-        guardarUltimosValores();
-        mostrarFlashExito('✅ ¡Plan guardado exitosamente en la memoria del navegador!');
-    } catch (error) {
-        console.error('Error al guardar:', error);
-        mostrarFlashMessages(['❌ Error al guardar. Verifique el espacio disponible.'], 'error');
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const datosGuardados = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (datosGuardados) {
-            const planData = JSON.parse(datosGuardados);
-            
-            if (planData.estaca) document.getElementById('pEstaca').value = planData.estaca;
-            if (planData.barrio) document.getElementById('pBarrio').value = planData.barrio;
-            if (planData.organizacion) document.getElementById('pOrganizacion').value = planData.organizacion;
-            if (planData.fecha) document.getElementById('pFecha').value = planData.fecha;
-            if (planData.proposito) {
-                document.getElementById('pProposito').value = planData.proposito;
-                if (propositoCount) {
-                    propositoCount.textContent = `${planData.proposito.length}/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
+    // ============================================================
+    //  EXPORTAR FUNCIONES PARA USO GLOBAL
+    // ============================================================
+    window.gastosApp = {
+        agregarGasto: function() {
+            agregarBtn.click();
+        },
+        eliminarGasto: window.eliminarGasto,
+        recopilarDatos: recopilarDatos,
+        guardarGastos: function() {
+            gastosForm.dispatchEvent(new Event('submit'));
+        },
+        limpiarGastos: function() {
+            if (confirm('¿Eliminar todos los gastos?')) {
+                const filas = document.querySelectorAll('.gasto-row');
+                if (filas.length <= 1) {
+                    mostrarNotificacion('Debe haber al menos un gasto', 'warning');
+                    return;
                 }
+                filas.forEach((fila, index) => {
+                    if (index > 0) {
+                        fila.style.animation = 'fadeOut 0.3s ease';
+                        setTimeout(() => fila.remove(), 300);
+                    }
+                });
+                setTimeout(() => {
+                    actualizarContador();
+                    mostrarNotificacion('Gastos eliminados', 'success');
+                }, 350);
             }
-            if (planData.asistentes) document.getElementById('pAsistentes').value = planData.asistentes;
-            if (planData.responsables) document.getElementById('pResponsables').value = planData.responsables;
-            if (planData.limpieza) document.getElementById('pLimpieza').value = planData.limpieza;
-            if (planData.solicitante) document.getElementById('pSolicitante').value = planData.solicitante;
-            if (planData.obispo) document.getElementById('pObispo').value = planData.obispo;
         }
-        
-        if (!document.getElementById('pFecha').value) {
-            document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
-        }
-        if (!document.getElementById('rFecha').value) {
-            document.getElementById('rFecha').value = new Date().toISOString().split('T')[0];
-        }
-        
-        if (itemsPlan && itemsPlan.children.length === 0) {
-            agregarFilaPlan();
-        }
-        
-        mostrarSugerencias();
-    } catch (error) {
-        console.error('Error al cargar datos:', error);
-    }
-});
-
-// ==========================================
-// 8.5 BOTÓN ELIMINAR DATOS GUARDADOS
-// ==========================================
-const btnEliminarDatos = document.getElementById('btnEliminarDatos');
-
-if (btnEliminarDatos) {
-    btnEliminarDatos.addEventListener('click', () => {
-        if (confirm('⚠️ ¿Está seguro de eliminar todos los datos guardados?\n\nEsta acción no se puede deshacer.')) {
-            localStorage.removeItem(CONFIG.STORAGE_KEY);
-            document.getElementById('formPlan').reset();
-            document.getElementById('itemsPlan').innerHTML = '';
-            agregarFilaPlan();
-            document.getElementById('pFecha').value = new Date().toISOString().split('T')[0];
-            if (propositoCount) {
-                propositoCount.textContent = `0/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
-                propositoCount.style.color = '';
-            }
-            mostrarFlashExito('✅ Datos eliminados exitosamente.');
-        }
-    });
-}
-
-// ==========================================
-// 9. IMPRESIÓN / PDF
-// ==========================================
-
-document.getElementById('btnImprimirPlan').addEventListener('click', () => {
-    if (validarPlanActividad()) {
-        imprimirPlan(true);
-    }
-});
-
-document.getElementById('btnDescargarPDFPlan').addEventListener('click', () => {
-    if (validarPlanActividad()) {
-        imprimirPlan(false);
-    }
-});
-
-document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
-    imprimirRendicion(true);
-});
-
-document.getElementById('btnDescargarPDFRendicion').addEventListener('click', () => {
-    imprimirRendicion(false);
-});
-
-function imprimirPlan(imprimirAutomatico = true) {
-    const datos = recolectarDatosPlan();
-    const total = calcularTotalPlanImpresion();
-    
-    const ventana = window.open('', '_blank', 'width=900,height=700');
-    if (!ventana) {
-        mostrarFlashMessages(['⚠️ Permite ventanas emergentes para generar el PDF.'], 'warning');
-        return;
-    }
-    
-    ventana.document.write(`
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <title>Plan de Actividad - ${datos.organizacion || 'SUD'}</title>
-            <style>
-                @page { size: letter; margin: 10mm; }
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; line-height: 1.3; }
-                .no-print-btns { text-align: center; margin-bottom: 10pt; }
-                .no-print-btns button { 
-                    background: #1a237e; color: white; border: none; 
-                    padding: 8px 20px; border-radius: 5px; cursor: pointer; 
-                    font-size: 12px; margin: 3px; 
-                }
-                .header { text-align: center; margin-bottom: 8pt; }
-                .header h1 { font-size: 14pt; text-transform: uppercase; margin-bottom: 2pt; }
-                .header p { font-size: 9pt; color: #555; }
-                .fila { display: flex; gap: 12pt; margin-bottom: 3pt; }
-                .fila-item { flex: 1; }
-                .label { font-weight: bold; }
-                .valor { border-bottom: 1px solid #000; padding: 1pt 3pt; display: inline-block; min-width: 80pt; }
-                .seccion { margin-top: 8pt; margin-bottom: 6pt; }
-                .seccion-titulo { font-weight: bold; font-size: 10pt; margin-bottom: 3pt; }
-                .proposito { border: 1px solid #000; padding: 5pt; min-height: 25pt; font-size: 9pt; }
-                ul { margin: 3pt 0; padding-left: 16pt; font-size: 9pt; }
-                li { margin-bottom: 1pt; }
-                table { width: 100%; border-collapse: collapse; margin-top: 5pt; font-size: 9pt; }
-                th { background: #1a237e; color: white; padding: 4pt 5pt; font-size: 8pt; }
-                td { padding: 3pt 5pt; border-bottom: 1px solid #ccc; }
-                .text-center { text-align: center; }
-                .text-right { text-align: right; }
-                .total-row { font-weight: bold; background: #e8eaf6; font-size: 10pt; }
-                .firmas { display: flex; justify-content: space-around; margin-top: 15pt; }
-                .firma { text-align: center; width: 40%; }
-                .firma-linea { border-top: 1px solid #000; margin-top: 20pt; }
-                .firma-texto { font-size: 8pt; margin-top: 2pt; }
-                @media print { body { padding: 0; } .no-print-btns { display: none; } }
-            </style>
-        </head>
-        <body>
-            <div class="no-print-btns">
-                <button onclick="window.print()">🖨️ Imprimir</button>
-                <button onclick="window.close()">❌ Cerrar</button>
-            </div>
-            
-            <div class="header">
-                <h1>PLAN DE ACTIVIDAD</h1>
-                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
-            </div>
-            
-            <div class="fila">
-                <div class="fila-item"><span class="label">Estaca:</span> <span class="valor">${datos.estaca || '________________'}</span></div>
-                <div class="fila-item"><span class="label">Organización:</span> <span class="valor">${datos.organizacion || '________________'}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Barrio:</span> <span class="valor">${datos.barrio || '________________'}</span></div>
-                <div class="fila-item"><span class="label">Fecha:</span> <span class="valor">${datos.fecha || '________________'}</span></div>
-            </div>
-            
-            <div class="seccion">
-                <div class="seccion-titulo">PROPÓSITO SAGRADO:</div>
-                <div class="proposito">${datos.proposito || '___________________________________________________________________________'}</div>
-            </div>
-            
-            ${datos.metas.length > 0 ? `
-                <div class="seccion">
-                    <div class="seccion-titulo">META(S):</div>
-                    <ul>${datos.metas.map(m => `<li>✓ ${m}</li>`).join('')}</ul>
-                </div>
-            ` : ''}
-            
-            <div class="fila">
-                <div class="fila-item"><span class="label">Asistentes estimados:</span> <span class="valor">${datos.asistentes || '________________'}</span></div>
-                <div class="fila-item"><span class="label">Responsables:</span> <span class="valor">${datos.responsables || '________________'}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Limpieza capilla:</span> <span class="valor">${datos.limpieza || '________________'}</span></div>
-                <div class="fila-item"><span class="label">Solicitante:</span> <span class="valor">${datos.solicitante || '________________'}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Obispo / Presidente:</span> <span class="valor">${datos.obispo || '________________'}</span></div>
-            </div>
-            
-            <div class="seccion">
-                <div class="seccion-titulo" style="text-align:center;">PLAN DE PRESUPUESTO (Antes de la actividad)</div>
-                <table>
-                    <thead><tr><th class="text-center">Cantidad</th><th>Descripción</th><th class="text-right">Importe</th></tr></thead>
-                    <tbody>
-                        ${datos.presupuesto.map(p => `
-                            <tr><td class="text-center">${p.cantidad}</td><td>${p.descripcion}</td><td class="text-right">Bs. ${p.importe.toFixed(2)}</td></tr>
-                        `).join('')}
-                    </tbody>
-                    <tfoot>
-                        <tr class="total-row">
-                            <td colspan="2" class="text-right">TOTAL de gastos ANTICIPADOS</td>
-                            <td class="text-center">Bs. ${total.toFixed(2)}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            
-            <div class="firmas">
-                <div class="firma">
-                    <div class="firma-linea"></div>
-                    <div class="firma-texto">Solicitante</div>
-                </div>
-                <div class="firma">
-                    <div class="firma-linea"></div>
-                    <div class="firma-texto">Obispo / Presidente</div>
-                </div>
-            </div>
-        </body>
-        </html>
-    `);
-    
-    ventana.document.close();
-    
-    if (imprimirAutomatico) {
-        setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
-    }
-}
-
-function imprimirRendicion(imprimirAutomatico = true) {
-    const datos = recolectarDatosRendicion();
-    let total = 0;
-    datos.gastos.forEach(g => total += g.monto);
-    
-    const ventana = window.open('', '_blank', 'width=900,height=700');
-    if (!ventana) {
-        mostrarFlashMessages(['⚠️ Permite ventanas emergentes para generar el PDF.'], 'warning');
-        return;
-    }
-    
-    ventana.document.write(`
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <title>Rendición de Cuentas</title>
-            <style>
-                @page { size: letter; margin: 10mm; }
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: 'Times New Roman', serif; font-size: 10pt; color: #000; }
-                .no-print-btns { text-align: center; margin-bottom: 10pt; }
-                .no-print-btns button { 
-                    background: #1a237e; color: white; border: none; 
-                    padding: 8px 20px; border-radius: 5px; cursor: pointer; 
-                    font-size: 12px; margin: 3px; 
-                }
-                .header { text-align: center; margin-bottom: 8pt; }
-                .header h1 { font-size: 14pt; margin-bottom: 2pt; }
-                .header p { font-size: 9pt; color: #555; }
-                .fila { display: flex; gap: 12pt; margin-bottom: 3pt; }
-                .fila-item { flex: 1; }
-                .label { font-weight: bold; }
-                .valor { border-bottom: 1px solid #000; padding: 1pt 3pt; display: inline-block; min-width: 80pt; }
-                .nota { background: #fff8e1; border-left: 3px solid #ff9800; padding: 5pt 8pt; margin: 8pt 0; font-size: 8pt; }
-                table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
-                th { background: #1a237e; color: white; padding: 4pt 5pt; font-size: 8pt; }
-                td { padding: 3pt 5pt; border-bottom: 1px solid #ccc; }
-                .total-row { font-weight: bold; background: #e8eaf6; }
-                .firmas { display: flex; justify-content: space-around; margin-top: 15pt; }
-                .firma { text-align: center; }
-                .firma-linea { border-top: 1px solid #000; width: 120pt; margin: 20pt auto 0; }
-                .firma-texto { font-size: 8pt; margin-top: 2pt; }
-                @media print { body { padding: 0; } .no-print-btns { display: none; } }
-            </style>
-        </head>
-        <body>
-            <div class="no-print-btns">
-                <button onclick="window.print()">🖨️ Imprimir</button>
-                <button onclick="window.close()">❌ Cerrar</button>
-            </div>
-            
-            <div class="header">
-                <h1>RENDICIÓN DE CUENTAS</h1>
-                <p>Iglesia de Jesucristo de los Santos de los Últimos Días</p>
-            </div>
-            
-            <div class="fila">
-                <div class="fila-item"><span class="label">Estaca:</span> <span class="valor">${datos.estaca}</span></div>
-                <div class="fila-item"><span class="label">Barrio:</span> <span class="valor">${datos.barrio}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Organización:</span> <span class="valor">${datos.organizacion}</span></div>
-                <div class="fila-item"><span class="label">Fecha:</span> <span class="valor">${datos.fecha}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Asistentes:</span> <span class="valor">${datos.asistentes}</span></div>
-                <div class="fila-item"><span class="label">Pagado a:</span> <span class="valor">${datos.pagadoA}</span></div>
-            </div>
-            <div class="fila">
-                <div class="fila-item"><span class="label">Referencia:</span> <span class="valor">${datos.cheque}</span></div>
-                <div class="fila-item"><span class="label">Monto recibido:</span> <span class="valor">Bs. ${datos.monto}</span></div>
-            </div>
-            
-            <div class="nota">
-                <strong>NOTA:</strong> La persona quien firma es responsable de presentar los comprobantes dentro de 7 días. Los fondos no utilizados deben ser devueltos.
-            </div>
-            
-            <table>
-                <thead><tr><th>Comp.</th><th>Concepto</th><th>Fecha</th><th>Proveedor</th><th>Monto</th></tr></thead>
-                <tbody>
-                    ${datos.gastos.map(g => `<tr><td>${g.comprobante}</td><td>${g.concepto}</td><td>${g.fecha}</td><td>${g.proveedor}</td><td>Bs. ${g.monto.toFixed(2)}</td></tr>`).join('')}
-                </tbody>
-                <tfoot><tr class="total-row"><td colspan="4" style="text-align:right;">TOTAL</td><td>Bs. ${total.toFixed(2)}</td></tr></tfoot>
-            </table>
-            
-            <div class="firmas">
-                <div class="firma"><div class="firma-linea"></div><div class="firma-texto">Comprador</div></div>
-                <div class="firma"><div class="firma-linea"></div><div class="firma-texto">Líder de Organización</div></div>
-                <div class="firma"><div class="firma-linea"></div><div class="firma-texto">Obispo / Presidente</div></div>
-            </div>
-        </body>
-        </html>
-    `);
-    
-    ventana.document.close();
-    
-    if (imprimirAutomatico) {
-        setTimeout(() => ventana.print(), CONFIG.DELAY_IMPRESION);
-    }
-}
-
-// ==========================================
-// 10. RECOLECCIÓN DE DATOS
-// ==========================================
-function recolectarDatosPlan() {
-    const metas = [];
-    document.querySelectorAll('input[name="meta"]:checked').forEach(cb => {
-        metas.push(cb.parentElement.textContent.trim());
-    });
-    
-    const presupuesto = [];
-    document.querySelectorAll('#itemsPlan .item-rendicion').forEach(row => {
-        const cantidad = row.querySelector('.cantidad')?.value || '';
-        const descripcion = row.querySelector('.descripcion')?.value || '';
-        const importe = sanitizarNumero(row.querySelector('.importe')?.value, 0);
-        if (descripcion.trim()) {
-            presupuesto.push({ cantidad, descripcion: sanitizarTexto(descripcion), importe });
-        }
-    });
-    
-    return {
-        estaca: sanitizarTexto(document.getElementById('pEstaca').value),
-        organizacion: document.getElementById('pOrganizacion').value,
-        barrio: sanitizarTexto(document.getElementById('pBarrio').value),
-        fecha: document.getElementById('pFecha').value,
-        proposito: sanitizarTexto(document.getElementById('pProposito').value),
-        metas: metas,
-        asistentes: sanitizarNumero(document.getElementById('pAsistentes').value),
-        responsables: sanitizarTexto(document.getElementById('pResponsables').value),
-        limpieza: sanitizarTexto(document.getElementById('pLimpieza').value),
-        solicitante: sanitizarTexto(document.getElementById('pSolicitante').value),
-        obispo: sanitizarTexto(document.getElementById('pObispo').value),
-        presupuesto: presupuesto
     };
-}
 
-function recolectarDatosRendicion() {
-    const gastos = [];
-    document.querySelectorAll('#itemsRendicion .item-rendicion').forEach(row => {
-        const comprobante = row.querySelector('.comprobante')?.value || '';
-        const concepto = row.querySelector('.concepto')?.value || '';
-        const fecha = row.querySelector('.fecha-gasto')?.value || '';
-        const proveedor = row.querySelector('.proveedor')?.value || '';
-        const monto = row.querySelector('.monto')?.value || '0';
-        
-        gastos.push({
-            comprobante: sanitizarTexto(comprobante),
-            concepto: sanitizarTexto(concepto),
-            fecha: fecha,
-            proveedor: sanitizarTexto(proveedor),
-            monto: sanitizarNumero(monto, 0)
-        });
-    });
-    
-    return {
-        estaca: sanitizarTexto(document.getElementById('rEstaca').value),
-        barrio: sanitizarTexto(document.getElementById('rBarrio').value),
-        organizacion: document.getElementById('rOrganizacion').value,
-        fecha: document.getElementById('rFecha').value,
-        asistentes: sanitizarNumero(document.getElementById('rAsistentes').value),
-        pagadoA: sanitizarTexto(document.getElementById('rPagadoA').value),
-        cheque: sanitizarTexto(document.getElementById('rCheque').value),
-        monto: sanitizarNumero(document.getElementById('rMonto').value, 0).toFixed(2),
-        gastos: gastos
-    };
-}
-
-function calcularTotalPlanImpresion() {
-    let total = 0;
-    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
-        total += sanitizarNumero(item.value, 0);
-    });
-    return total;
-}
+    console.log('✅ Gastos App inicializada correctamente');
+    console.log('📊 Funciones disponibles: window.gastosApp');
+});

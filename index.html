@@ -1,389 +1,205 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
-    <meta name="description" content="Sistema de Planificación y Rendición de Actividades - Iglesia de Jesucristo de los Santos de los Últimos Días">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="theme-color" content="#1a237e">
-    <title>Plan de Actividad - La Iglesia de Jesucristo SUD</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <title>Gastos Actuales - Panel Administrativo</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="light">
-
-    <!-- ============================================ -->
-    <!-- MENÚ SUPERIOR (TOPBAR)                       -->
-    <!-- ============================================ -->
-    <header class="topbar">
-        <div class="topbar-brand">
-            <span class="sidebar-icon">📋</span>
-            <div>
-                <h2>Gestión de Actividades</h2>
-                <small>La Iglesia de Jesucristo de los Santos de los Últimos Días</small>
-            </div>
+<body>
+    <div class="app-container">
+        <!-- ===== TOGGLE TEMA ===== -->
+        <div class="theme-toggle">
+            <button id="themeToggle" aria-label="Cambiar tema">🌓</button>
         </div>
-        
-        <div style="display:flex;align-items:center;gap:8px;">
-            <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Alternar modo oscuro">🌙</button>
-            <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
-        </div>
-        
-        <nav id="menuNav" class="topbar-menu">
-            <a href="#" class="nav-link active" data-target="plan" aria-current="page">📋 Plan de Actividad</a>
-            <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
-        </nav>
-    </header>
 
-    <!-- ============================================ -->
-    <!-- CONTENIDO PRINCIPAL                          -->
-    <!-- ============================================ -->
-    <main class="main-content">
-        
-        <!-- ============================================ -->
-        <!-- SECCIÓN: PLAN DE ACTIVIDAD                   -->
-        <!-- ============================================ -->
-        <section id="planSection">
-            <div class="card">
-                
-                <!-- Encabezado institucional -->
-                <div class="institutional-header">
-                    <h1>PLAN DE ACTIVIDAD</h1>
-                    <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
+        <!-- ===== SECCIÓN GASTOS ACTUALES ===== -->
+        <section class="gastos-section" aria-labelledby="gastos-title">
+            <header class="section-header">
+                <h2 id="gastos-title">💳 Gastos Actuales</h2>
+                <span class="gasto-count" id="gastoCount">3 gastos</span>
+            </header>
+
+            <form class="gastos-form" id="gastosForm" novalidate>
+                <div class="table-responsive">
+                    <table class="gastos-table" aria-label="Tabla de gastos actuales">
+                        <thead>
+                            <tr>
+                                <th scope="col">Comprobante</th>
+                                <th scope="col">Concepto</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Proveedor</th>
+                                <th scope="col">Monto</th>
+                                <th scope="col">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gastosBody">
+                            <!-- Fila 1 -->
+                            <tr class="gasto-row">
+                                <td>
+                                    <input type="text" 
+                                           id="comprobante_1" 
+                                           placeholder="Ej: FAC-001" 
+                                           aria-label="Número de comprobante" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="concepto_1" 
+                                           placeholder="Ej: Compra de insumos" 
+                                           aria-label="Concepto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="date" 
+                                           id="fecha_1" 
+                                           aria-label="Fecha del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="proveedor_1" 
+                                           placeholder="Ej: Proveedor SA" 
+                                           aria-label="Nombre del proveedor" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           id="monto_1" 
+                                           placeholder="0.00" 
+                                           step="0.01" 
+                                           min="0" 
+                                           aria-label="Monto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <button type="button" 
+                                            class="btn-eliminar" 
+                                            aria-label="Eliminar este gasto" 
+                                            onclick="eliminarGasto(this)">
+                                        ✕
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Fila 2 -->
+                            <tr class="gasto-row">
+                                <td>
+                                    <input type="text" 
+                                           id="comprobante_2" 
+                                           placeholder="Ej: FAC-002" 
+                                           aria-label="Número de comprobante" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="concepto_2" 
+                                           placeholder="Ej: Servicios básicos" 
+                                           aria-label="Concepto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="date" 
+                                           id="fecha_2" 
+                                           aria-label="Fecha del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="proveedor_2" 
+                                           placeholder="Ej: Electricidad S.A." 
+                                           aria-label="Nombre del proveedor" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           id="monto_2" 
+                                           placeholder="0.00" 
+                                           step="0.01" 
+                                           min="0" 
+                                           aria-label="Monto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <button type="button" 
+                                            class="btn-eliminar" 
+                                            aria-label="Eliminar este gasto" 
+                                            onclick="eliminarGasto(this)">
+                                        ✕
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Fila 3 -->
+                            <tr class="gasto-row">
+                                <td>
+                                    <input type="text" 
+                                           id="comprobante_3" 
+                                           placeholder="Ej: FAC-003" 
+                                           aria-label="Número de comprobante" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="concepto_3" 
+                                           placeholder="Ej: Material de oficina" 
+                                           aria-label="Concepto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="date" 
+                                           id="fecha_3" 
+                                           aria-label="Fecha del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           id="proveedor_3" 
+                                           placeholder="Ej: Papelería Central" 
+                                           aria-label="Nombre del proveedor" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           id="monto_3" 
+                                           placeholder="0.00" 
+                                           step="0.01" 
+                                           min="0" 
+                                           aria-label="Monto del gasto" 
+                                           required>
+                                </td>
+                                <td>
+                                    <button type="button" 
+                                            class="btn-eliminar" 
+                                            aria-label="Eliminar este gasto" 
+                                            onclick="eliminarGasto(this)">
+                                        ✕
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="6">
+                                    <button type="button" 
+                                            class="btn-agregar" 
+                                            id="agregarGasto">
+                                        ➕ Agregar Gasto
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                
-                <form id="formPlan" autocomplete="off" novalidate>
-                    
-                    <!-- Datos Generales -->
-                    <div class="aprobacion-card">
-                        <div class="aprobacion-header">
-                            <h2>📌 DATOS GENERALES</h2>
-                        </div>
-                        <div class="aprobacion-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="pEstaca">Estaca</label>
-                                    <input type="text" id="pEstaca" class="form-control" 
-                                           placeholder="Nombre de la estaca" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimaEstaca" onclick="usarUltimoValor('pEstaca')" style="display:none;cursor:pointer;color:var(--color-text-secondary);margin-top:4px;"></small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pOrganizacion">Organización</label>
-                                    <select id="pOrganizacion" class="form-control" required>
-                                        <option value="">Seleccione...</option>
-                                        <option>Administración</option>
-                                        <option>Currículo</option>
-                                        <option>Centro de Distribución</option>
-                                        <option>Quórum de Élderes</option>
-                                        <option>Centro de Historia Familiar</option>
-                                        <option>Grupo Sumos Sacerdotes</option>
-                                        <option>Biblioteca</option>
-                                        <option>Misceláneo</option>
-                                        <option>Primaria</option>
-                                        <option>Sociedad de Socorro</option>
-                                        <option>Adultos Solteros</option>
-                                        <option>Escuela Dominical</option>
-                                        <option>Hombres Jóvenes</option>
-                                        <option>Mujeres Jóvenes</option>
-                                        <option>Barrio</option>
-                                        <option>Estaca</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="pBarrio">Barrio</label>
-                                    <input type="text" id="pBarrio" class="form-control" 
-                                           placeholder="Nombre del barrio" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimoBarrio" onclick="usarUltimoValor('pBarrio')" style="display:none;cursor:pointer;color:var(--color-text-secondary);margin-top:4px;"></small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pFecha">Fecha de actividad</label>
-                                    <input type="date" id="pFecha" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Propósito Sagrado -->
-                    <div class="aprobacion-card">
-                        <div class="aprobacion-header">
-                            <h2>🎯 PROPÓSITO SAGRADO</h2>
-                        </div>
-                        <div class="aprobacion-body">
-                            <div class="form-group">
-                                <label for="pProposito">
-                                    (para satisfacer las necesidades espirituales y temporales de los participantes)
-                                </label>
-                                <textarea id="pProposito" class="form-control" rows="3" 
-                                          placeholder="Describa el propósito sagrado de esta actividad..." 
-                                          required maxlength="500"></textarea>
-                                <small class="char-count" id="propositoCount">0/500</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Metas -->
-                    <div class="aprobacion-card">
-                        <div class="aprobacion-header">
-                            <h2>✅ META(S)</h2>
-                        </div>
-                        <div class="aprobacion-body">
-                            <div class="checkbox-list" id="metasList">
-                                
-                                <div class="meta-categoria">Vivir el Evangelio de Jesucristo</div>
-                                <label><input type="checkbox" name="meta" value="Fortalecer la fe en Jesucristo"> Fortalecer la fe en Jesucristo y en Su Expiación mediante la participación en ordenanzas y convenios.</label>
-                                <label><input type="checkbox" name="meta" value="Profundizar el estudio de las Escrituras"> Profundizar el estudio personal y familiar de las Escrituras y las palabras de los profetas vivientes.</label>
-                                <label><input type="checkbox" name="meta" value="Fomentar la oración personal y familiar"> Fomentar la oración personal y familiar como medio de comunicación con el Padre Celestial.</label>
-                                <label><input type="checkbox" name="meta" value="Promover el arrepentimiento diario"> Promover el arrepentimiento diario y la búsqueda del perdón.</label>
-                                <label><input type="checkbox" name="meta" value="Vivir los mandamientos"> Vivir los mandamientos y las normas del Evangelio en la vida cotidiana.</label>
-
-                                <div class="meta-categoria">Cuidar de los necesitados</div>
-                                <label><input type="checkbox" name="meta" value="Prestar servicio a los miembros"> Prestar servicio a los miembros de la familia, el barrio y la comunidad, siguiendo el ejemplo del Salvador.</label>
-                                <label><input type="checkbox" name="meta" value="Identificar y atender necesidades"> Identificar y atender las necesidades temporales y espirituales de las personas dentro de la esfera de influencia.</label>
-                                <label><input type="checkbox" name="meta" value="Fomentar la unidad mediante el servicio"> Fomentar la unidad y el amor entre los miembros mediante el servicio y la compasión.</label>
-                                <label><input type="checkbox" name="meta" value="Apoyar a los líderes del sacerdocio"> Apoyar a los líderes del sacerdocio en sus responsabilidades de cuidar a los miembros.</label>
-                                <label><input type="checkbox" name="meta" value="Ayudar a lograr la autosuficiencia"> Ayudar a los miembros a lograr la autosuficiencia espiritual y temporal.</label>
-
-                                <div class="meta-categoria">Invitar a todos a recibir el Evangelio</div>
-                                <label><input type="checkbox" name="meta" value="Invitar a amigos y familiares"> Invitar a amigos, vecinos y familiares a participar en actividades de la Iglesia y a escuchar el mensaje del Evangelio.</label>
-                                <label><input type="checkbox" name="meta" value="Ayudar a miembros nuevos y menos activos"> Ayudar a los miembros nuevos y a los menos activos a sentir que pertenecen y a integrarse en el barrio.</label>
-                                <label><input type="checkbox" name="meta" value="Preparar para compartir testimonio"> Preparar a los miembros para compartir su testimonio y explicar las doctrinas básicas.</label>
-                                <label><input type="checkbox" name="meta" value="Apoyar a los misioneros"> Apoyar a los misioneros en su obra de invitar a las personas a venir a Cristo.</label>
-                                <label><input type="checkbox" name="meta" value="Crear ambiente de amor y aceptación"> Crear un ambiente de amor y aceptación para todos los que asisten a las actividades.</label>
-
-                                <div class="meta-categoria">Unir a las familias por la eternidad</div>
-                                <label><input type="checkbox" name="meta" value="Fortalecer las relaciones familiares"> Fortalecer las relaciones familiares en el hogar y en las actividades de la Iglesia.</label>
-                                <label><input type="checkbox" name="meta" value="Participar en historia familiar"> Participar en la obra de historia familiar para identificar a los antepasados.</label>
-                                <label><input type="checkbox" name="meta" value="Prepararse para el templo"> Prepararse para recibir las ordenanzas del templo y asistir al templo con regularidad.</label>
-                                <label><input type="checkbox" name="meta" value="Ayudar a la familia al templo"> Ayudar a otros miembros de la familia a prepararse y asistir al templo.</label>
-                                <label><input type="checkbox" name="meta" value="Honrar los convenios familiares"> Honrar y respetar los convenios familiares y las tradiciones del Evangelio.</label>
-
-                                <div class="meta-categoria">Fortalecimiento personal y desarrollo de capacidades</div>
-                                <label><input type="checkbox" name="meta" value="Desarrollar talentos y capacidades"> Desarrollar talentos y capacidades personales para servir a los demás y edificar el reino de Dios.</label>
-                                <label><input type="checkbox" name="meta" value="Asumir responsabilidades de liderazgo"> Asumir responsabilidades de liderazgo en las actividades y organizaciones de la Iglesia.</label>
-                                <label><input type="checkbox" name="meta" value="Aprender principios de liderazgo"> Aprender principios de liderazgo basados en el ejemplo de Jesucristo.</label>
-                                <label><input type="checkbox" name="meta" value="Adquirir habilidades prácticas"> Adquirir habilidades prácticas para la autosuficiencia y el servicio.</label>
-                                <label><input type="checkbox" name="meta" value="Establecer metas personales"> Establecer y alcanzar metas personales que promuevan el crecimiento espiritual y temporal.</label>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Participación y Responsables -->
-                    <div class="aprobacion-card">
-                        <div class="aprobacion-header">
-                            <h2>👥 PARTICIPACIÓN Y RESPONSABLES</h2>
-                        </div>
-                        <div class="aprobacion-body">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="pAsistentes">Total estimado de asistentes (investigadores, conversos, menos activos)</label>
-                                    <input type="number" id="pAsistentes" min="0" max="9999" class="form-control" placeholder="0">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pResponsables">Responsables de la actividad</label>
-                                    <input type="text" id="pResponsables" class="form-control" 
-                                           placeholder="Nombres de los responsables" maxlength="200">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="pLimpieza">Responsables limpieza capilla</label>
-                                    <input type="text" id="pLimpieza" class="form-control" 
-                                           placeholder="Nombres de responsables de limpieza" maxlength="200">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pSolicitante">Solicitante</label>
-                                    <input type="text" id="pSolicitante" class="form-control" 
-                                           placeholder="Nombre del solicitante" maxlength="100">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="pObispo">Obispo / Presidente</label>
-                                <input type="text" id="pObispo" class="form-control" 
-                                       placeholder="Nombre del obispo o presidente" maxlength="100">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Presupuesto -->
-                    <div class="presupuesto-section">
-                        <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 5px;">
-                            💰 PLAN DE PRESUPUESTO 
-                            <span style="font-weight: normal; font-size: 14px;">(Antes de la actividad)</span>
-                        </h2>
-                        <h3 style="color: var(--color-primary); font-size: 14px; margin-bottom: 10px; text-align: center;">
-                            GASTOS ANTICIPADOS
-                        </h3>
-                        
-                        <div class="tabla-rendicion-header" style="grid-template-columns: 100px 1fr 140px 50px;">
-                            <div>Cantidad</div>
-                            <div>Descripción (invitaciones, equipos, incentivos, servicios, refrigerio)</div>
-                            <div>Importe</div>
-                            <div class="no-print">Acción</div>
-                        </div>
-
-                        <div id="itemsPlan"></div>
-
-                        <button type="button" class="btn-agregar-item no-print mt-small" id="btnAgregarGastoPlan">
-                            ➕ Agregar Gasto Anticipado
-                        </button>
-
-                        <div class="presupuesto-total">
-                            <span>TOTAL DE GASTOS ANTICIPADOS</span>
-                            <span id="totalPlan">0,00</span>
-                        </div>
-                    </div>
-
-                    <!-- Botones de acción -->
-                    <div class="action-buttons no-print mt-large">
-                        <button type="button" class="btn btn-primary" id="btnImprimirPlan">
-                            🖨️ Imprimir
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="btnDescargarPDFPlan">
-                            📄 Descargar PDF
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                            💾 Guardar en Navegador
-                        </button>
-                        <button type="button" class="btn btn-danger" id="btnEliminarDatos" title="Eliminar datos guardados">
-                            🗑️ Eliminar Datos
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- ============================================ -->
-        <!-- SECCIÓN: RENDICIÓN DE CUENTAS                -->
-        <!-- ============================================ -->
-        <section id="rendicionSection" style="display:none">
-            <div class="card">
-                
-                <div class="institutional-header">
-                    <h1>RENDICIÓN DE CUENTAS</h1>
-                    <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
-                </div>
-                
-                <div class="aprobacion-card">
-                    <div class="aprobacion-header">
-                        <h2>📌 DATOS DE LA ACTIVIDAD</h2>
-                    </div>
-                    <div class="aprobacion-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="rEstaca">Estaca</label>
-                                <input type="text" id="rEstaca" class="form-control" 
-                                       placeholder="Nombre de la estaca" maxlength="100">
-                            </div>
-                            <div class="form-group">
-                                <label for="rBarrio">Barrio</label>
-                                <input type="text" id="rBarrio" class="form-control" 
-                                       placeholder="Nombre del barrio" maxlength="100">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="rOrganizacion">Organización</label>
-                                <select id="rOrganizacion" class="form-control">
-                                    <option value="">Seleccione...</option>
-                                    <option>Administración</option>
-                                    <option>Currículo</option>
-                                    <option>Centro de Distribución</option>
-                                    <option>Quórum de Élderes</option>
-                                    <option>Centro de Historia Familiar</option>
-                                    <option>Grupo Sumos Sacerdotes</option>
-                                    <option>Biblioteca</option>
-                                    <option>Misceláneo</option>
-                                    <option>Primaria</option>
-                                    <option>Sociedad de Socorro</option>
-                                    <option>Adultos Solteros</option>
-                                    <option>Escuela Dominical</option>
-                                    <option>Hombres Jóvenes</option>
-                                    <option>Mujeres Jóvenes</option>
-                                    <option>Barrio</option>
-                                    <option>Estaca</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="rFecha">Fecha</label>
-                                <input type="date" id="rFecha" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="nota-rendicion">
-                    <strong>⚠️ NOTA IMPORTANTE:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de <strong>7 días</strong> después de concluida la actividad. Los fondos no utilizados deben ser devueltos inmediatamente.
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="rAsistentes">Total que asistieron</label>
-                        <input type="number" min="0" max="9999" id="rAsistentes" class="form-control" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="rPagadoA">Pagado a</label>
-                        <input type="text" id="rPagadoA" class="form-control" 
-                               placeholder="Nombre de quien recibe el pago" maxlength="100">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="rCheque">Gasto Nº / Referencia</label>
-                        <input type="text" id="rCheque" class="form-control" 
-                               placeholder="Número de gasto o referencia" maxlength="50">
-                    </div>
-                    <div class="form-group">
-                        <label for="rMonto">Monto recibido (Bs.)</label>
-                        <input type="text" id="rMonto" class="form-control monto-formato" placeholder="0,00" inputmode="decimal">
-                    </div>
-                </div>
-
-                <!-- Gastos actuales -->
-                <div class="presupuesto-section">
-                    <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 10px;">
-                        💳 GASTOS ACTUALES
-                    </h2>
-                    
-                    <div class="tabla-rendicion-header">
-                        <div>Comprobante</div>
-                        <div>Concepto</div>
-                        <div>Fecha</div>
-                        <div>Proveedor</div>
-                        <div>Monto</div>
-                        <div class="no-print">Acción</div>
-                    </div>
-
-                    <div id="itemsRendicion"></div>
-
-                    <button type="button" class="btn-agregar-item no-print" id="btnAgregarGasto">
-                        ➕ Agregar Gasto
+                <div class="form-actions">
+                    <button type="submit" class="btn-guardar">
+                        💾 Guardar Gastos
                     </button>
-
-                    <div class="presupuesto-total">
-                        <span>TOTAL GASTOS ACTUALES</span>
-                        <span id="totalRendicion">Bs. 0,00</span>
-                    </div>
-                    
-                    <div class="action-buttons no-print mt-large">
-                        <button type="button" class="btn btn-primary" id="btnImprimirRendicion">
-                            🖨️ Imprimir
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="btnDescargarPDFRendicion">
-                            📄 Descargar PDF
-                        </button>
-                    </div>
                 </div>
-            </div>
+            </form>
         </section>
-        
-    </main>
-    
-    <script src="js/app.js"></script>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
