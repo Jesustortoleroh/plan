@@ -39,6 +39,18 @@
     <!-- CONTENIDO PRINCIPAL                          -->
     <!-- ============================================ -->
     <main class="main-content">
+
+        <details class="draft-panel no-print">
+            <summary>Borradores locales</summary>
+            <div class="draft-panel-content">
+                <p>Guarda o recupera un archivo en este dispositivo. La planilla no se guarda automáticamente ni se envía a un servidor.</p>
+                <div class="draft-actions">
+                    <button type="button" class="btn btn-secondary" id="btnGuardarBorrador">Guardar borrador</button>
+                    <button type="button" class="btn btn-secondary" id="btnAbrirBorrador">Abrir borrador</button>
+                    <input type="file" id="archivoBorrador" accept=".json,application/json" hidden>
+                </div>
+            </div>
+        </details>
         
         <!-- ============================================ -->
         <!-- SECCIÓN: PLAN DE ACTIVIDAD                   -->
@@ -263,6 +275,9 @@
                 <div class="aprobacion-card">
                     <div class="aprobacion-header">
                         <h2>Datos de la actividad</h2>
+                        <button type="button" class="btn btn-secondary btn-small no-print" id="btnActualizarDesdePlan" disabled>
+                            Usar datos del plan
+                        </button>
                     </div>
                     <div class="aprobacion-body">
                         <div class="form-row">
@@ -308,6 +323,25 @@
                     </div>
                 </div>
 
+                <section id="comparacionPresupuesto" class="budget-comparison" aria-labelledby="tituloComparacion" hidden>
+                    <h2 id="tituloComparacion">Comparación con el plan de presupuesto</h2>
+                    <div class="budget-comparison-grid">
+                        <div class="budget-stat">
+                            <span>Presupuesto aprobado</span>
+                            <strong id="presupuestoAprobado">Bs. 0,00</strong>
+                        </div>
+                        <div class="budget-stat">
+                            <span>Gastos registrados</span>
+                            <strong id="gastosRegistrados">Bs. 0,00</strong>
+                        </div>
+                        <div class="budget-stat" id="saldoPresupuesto">
+                            <span id="etiquetaSaldo">Saldo disponible</span>
+                            <strong id="montoSaldo">Bs. 0,00</strong>
+                        </div>
+                    </div>
+                    <p id="estadoPresupuesto" aria-live="polite"></p>
+                </section>
+
                 <div class="nota-rendicion">
                     <strong>Nota importante:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de <strong>7 días</strong> después de concluida la actividad. Los fondos no utilizados deben ser devueltos inmediatamente.
                 </div>
@@ -332,7 +366,7 @@
                     </div>
                     <div class="form-group">
                         <label for="rMonto">Monto recibido (Bs.)</label>
-                        <input type="text" id="rMonto" class="form-control monto-formato" placeholder="0,00" inputmode="decimal">
+                        <input type="text" id="rMonto" class="form-control monto-formato" placeholder="0,00" inputmode="decimal" maxlength="20">
                     </div>
                 </div>
 
@@ -380,6 +414,7 @@
     </main>
     
     <script src="assets/js/pdf.js"></script>
+    <script src="assets/js/workflow.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

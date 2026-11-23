@@ -62,6 +62,7 @@ const CONFIG = {
     MAX_CARACTERES_PROPOSITO: 500,
     MAX_ASISTENTES: 9999
 };
+let planVinculado = false;
 
 // ==========================================
 // 1. NAVEGACIÓN Y MENÚ SUPERIOR
@@ -102,6 +103,7 @@ function mostrarSeccion(tipo) {
     } else {
         navLinks[1].classList.add('active');
     }
+    if (tipo === 'rendicion') vincularPlanARendicion(false);
 }
 
 // ==========================================
@@ -139,8 +141,8 @@ document.addEventListener('input', function(e) {
 
 document.addEventListener('blur', function(e) {
     if (e.target.matches('.importe, .monto, .monto-formato')) {
-        const valor = parseFloat(e.target.value.replace(/[^0-9,.-]/g, '').replace(',', '.')) || 0;
-        e.target.value = valor.toFixed(2);
+        const valor = WorkflowTools.parseMoney(e.target.value);
+        if (valor !== null) e.target.value = valor.toFixed(2);
         
         if (e.target.classList.contains('importe')) calcularTotalPlan();
         if (e.target.classList.contains('monto')) calcularTotalRendicion();
@@ -163,8 +165,9 @@ function agregarFilaPlan(datos = {}) {
     fila.style.gridTemplateColumns = '100px 1fr 140px 50px';
     
     const cantidad = sanitizarNumero(datos.cantidad, 0);
-    const concepto = escapeHtml(sanitizarTexto(datos.concepto || ''));
-    const importe = datos.importe ? parseFloat(datos.importe).toFixed(2) : '0.00';
+    const concepto = escapeHtml(sanitizarTexto(datos.descripcion || datos.concepto || ''));
+    const importeValor = WorkflowTools.parseMoney(datos.importe);
+    const importe = importeValor === null ? '0.00' : importeValor.toFixed(2);
     
     fila.innerHTML = `
         <div class="input-wrapper">
@@ -184,7 +187,7 @@ function agregarFilaPlan(datos = {}) {
             <label class="mobile-label">Importe</label>
             <input type="text" value="${importe}" 
                    class="importe" placeholder="0.00" 
-                   aria-label="Importe" inputmode="decimal">
+                   aria-label="Importe" inputmode="decimal" maxlength="20">
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar gasto">×</button>
@@ -207,7 +210,8 @@ function agregarFilaRendicion(datos = {}) {
     fila.className = 'item-rendicion';
     fila.style.gridTemplateColumns = '110px 1.5fr 110px 1.5fr 110px 50px';
     
-    const monto = datos.monto ? parseFloat(datos.monto).toFixed(2) : '0.00';
+    const montoValor = WorkflowTools.parseMoney(datos.monto);
+    const monto = montoValor === null ? '0.00' : montoValor.toFixed(2);
     
     fila.innerHTML = `
         <div class="input-wrapper">
@@ -237,7 +241,7 @@ function agregarFilaRendicion(datos = {}) {
             <label class="mobile-label">Monto</label>
             <input type="text" class="monto" 
                    value="${monto}" 
-                   placeholder="0.00" aria-label="Monto" inputmode="decimal">
+                   placeholder="0.00" aria-label="Monto" inputmode="decimal" maxlength="20">
         </div>
         <button type="button" class="btn-eliminar no-print" 
                 aria-label="Eliminar gasto" title="Eliminar gasto">×</button>
@@ -264,8 +268,8 @@ function escapeHtml(texto) {
 }
 
 function sanitizarNumero(valor, defecto = 0) {
-    const num = parseFloat(String(valor).replace(/[^0-9,.-]/g, '').replace(',', '.'));
-    return isNaN(num) || num < 0 ? defecto : num;
+    const num = WorkflowTools.parseMoney(valor);
+    return num === null ? defecto : num;
 }
 
 function actualizarValorImpresion(campo) {
@@ -292,7 +296,7 @@ function actualizarValorImpresion(campo) {
 // 6. ELIMINACIÓN Y CÁLCULOS
 // ==========================================
 itemsPlan.addEventListener('input', (e) => {
-    if (e.target.classList.contains('importe')) calcularTotalPlan();
+    if (e.target.classList.contains('importe') || e.target.classList.contains('descripcion')) calcularTotalPlan();
 });
 
 itemsPlan.addEventListener('click', (e) => {
@@ -333,13 +337,16 @@ itemsRendicion.addEventListener('keydown', (e) => {
 
 function calcularTotalPlan() {
     let total = 0;
-    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
-        total += sanitizarNumero(item.value, 0);
+    document.querySelectorAll('#itemsPlan .item-rendicion').forEach(fila => {
+        if (fila.querySelector('.descripcion').value.trim()) {
+            total += sanitizarNumero(fila.querySelector('.importe').value, 0);
+        }
     });
     document.getElementById('totalPlan').textContent = 'Bs. ' + total.toLocaleString('es-VE', { 
         minimumFractionDigits: 2, 
         maximumFractionDigits: 2 
     });
+    actualizarComparacionPresupuesto();
 }
 
 function calcularTotalRendicion() {
@@ -351,6 +358,7 @@ function calcularTotalRendicion() {
         minimumFractionDigits: 2, 
         maximumFractionDigits: 2 
     });
+    actualizarComparacionPresupuesto();
 }
 
 // ==========================================
@@ -393,10 +401,28 @@ function validarPlanActividad() {
             }, 3000);
         }
     }
+
+    leerFilasPlanCrudas().forEach((gasto, index) => {
+        const importe = WorkflowTools.parseMoney(gasto.importe);
+        const tieneDatos = gasto.descripcion.trim() ||
+            (gasto.cantidad.trim() && Number(gasto.cantidad) > 0) ||
+            (gasto.importe.trim() && (importe === null || importe > 0));
+        if (!tieneDatos) return;
+
+        const fila = itemsPlan.querySelectorAll('.item-rendicion')[index];
+        if (!gasto.descripcion.trim()) {
+            marcarError(fila.querySelector('.descripcion'));
+            errores.push(`Indique la descripción del gasto anticipado ${index + 1}.`);
+        }
+        if (importe === null) {
+            marcarError(fila.querySelector('.importe'));
+            errores.push(`Ingrese un importe válido para el gasto anticipado ${index + 1}.`);
+        }
+    });
     
     if (errores.length > 0) {
         mostrarFlashMessages(errores, 'error');
-        const primerError = document.querySelector('.form-control[style*="border-color: rgb(220, 38, 38)"]');
+        const primerError = document.querySelector('#formPlan [aria-invalid="true"]');
         if (primerError) {
             primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             primerError.focus();
@@ -406,6 +432,52 @@ function validarPlanActividad() {
         return false;
     }
     
+    return true;
+}
+
+function controlParaErrorRendicion(campo) {
+    const camposDirectos = {
+        estaca: 'rEstaca',
+        barrio: 'rBarrio',
+        organizacion: 'rOrganizacion',
+        fecha: 'rFecha',
+        asistentes: 'rAsistentes',
+        monto: 'rMonto'
+    };
+    if (camposDirectos[campo]) return document.getElementById(camposDirectos[campo]);
+
+    const coincidencia = campo.match(/^gastos\.(\d+)\.(concepto|monto|fecha)$/);
+    if (!coincidencia) return null;
+    const fila = itemsRendicion.querySelectorAll('.item-rendicion')[Number(coincidencia[1])];
+    if (!fila) return null;
+    const selectores = { concepto: '.concepto', monto: '.monto', fecha: '.fecha-gasto' };
+    return fila.querySelector(selectores[coincidencia[2]]);
+}
+
+function validarRendicionActividad() {
+    limpiarFlashMessages();
+    document.querySelectorAll('#rendicionSection [aria-invalid="true"]').forEach(limpiarError);
+    const errores = WorkflowTools.validateRendition(leerRendicionCruda());
+
+    errores.forEach(error => {
+        const control = controlParaErrorRendicion(error.field);
+        if (control) marcarError(control);
+    });
+
+    if (errores.length > 0) {
+        mostrarFlashMessages(
+            errores.map(error => error.message),
+            'error',
+            document.querySelector('#rendicionSection .card')
+        );
+        const primerError = controlParaErrorRendicion(errores[0].field);
+        if (primerError) {
+            primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            primerError.focus();
+        }
+        return false;
+    }
+
     return true;
 }
 
@@ -428,7 +500,7 @@ function limpiarFlashMessages() {
     existentes.forEach(el => el.remove());
 }
 
-function mostrarFlashMessages(mensajes, tipo = 'error') {
+function mostrarFlashMessages(mensajes, tipo = 'error', destino) {
     limpiarFlashMessages();
     
     const colores = {
@@ -442,6 +514,7 @@ function mostrarFlashMessages(mensajes, tipo = 'error') {
     
     const container = document.createElement('div');
     container.className = 'flash-message';
+    container.setAttribute('role', tipo === 'error' ? 'alert' : 'status');
     container.style.cssText = `
         background: ${c.bg};
         border-left: 4px solid ${c.border};
@@ -468,7 +541,7 @@ function mostrarFlashMessages(mensajes, tipo = 'error') {
         messageContent.appendChild(paragraph);
     } else {
         const paragraph = document.createElement('p');
-        paragraph.textContent = `Se encontraron ${mensajes.length} campos por completar:`;
+        paragraph.textContent = `Se encontraron ${mensajes.length} problemas por corregir:`;
         paragraph.style.cssText = 'font-weight:700;margin-bottom:8px;';
         const list = document.createElement('ul');
         list.style.cssText = 'margin:0;padding-left:20px;';
@@ -491,7 +564,11 @@ function mostrarFlashMessages(mensajes, tipo = 'error') {
     container.appendChild(content);
 
     const formPlan = document.getElementById('formPlan');
-    formPlan.insertBefore(container, formPlan.firstChild);
+    const rendicionVisible = document.getElementById('rendicionSection').style.display !== 'none';
+    const contenedor = destino || (rendicionVisible
+        ? document.querySelector('#rendicionSection .card')
+        : formPlan);
+    contenedor.insertBefore(container, contenedor.firstChild);
     setTimeout(() => {
         if (container.parentElement) {
             container.style.opacity = '0';
@@ -506,7 +583,15 @@ function mostrarFlashExito(mensaje) {
 }
 
 document.addEventListener('input', event => {
-    if (event.target.matches('input, textarea, select')) limpiarError(event.target);
+    if (event.target.matches('input, textarea, select')) {
+        limpiarError(event.target);
+        if (event.target.closest('#planSection')) {
+            actualizarBotonVinculacionPlan();
+            if (planVinculado) actualizarComparacionPresupuesto();
+        } else if (event.target.closest('#rendicionSection')) {
+            actualizarComparacionPresupuesto();
+        }
+    }
 });
 
 document.addEventListener('change', event => {
@@ -521,15 +606,23 @@ document.addEventListener('change', event => {
     if (event.target.matches('input[type="date"], select')) {
         actualizarValorImpresion(event.target);
     }
+    if (event.target.closest('#planSection')) {
+        actualizarBotonVinculacionPlan();
+        if (planVinculado) actualizarComparacionPresupuesto();
+    }
+    if (event.target.closest('#rendicionSection')) actualizarComparacionPresupuesto();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
     if (!document.getElementById('pFecha').value) document.getElementById('pFecha').value = hoy;
-    if (!document.getElementById('rFecha').value) document.getElementById('rFecha').value = hoy;
     if (itemsPlan.children.length === 0) agregarFilaPlan();
     if (itemsRendicion.children.length === 0) agregarFilaRendicion();
     document.querySelectorAll('input[type="date"], select').forEach(actualizarValorImpresion);
+    calcularTotalPlan();
+    calcularTotalRendicion();
+    actualizarBotonVinculacionPlan();
+    actualizarComparacionPresupuesto();
 });
 
 // ==========================================
@@ -541,7 +634,7 @@ document.getElementById('btnDescargarPDFPlan').addEventListener('click', () => {
 });
 
 document.getElementById('btnDescargarPDFRendicion').addEventListener('click', () => {
-    descargarPdf('rendicion');
+    if (validarRendicionActividad()) descargarPdf('rendicion');
 });
 
 document.getElementById('btnWhatsappPlan').addEventListener('click', () => {
@@ -549,7 +642,7 @@ document.getElementById('btnWhatsappPlan').addEventListener('click', () => {
 });
 
 document.getElementById('btnWhatsappRendicion').addEventListener('click', () => {
-    enviarPdfPorWhatsApp('rendicion');
+    if (validarRendicionActividad()) enviarPdfPorWhatsApp('rendicion');
 });
 
 document.getElementById('btnImprimirPlan').addEventListener('click', () => {
@@ -557,10 +650,311 @@ document.getElementById('btnImprimirPlan').addEventListener('click', () => {
 });
 
 document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
-    window.print();
+    if (validarRendicionActividad()) window.print();
 });
 
 document.getElementById('formPlan').addEventListener('submit', event => event.preventDefault());
+document.getElementById('btnActualizarDesdePlan').addEventListener('click', () => vincularPlanARendicion(true));
+document.getElementById('btnGuardarBorrador').addEventListener('click', guardarBorrador);
+document.getElementById('btnAbrirBorrador').addEventListener('click', () => {
+    document.getElementById('archivoBorrador').click();
+});
+document.getElementById('archivoBorrador').addEventListener('change', abrirBorrador);
+
+function leerFilasPlanCrudas() {
+    return Array.from(document.querySelectorAll('#itemsPlan .item-rendicion')).map(row => ({
+        cantidad: row.querySelector('.cantidad').value,
+        descripcion: row.querySelector('.descripcion').value,
+        importe: row.querySelector('.importe').value
+    }));
+}
+
+function leerGastosRendicionCrudos() {
+    return Array.from(document.querySelectorAll('#itemsRendicion .item-rendicion')).map(row => ({
+        comprobante: row.querySelector('.comprobante').value,
+        concepto: row.querySelector('.concepto').value,
+        fecha: row.querySelector('.fecha-gasto').value,
+        proveedor: row.querySelector('.proveedor').value,
+        monto: row.querySelector('.monto').value
+    }));
+}
+
+function filaGastoTieneDatos(gasto) {
+    const monto = String(gasto.monto || '').trim();
+    const montoNumerico = WorkflowTools.parseMoney(monto);
+    return [gasto.comprobante, gasto.concepto, gasto.fecha, gasto.proveedor]
+        .some(value => String(value || '').trim()) ||
+        (monto !== '' && (montoNumerico === null || montoNumerico > 0));
+}
+
+function leerDatosPlanCrudos() {
+    return {
+        estaca: document.getElementById('pEstaca').value,
+        barrio: document.getElementById('pBarrio').value,
+        organizacion: document.getElementById('pOrganizacion').value,
+        fecha: document.getElementById('pFecha').value,
+        proposito: document.getElementById('pProposito').value,
+        metas: Array.from(document.querySelectorAll('input[name="meta"]:checked'), checkbox => checkbox.value),
+        asistentes: document.getElementById('pAsistentes').value,
+        responsables: document.getElementById('pResponsables').value,
+        limpieza: document.getElementById('pLimpieza').value,
+        solicitante: document.getElementById('pSolicitante').value,
+        obispo: document.getElementById('pObispo').value,
+        presupuesto: leerFilasPlanCrudas()
+    };
+}
+
+function leerRendicionCruda() {
+    return {
+        estaca: document.getElementById('rEstaca').value,
+        barrio: document.getElementById('rBarrio').value,
+        organizacion: document.getElementById('rOrganizacion').value,
+        fecha: document.getElementById('rFecha').value,
+        asistentes: document.getElementById('rAsistentes').value,
+        pagadoA: document.getElementById('rPagadoA').value,
+        cheque: document.getElementById('rCheque').value,
+        monto: document.getElementById('rMonto').value,
+        gastos: leerGastosRendicionCrudos()
+    };
+}
+
+function planListoParaVincular(plan = leerDatosPlanCrudos()) {
+    return Boolean(
+        plan.estaca.trim() &&
+        plan.barrio.trim() &&
+        plan.organizacion.trim() &&
+        plan.fecha.trim() &&
+        plan.proposito.trim()
+    );
+}
+
+function actualizarBotonVinculacionPlan() {
+    document.getElementById('btnActualizarDesdePlan').disabled = !planListoParaVincular();
+}
+
+function vincularPlanARendicion(reemplazar) {
+    const plan = leerDatosPlanCrudos();
+    if (!planListoParaVincular(plan)) {
+        if (reemplazar) {
+            mostrarFlashMessages(
+                ['Complete estaca, barrio, organización, fecha y propósito en el plan antes de vincularlo.'],
+                'error',
+                document.querySelector('#rendicionSection .card')
+            );
+        }
+        actualizarBotonVinculacionPlan();
+        return false;
+    }
+
+    const rendicion = leerRendicionCruda();
+    const camposCompartidos = ['estaca', 'barrio', 'organizacion', 'fecha'];
+    const hayDatosCompartidos = camposCompartidos
+        .some(campo => String(rendicion[campo] || '').trim());
+    if (reemplazar && hayDatosCompartidos &&
+        !window.confirm('Se reemplazarán los datos generales de la rendición con los del plan. ¿Desea continuar?')) {
+        return false;
+    }
+    if (!reemplazar && camposCompartidos.some(campo =>
+        String(plan[campo] || '').trim() &&
+        String(rendicion[campo] || '').trim() &&
+        String(plan[campo]).trim() !== String(rendicion[campo]).trim())) {
+        planVinculado = false;
+        actualizarComparacionPresupuesto();
+        mostrarFlashMessages(
+            ['Los datos de la rendición no coinciden con el plan. Use "Usar datos del plan" para reemplazarlos y vincularlos.'],
+            'warning',
+            document.querySelector('#rendicionSection .card')
+        );
+        return false;
+    }
+
+    const datosVinculados = WorkflowTools.copyPlanToRendition(plan, rendicion, reemplazar);
+    document.getElementById('rEstaca').value = datosVinculados.estaca;
+    document.getElementById('rBarrio').value = datosVinculados.barrio;
+    document.getElementById('rOrganizacion').value = datosVinculados.organizacion;
+    document.getElementById('rFecha').value = datosVinculados.fecha;
+    actualizarValorImpresion(document.getElementById('rOrganizacion'));
+    actualizarValorImpresion(document.getElementById('rFecha'));
+
+    planVinculado = true;
+    actualizarComparacionPresupuesto();
+    if (reemplazar) mostrarFlashExito('Datos generales copiados desde el plan.');
+    return true;
+}
+
+function formatearMoneda(valor) {
+    return 'Bs. ' + valor.toLocaleString('es-VE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function rendicionCoincideConPlan() {
+    const plan = leerDatosPlanCrudos();
+    const rendicion = leerRendicionCruda();
+    return ['estaca', 'barrio', 'organizacion', 'fecha'].every(campo =>
+        String(plan[campo] || '').trim() === String(rendicion[campo] || '').trim());
+}
+
+function actualizarComparacionPresupuesto() {
+    const comparacion = document.getElementById('comparacionPresupuesto');
+    if (!comparacion) return;
+    const estabaVinculado = planVinculado;
+    if (planVinculado && !rendicionCoincideConPlan()) planVinculado = false;
+    comparacion.hidden = !planVinculado;
+    if (estabaVinculado && !planVinculado &&
+        document.getElementById('rendicionSection').style.display !== 'none') {
+        mostrarFlashMessages(
+            ['Los datos generales ya no coinciden con el plan. La comparación se ocultó; use "Usar datos del plan" para vincular de nuevo.'],
+            'warning',
+            document.querySelector('#rendicionSection .card')
+        );
+    }
+    if (!planVinculado) return;
+
+    const gastos = leerGastosRendicionCrudos().filter(filaGastoTieneDatos);
+    const totalGastos = gastos.reduce((total, gasto) => total + (WorkflowTools.parseMoney(gasto.monto) || 0), 0);
+    const resultado = WorkflowTools.compareBudget(calcularTotalPlanPdf(), totalGastos);
+    document.getElementById('presupuestoAprobado').textContent = formatearMoneda(resultado.approved);
+    document.getElementById('gastosRegistrados').textContent = formatearMoneda(resultado.actual);
+    document.getElementById('etiquetaSaldo').textContent = resultado.overBudget
+        ? 'Exceso sobre el presupuesto'
+        : 'Saldo disponible';
+    document.getElementById('montoSaldo').textContent = formatearMoneda(Math.abs(resultado.balance));
+    document.getElementById('saldoPresupuesto').classList.toggle('is-over', resultado.overBudget);
+    document.getElementById('estadoPresupuesto').textContent = resultado.overBudget
+        ? `Los gastos superan el presupuesto aprobado por ${formatearMoneda(Math.abs(resultado.balance))}.`
+        : `Saldo del presupuesto: ${formatearMoneda(resultado.balance)}.`;
+}
+
+function crearBorradorActual() {
+    return WorkflowTools.createDraft(leerDatosPlanCrudos(), leerRendicionCruda(), planVinculado);
+}
+
+function guardarBorrador() {
+    try {
+        const contenido = WorkflowTools.serializeDraft(crearBorradorActual());
+        const blob = new Blob([contenido], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = `borrador-actividades-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        mostrarFlashExito('Borrador descargado en este dispositivo.');
+    } catch (error) {
+        mostrarFlashMessages([`No se pudo guardar el borrador: ${error.message}`]);
+    }
+}
+
+function formularioTieneDatos() {
+    const campos = [
+        'pEstaca', 'pOrganizacion', 'pBarrio', 'pProposito', 'pAsistentes',
+        'pResponsables', 'pLimpieza', 'pSolicitante', 'pObispo',
+        'rEstaca', 'rBarrio', 'rOrganizacion', 'rAsistentes', 'rPagadoA', 'rCheque', 'rMonto'
+    ];
+    if (campos.some(id => document.getElementById(id).value.trim())) return true;
+    if (document.querySelector('input[name="meta"]:checked')) return true;
+    if (leerFilasPlanCrudas().some(row =>
+        row.descripcion.trim() || (WorkflowTools.parseMoney(row.importe) || 0) > 0 ||
+        (row.cantidad.trim() && row.cantidad !== '0'))) return true;
+    return leerGastosRendicionCrudos().some(filaGastoTieneDatos);
+}
+
+function asignarSelect(select, value) {
+    if (value && !Array.from(select.options).some(option => option.value === value)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.add(option);
+    }
+    select.value = value;
+}
+
+function aplicarBorrador(borrador) {
+    const camposPlan = {
+        pEstaca: borrador.plan.estaca,
+        pBarrio: borrador.plan.barrio,
+        pFecha: borrador.plan.fecha,
+        pProposito: borrador.plan.proposito,
+        pAsistentes: borrador.plan.asistentes,
+        pResponsables: borrador.plan.responsables,
+        pLimpieza: borrador.plan.limpieza,
+        pSolicitante: borrador.plan.solicitante,
+        pObispo: borrador.plan.obispo
+    };
+    Object.entries(camposPlan).forEach(([id, value]) => {
+        document.getElementById(id).value = value;
+    });
+    asignarSelect(document.getElementById('pOrganizacion'), borrador.plan.organizacion);
+    const metas = new Set(borrador.plan.metas);
+    document.querySelectorAll('input[name="meta"]').forEach(checkbox => {
+        checkbox.checked = metas.has(checkbox.value);
+    });
+
+    const camposRendicion = {
+        rEstaca: borrador.rendicion.estaca,
+        rBarrio: borrador.rendicion.barrio,
+        rFecha: borrador.rendicion.fecha,
+        rAsistentes: borrador.rendicion.asistentes,
+        rPagadoA: borrador.rendicion.pagadoA,
+        rCheque: borrador.rendicion.cheque,
+        rMonto: borrador.rendicion.monto
+    };
+    Object.entries(camposRendicion).forEach(([id, value]) => {
+        document.getElementById(id).value = value;
+    });
+    asignarSelect(document.getElementById('rOrganizacion'), borrador.rendicion.organizacion);
+
+    itemsPlan.textContent = '';
+    borrador.plan.presupuesto.forEach(agregarFilaPlan);
+    if (itemsPlan.children.length === 0) agregarFilaPlan();
+    itemsRendicion.textContent = '';
+    borrador.rendicion.gastos.forEach(agregarFilaRendicion);
+    if (itemsRendicion.children.length === 0) agregarFilaRendicion();
+
+    document.querySelectorAll('[aria-invalid="true"]').forEach(limpiarError);
+    propositoCount.textContent = `${borrador.plan.proposito.length}/${CONFIG.MAX_CARACTERES_PROPOSITO}`;
+    planVinculado = borrador.planLinked;
+    document.querySelectorAll('input[type="date"], select').forEach(actualizarValorImpresion);
+    calcularTotalPlan();
+    calcularTotalRendicion();
+    actualizarBotonVinculacionPlan();
+    actualizarComparacionPresupuesto();
+}
+
+function abrirBorrador(event) {
+    const input = event.target;
+    const archivo = input.files[0];
+    if (!archivo) return;
+    if (archivo.size > WorkflowTools.MAX_DRAFT_CHARS) {
+        mostrarFlashMessages(['El archivo de borrador supera el tamaño permitido.']);
+        input.value = '';
+        return;
+    }
+
+    const lector = new FileReader();
+    lector.onload = () => {
+        try {
+            const borrador = WorkflowTools.parseDraft(String(lector.result || ''));
+            if (formularioTieneDatos() &&
+                !window.confirm('Abrir el borrador reemplazara los datos actuales. ¿Desea continuar?')) return;
+            aplicarBorrador(borrador);
+            mostrarFlashExito('Borrador abierto correctamente.');
+        } catch (error) {
+            mostrarFlashMessages([`No se pudo abrir el borrador: ${error.message}`]);
+        } finally {
+            input.value = '';
+        }
+    };
+    lector.onerror = () => {
+        mostrarFlashMessages(['No se pudo leer el archivo de borrador.']);
+        input.value = '';
+    };
+    lector.readAsText(archivo, 'UTF-8');
+}
 
 // PDF form data
 function recolectarDatosPlan() {
@@ -596,22 +990,15 @@ function recolectarDatosPlan() {
 }
 
 function recolectarDatosRendicion() {
-    const gastos = [];
-    document.querySelectorAll('#itemsRendicion .item-rendicion').forEach(row => {
-        const comprobante = row.querySelector('.comprobante')?.value || '';
-        const concepto = row.querySelector('.concepto')?.value || '';
-        const fecha = row.querySelector('.fecha-gasto')?.value || '';
-        const proveedor = row.querySelector('.proveedor')?.value || '';
-        const monto = row.querySelector('.monto')?.value || '0';
-        
-        gastos.push({
-            comprobante: sanitizarTexto(comprobante),
-            concepto: sanitizarTexto(concepto),
-            fecha: fecha,
-            proveedor: sanitizarTexto(proveedor),
-            monto: sanitizarNumero(monto, 0)
-        });
-    });
+    const gastos = leerGastosRendicionCrudos()
+        .filter(filaGastoTieneDatos)
+        .map(gasto => ({
+            comprobante: sanitizarTexto(gasto.comprobante),
+            concepto: sanitizarTexto(gasto.concepto),
+            fecha: gasto.fecha,
+            proveedor: sanitizarTexto(gasto.proveedor),
+            monto: sanitizarNumero(gasto.monto, 0)
+        }));
     
     return {
         estaca: sanitizarTexto(document.getElementById('rEstaca').value),
@@ -628,8 +1015,10 @@ function recolectarDatosRendicion() {
 
 function calcularTotalPlanPdf() {
     let total = 0;
-    document.querySelectorAll('#itemsPlan .importe').forEach(item => {
-        total += sanitizarNumero(item.value, 0);
+    document.querySelectorAll('#itemsPlan .item-rendicion').forEach(fila => {
+        if (fila.querySelector('.descripcion').value.trim()) {
+            total += sanitizarNumero(fila.querySelector('.importe').value, 0);
+        }
     });
     return total;
 }
@@ -683,6 +1072,13 @@ function generarTextoPdf(tipo) {
 
     const datos = recolectarDatosRendicion();
     const total = datos.gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
+    const comparacion = WorkflowTools.compareBudget(calcularTotalPlanPdf(), total);
+    const resumenPresupuesto = planVinculado ? [
+        'Comparación con el plan de presupuesto',
+        `Presupuesto aprobado: Bs. ${comparacion.approved.toFixed(2)}`,
+        `Gastos registrados: Bs. ${comparacion.actual.toFixed(2)}`,
+        `${comparacion.overBudget ? 'Exceso sobre el presupuesto' : 'Saldo disponible'}: Bs. ${Math.abs(comparacion.balance).toFixed(2)}`
+    ] : [];
     return [
         'Rendición de cuentas',
         'La Iglesia de Jesucristo de los Santos de los Últimos Días',
@@ -696,6 +1092,7 @@ function generarTextoPdf(tipo) {
         `Pagado a: ${textoCeldaPdf(datos.pagadoA)}`,
         `Referencia: ${textoCeldaPdf(datos.cheque)}`,
         `Monto recibido: Bs. ${datos.monto}`,
+        ...(resumenPresupuesto.length ? ['', ...resumenPresupuesto] : []),
         '',
         'Gastos actuales',
         'Comprobante | Concepto | Fecha | Proveedor | Monto',

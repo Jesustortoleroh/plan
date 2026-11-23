@@ -135,6 +135,17 @@ body {
     background: var(--color-surface); border: 1px solid var(--color-border);
     border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-sm);
 }
+.draft-panel {
+    margin-bottom: 18px; border: 1px solid var(--color-border);
+    border-radius: var(--radius-md); background: var(--color-surface);
+}
+.draft-panel summary {
+    padding: 12px 16px; color: var(--color-primary); font-weight: 600; cursor: pointer;
+}
+.draft-panel summary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.draft-panel-content { padding: 0 16px 14px; }
+.draft-panel-content p { margin: 0 0 12px; color: var(--color-text-secondary); font-size: 13px; line-height: 1.5; }
+.draft-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ENCABEZADO */
 .institutional-header {
@@ -151,9 +162,11 @@ body {
 }
 .aprobacion-header {
     background: var(--color-surface-hover); color: var(--color-text);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 12px 16px; border-left: 3px solid var(--color-primary);
 }
 .aprobacion-header h2 { font-size: 0.875rem; margin: 0; font-weight: 600; letter-spacing: 0; }
+.btn-small { padding: 6px 10px; font-size: 12px; }
 .aprobacion-body { padding: 20px; background: var(--color-surface-hover); }
 
 /* FORMULARIOS */
@@ -316,6 +329,24 @@ textarea { resize: vertical; min-height: 80px; max-height: 300px; line-height: 1
 [data-theme="dark"] .presupuesto-total { background: #005175; }
 .presupuesto-total span:last-child { font-size: 20px; }
 
+/* COMPARACION DEL PRESUPUESTO */
+.budget-comparison {
+    margin: 0 0 20px; padding: 16px;
+    border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+.budget-comparison[hidden] { display: none !important; }
+.budget-comparison h2 { margin: 0 0 12px; color: var(--color-primary); font-size: 15px; }
+.budget-comparison-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.budget-stat {
+    display: flex; flex-direction: column; gap: 5px; min-width: 0;
+    padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+}
+.budget-stat span { color: var(--color-text-secondary); font-size: 12px; }
+.budget-stat strong { color: var(--color-text); font-size: 16px; overflow-wrap: anywhere; }
+.budget-stat.is-over strong { color: var(--color-danger); }
+.budget-comparison > p { margin: 10px 0 0; color: var(--color-text-secondary); font-size: 13px; }
+
 /* BOTONES ACCIÓN */
 .action-buttons { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
@@ -366,6 +397,7 @@ textarea { resize: vertical; min-height: 80px; max-height: 300px; line-height: 1
         background: #fff;
     }
     .aprobacion-header {
+        display: flex;
         padding: 6pt 9pt;
         border-bottom: 1px solid #d0d3d3;
         border-left: 2px solid #006184;
@@ -477,6 +509,17 @@ textarea { resize: vertical; min-height: 80px; max-height: 300px; line-height: 1
         page-break-inside: avoid;
     }
     .presupuesto-total span:last-child { font-size: 11pt; }
+    .budget-comparison {
+        margin: 0 0 8pt; padding: 8pt;
+        border: 1px solid #d0d3d3; border-radius: 4pt; background: #fff !important;
+        break-inside: avoid; page-break-inside: avoid;
+    }
+    .budget-comparison h2 { margin: 0 0 5pt; color: #006184 !important; font-size: 9pt; }
+    .budget-comparison-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5pt; }
+    .budget-stat { gap: 2pt; padding: 5pt; border-color: #d0d3d3; }
+    .budget-stat span { color: #53575b; font-size: 7pt; }
+    .budget-stat strong, .budget-stat.is-over strong { color: #111827; font-size: 9pt; }
+    .budget-comparison > p { margin-top: 5pt; color: #53575b; font-size: 7pt; }
 
     .checkbox-list { gap: 1pt; }
     .checkbox-list label {
@@ -543,6 +586,11 @@ textarea { resize: vertical; min-height: 80px; max-height: 300px; line-height: 1
     
     .action-buttons { flex-direction: column; }
     .action-buttons .btn { width: 100%; justify-content: center; padding: 14px; font-size: 16px; }
+    .draft-actions { flex-direction: column; }
+    .draft-actions .btn { width: 100%; }
+    .budget-comparison-grid { grid-template-columns: 1fr; }
+    .aprobacion-header { align-items: flex-start; }
+    .aprobacion-header .btn-small { white-space: normal; text-align: center; }
     .presupuesto-total { flex-direction: column; text-align: center; gap: 8px; }
     .form-control { font-size: 16px; padding: 12px 14px; }
     .checkbox-list label { font-size: 14px; }
