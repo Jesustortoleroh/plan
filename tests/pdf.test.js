@@ -17,13 +17,39 @@ test('creates a downloadable PDF with a correct cross-reference offset', async (
     assert.match(pdf, /\/Count 1/);
 });
 
-test('escapes PDF string delimiters and creates extra pages for long reports', async () => {
-    const lines = Array.from({ length: 49 }, (_, index) => `Linea ${index + 1}`);
-    lines[0] = 'Texto (con) barras \\ y acentos: acción';
+test('preserves Spanish accents, escapes PDF delimiters, and paginates long reports', async () => {
+    const lines = [
+        'Titulo',
+        'Subtitulo',
+        'Texto (con) barras \\ y acentos acci\u00f3n',
+        ...Array.from({ length: 80 }, (_, index) => `Linea ${index + 1} con suficiente contenido para probar la paginacion.`)
+    ];
     const pdf = await createPdfBlob(lines).text();
 
-    assert.ok(pdf.includes('Texto \\(con\\) barras \\\\ y acentos: accion'));
-    assert.match(pdf, /\/Count 2/);
+    assert.ok(pdf.includes('Texto \\(con\\) barras \\\\ y acentos acci\\363n'));
+    assert.match(pdf, /\/Count [2-9]\d*/);
+    assert.match(pdf, /\/BaseFont \/Times-Bold/);
+});
+
+test('renders structured report sections and budget tables', async () => {
+    const pdf = await createPdfBlob([
+        'Plan de actividad',
+        'La Iglesia de Jesucristo de los Santos de los Últimos Días',
+        '',
+        'Datos generales',
+        'Estaca: Estaca de prueba',
+        'Fecha: 23/11/2026',
+        '',
+        'Plan de presupuesto',
+        'Cantidad | Descripción | Importe',
+        '2 | Refrigerios | Bs. 30.00',
+        'TOTAL: Bs. 30.00'
+    ]).text();
+
+    assert.match(pdf, /\/Count 1/);
+    assert.match(pdf, /Cantidad/);
+    assert.match(pdf, /Bs\. 30\.00/);
+    assert.match(pdf, /0\.000 0\.380 0\.518 rg/);
 });
 
 test('rejects invalid PDF input instead of producing an empty document', () => {

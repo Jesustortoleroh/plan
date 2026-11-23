@@ -634,35 +634,49 @@ function calcularTotalPlanPdf() {
     return total;
 }
 
+function textoCeldaPdf(valor, defecto = '-') {
+    const texto = String(valor || '').replace(/\s+/g, ' ').replace(/\|/g, '/').trim();
+    return texto || defecto;
+}
+
+function formatearFechaPdf(fecha) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha || '')) return '-';
+    const [year, month, day] = fecha.split('-');
+    return `${day}/${month}/${year}`;
+}
+
 function generarTextoPdf(tipo) {
     if (tipo === 'plan') {
         const datos = recolectarDatosPlan();
         const total = calcularTotalPlanPdf();
         return [
-            'PLAN DE ACTIVIDAD',
-            'La Iglesia de Jesucristo de los Santos de los Ultimos Dias',
+            'Plan de actividad',
+            'La Iglesia de Jesucristo de los Santos de los Últimos Días',
             '',
-            `Estaca: ${datos.estaca}`,
-            `Barrio: ${datos.barrio}`,
-            `Organizacion: ${datos.organizacion}`,
-            `Fecha: ${datos.fecha}`,
+            'Datos generales',
+            `Estaca: ${textoCeldaPdf(datos.estaca)}`,
+            `Barrio: ${textoCeldaPdf(datos.barrio)}`,
+            `Organización: ${textoCeldaPdf(datos.organizacion)}`,
+            `Fecha: ${formatearFechaPdf(datos.fecha)}`,
             '',
-            'PROPOSITO SAGRADO',
-            datos.proposito,
+            'Propósito sagrado',
+            textoCeldaPdf(datos.proposito, 'Sin descripción'),
             '',
-            'METAS',
-            ...(datos.metas.length ? datos.metas.map(meta => `- ${meta}`) : ['- Sin metas seleccionadas']),
+            'Metas',
+            ...(datos.metas.length ? datos.metas.map(meta => `- ${textoCeldaPdf(meta)}`) : ['- Sin metas seleccionadas']),
             '',
+            'Participación y responsables',
             `Asistentes estimados: ${datos.asistentes}`,
-            `Responsables: ${datos.responsables}`,
-            `Limpieza capilla: ${datos.limpieza}`,
-            `Solicitante: ${datos.solicitante}`,
-            `Obispo / Presidente: ${datos.obispo}`,
+            `Responsables: ${textoCeldaPdf(datos.responsables)}`,
+            `Limpieza capilla: ${textoCeldaPdf(datos.limpieza)}`,
+            `Solicitante: ${textoCeldaPdf(datos.solicitante)}`,
+            `Obispo / Presidente: ${textoCeldaPdf(datos.obispo)}`,
             '',
-            'PLAN DE PRESUPUESTO',
-            ...datos.presupuesto.map(gasto =>
-                `${gasto.cantidad || 1} | ${gasto.descripcion} | Bs. ${gasto.importe.toFixed(2)}`
-            ),
+            'Plan de presupuesto',
+            'Cantidad | Descripción | Importe',
+            ...(datos.presupuesto.length ? datos.presupuesto.map(gasto =>
+                `${gasto.cantidad || 1} | ${textoCeldaPdf(gasto.descripcion)} | Bs. ${gasto.importe.toFixed(2)}`
+            ) : ['Sin gastos anticipados']),
             `TOTAL: Bs. ${total.toFixed(2)}`
         ];
     }
@@ -670,23 +684,25 @@ function generarTextoPdf(tipo) {
     const datos = recolectarDatosRendicion();
     const total = datos.gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
     return [
-        'RENDICION DE CUENTAS',
-        'La Iglesia de Jesucristo de los Santos de los Ultimos Dias',
+        'Rendición de cuentas',
+        'La Iglesia de Jesucristo de los Santos de los Últimos Días',
         '',
-        `Estaca: ${datos.estaca}`,
-        `Barrio: ${datos.barrio}`,
-        `Organizacion: ${datos.organizacion}`,
-        `Fecha: ${datos.fecha}`,
+        'Datos de la actividad',
+        `Estaca: ${textoCeldaPdf(datos.estaca)}`,
+        `Barrio: ${textoCeldaPdf(datos.barrio)}`,
+        `Organización: ${textoCeldaPdf(datos.organizacion)}`,
+        `Fecha: ${formatearFechaPdf(datos.fecha)}`,
         `Asistentes: ${datos.asistentes}`,
-        `Pagado a: ${datos.pagadoA}`,
-        `Referencia: ${datos.cheque}`,
+        `Pagado a: ${textoCeldaPdf(datos.pagadoA)}`,
+        `Referencia: ${textoCeldaPdf(datos.cheque)}`,
         `Monto recibido: Bs. ${datos.monto}`,
         '',
-        'GASTOS ACTUALES',
-        ...datos.gastos.map(gasto =>
-            `${gasto.comprobante || '-'} | ${gasto.concepto || '-'} | ${gasto.fecha || '-'} | ${gasto.proveedor || '-'} | Bs. ${gasto.monto.toFixed(2)}`
-        ),
-        `TOTAL GASTOS: Bs. ${total.toFixed(2)}`
+        'Gastos actuales',
+        'Comprobante | Concepto | Fecha | Proveedor | Monto',
+        ...(datos.gastos.length ? datos.gastos.map(gasto =>
+            `${textoCeldaPdf(gasto.comprobante)} | ${textoCeldaPdf(gasto.concepto)} | ${formatearFechaPdf(gasto.fecha)} | ${textoCeldaPdf(gasto.proveedor)} | Bs. ${gasto.monto.toFixed(2)}`
+        ) : ['Sin gastos registrados']),
+        `Total gastos: Bs. ${total.toFixed(2)}`
     ];
 }
 
@@ -716,7 +732,7 @@ function descargarPdf(tipo) {
 async function enviarPdfPorWhatsApp(tipo) {
     const blob = crearArchivoPdf(tipo);
     const archivo = nombrePdf(tipo);
-    const titulo = tipo === 'plan' ? 'Plan de actividad' : 'Rendicion de cuentas';
+    const titulo = tipo === 'plan' ? 'Plan de actividad' : 'Rendición de cuentas';
     const datos = tipo === 'plan' ? recolectarDatosPlan() : recolectarDatosRendicion();
     const texto = `${titulo} - ${datos.organizacion || datos.estaca || 'La Iglesia de Jesucristo de los Santos de los Últimos Días'}`;
 
