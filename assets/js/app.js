@@ -84,8 +84,7 @@ document.addEventListener('click', (e) => {
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
-        const target = e.target.getAttribute('data-target');
-        mostrarSeccion(target);
+        mostrarSeccion(link.getAttribute('data-target'));
         
         if (window.innerWidth <= 768) {
             topbarMenu.classList.remove('show');
@@ -94,16 +93,15 @@ navLinks.forEach(link => {
 });
 
 function mostrarSeccion(tipo) {
-    document.getElementById('planSection').style.display = tipo === 'plan' ? 'block' : 'none';
-    document.getElementById('rendicionSection').style.display = tipo === 'rendicion' ? 'block' : 'none';
-    
-    navLinks.forEach(link => link.classList.remove('active'));
-    if (tipo === 'plan') {
-        navLinks[0].classList.add('active');
-    } else {
-        navLinks[1].classList.add('active');
-    }
+    const section = document.getElementById(tipo === 'plan' ? 'planSection' : 'rendicionSection');
+    navLinks.forEach(link => {
+        const isCurrent = link.getAttribute('data-target') === tipo;
+        link.classList.toggle('active', isCurrent);
+        if (isCurrent) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+    });
     if (tipo === 'rendicion') vincularPlanARendicion(false);
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ==========================================
@@ -646,11 +644,20 @@ document.getElementById('btnWhatsappRendicion').addEventListener('click', () => 
 });
 
 document.getElementById('btnImprimirPlan').addEventListener('click', () => {
-    if (validarPlanActividad()) window.print();
+    if (validarPlanActividad()) imprimirSeccion('plan');
 });
 
 document.getElementById('btnImprimirRendicion').addEventListener('click', () => {
-    if (validarRendicionActividad()) window.print();
+    if (validarRendicionActividad()) imprimirSeccion('rendicion');
+});
+
+function imprimirSeccion(tipo) {
+    document.body.dataset.printSection = tipo;
+    window.print();
+}
+
+window.addEventListener('afterprint', () => {
+    delete document.body.dataset.printSection;
 });
 
 document.getElementById('formPlan').addEventListener('submit', event => event.preventDefault());

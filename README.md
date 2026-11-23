@@ -9,6 +9,7 @@ La interfaz usa una paleta neutra con azul de acento y una presentación tipogr�
 
 ## ✨ Funciones
 
+- 🧾 El plan y la rendición aparecen en una sola página; la navegación desplaza a cada sección
 - 📋 Plan de Actividad con presupuesto
 - 💰 Rendición de Cuentas con gastos
 - 🔗 Vincula la rendición con el plan, reutilizando los datos generales sin reemplazar los que ya ingresaste
@@ -18,6 +19,7 @@ La interfaz usa una paleta neutra con azul de acento y una presentación tipogr�
 - 🖨️ Imprimir la planilla directamente
 - ✅ Valida los campos de la rendición antes de descargar, compartir o imprimir
 - 💾 Guarda y abre borradores JSON de forma explícita; no hay guardado automático
+- 🎨 Los botones de PDF, WhatsApp e impresión mantienen el mismo estilo y orden en ambas secciones
 - Los PDF de descarga y WhatsApp incluyen secciones, campos y tablas estructuradas
 - 🛡️ Los borradores permanecen en archivos del dispositivo y no se envían a un servidor
 - 📱 Funciona en celular
