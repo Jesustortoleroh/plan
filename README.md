@@ -9,7 +9,7 @@ La interfaz usa una paleta neutra con azul de acento y una presentación tipogr�
 
 ## ✨ Funciones
 
-- 🧾 El plan y la rendición aparecen en una sola página; la navegación desplaza a cada sección
+- 🧾 Plan y rendición en secciones separadas, accesibles desde el menú principal
 - 📋 Plan de Actividad con presupuesto
 - 💰 Rendición de Cuentas con gastos
 - 🔗 Vincula la rendición con el plan, reutilizando los datos generales sin reemplazar los que ya ingresaste

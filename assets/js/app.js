@@ -93,15 +93,17 @@ navLinks.forEach(link => {
 });
 
 function mostrarSeccion(tipo) {
-    const section = document.getElementById(tipo === 'plan' ? 'planSection' : 'rendicionSection');
+    const planSection = document.getElementById('planSection');
+    const rendicionSection = document.getElementById('rendicionSection');
+    planSection.hidden = tipo !== 'plan';
+    rendicionSection.hidden = tipo !== 'rendicion';
     navLinks.forEach(link => {
         const isCurrent = link.getAttribute('data-target') === tipo;
         link.classList.toggle('active', isCurrent);
-        if (isCurrent) link.setAttribute('aria-current', 'location');
+        if (isCurrent) link.setAttribute('aria-current', 'page');
         else link.removeAttribute('aria-current');
     });
     if (tipo === 'rendicion') vincularPlanARendicion(false);
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ==========================================
@@ -562,7 +564,7 @@ function mostrarFlashMessages(mensajes, tipo = 'error', destino) {
     container.appendChild(content);
 
     const formPlan = document.getElementById('formPlan');
-    const rendicionVisible = document.getElementById('rendicionSection').style.display !== 'none';
+    const rendicionVisible = !document.getElementById('rendicionSection').hidden;
     const contenedor = destino || (rendicionVisible
         ? document.querySelector('#rendicionSection .card')
         : formPlan);
@@ -810,7 +812,7 @@ function actualizarComparacionPresupuesto() {
     if (planVinculado && !rendicionCoincideConPlan()) planVinculado = false;
     comparacion.hidden = !planVinculado;
     if (estabaVinculado && !planVinculado &&
-        document.getElementById('rendicionSection').style.display !== 'none') {
+        !document.getElementById('rendicionSection').hidden) {
         mostrarFlashMessages(
             ['Los datos generales ya no coinciden con el plan. La comparación se ocultó; use "Usar datos del plan" para vincular de nuevo.'],
             'warning',
