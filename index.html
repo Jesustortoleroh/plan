@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
-    <meta name="description" content="Sistema de Planificación y Rendición de Actividades - Iglesia de Jesucristo de los Santos de los Últimos Días">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';">
+    <meta name="description" content="Sistema de planificación y rendición de actividades para La Iglesia de Jesucristo de los Santos de los Últimos Días">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="theme-color" content="#1a237e">
-    <title>Plan de Actividad - La Iglesia de Jesucristo SUD</title>
+    <meta name="theme-color" content="#006184">
+    <title>Plan de Actividad - La Iglesia de Jesucristo de los Santos de los Últimos Días</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body data-theme="light">
 
@@ -19,7 +18,6 @@
     <!-- ============================================ -->
     <header class="topbar">
         <div class="topbar-brand">
-            <span class="sidebar-icon">📋</span>
             <div>
                 <h2>Gestión de Actividades</h2>
                 <small>La Iglesia de Jesucristo de los Santos de los Últimos Días</small>
@@ -32,8 +30,8 @@
         </div>
         
         <nav id="menuNav" class="topbar-menu">
-            <a href="#" class="nav-link active" data-target="plan" aria-current="page">📋 Plan de Actividad</a>
-            <a href="#" class="nav-link" data-target="rendicion">💰 Rendición de Cuentas</a>
+            <a href="#" class="nav-link active" data-target="plan" aria-current="page">Plan de Actividad</a>
+            <a href="#" class="nav-link" data-target="rendicion">Rendición de Cuentas</a>
         </nav>
     </header>
 
@@ -49,7 +47,7 @@
             <div class="card">
                 
                 <div class="institutional-header">
-                    <h1>PLAN DE ACTIVIDAD</h1>
+                    <h1>Plan de actividad</h1>
                     <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
                 </div>
                 
@@ -58,7 +56,7 @@
                     <!-- Datos Generales -->
                     <div class="aprobacion-card">
                         <div class="aprobacion-header">
-                            <h2>📌 DATOS GENERALES</h2>
+                            <h2>Datos generales</h2>
                         </div>
                         <div class="aprobacion-body">
                             <div class="form-row">
@@ -66,7 +64,6 @@
                                     <label for="pEstaca">Estaca</label>
                                     <input type="text" id="pEstaca" class="form-control" 
                                            placeholder="Nombre de la estaca" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimaEstaca" onclick="usarUltimoValor('pEstaca')" style="display:none;cursor:pointer;margin-top:4px;"></small>
                                 </div>
                                 <div class="form-group">
                                     <label for="pOrganizacion">Organización</label>
@@ -96,7 +93,6 @@
                                     <label for="pBarrio">Barrio</label>
                                     <input type="text" id="pBarrio" class="form-control" 
                                            placeholder="Nombre del barrio" required maxlength="100" autocomplete="off">
-                                    <small class="sugerencia-texto" id="ultimoBarrio" onclick="usarUltimoValor('pBarrio')" style="display:none;cursor:pointer;margin-top:4px;"></small>
                                 </div>
                                 <div class="form-group">
                                     <label for="pFecha">Fecha de actividad</label>
@@ -109,7 +105,7 @@
                     <!-- Propósito Sagrado -->
                     <div class="aprobacion-card">
                         <div class="aprobacion-header">
-                            <h2>🎯 PROPÓSITO SAGRADO</h2>
+                            <h2>Propósito sagrado</h2>
                         </div>
                         <div class="aprobacion-body">
                             <div class="form-group">
@@ -127,7 +123,7 @@
                     <!-- Metas -->
                     <div class="aprobacion-card">
                         <div class="aprobacion-header">
-                            <h2>✅ META(S)</h2>
+                            <h2>Metas</h2>
                         </div>
                         <div class="aprobacion-body">
                             <div class="checkbox-list" id="metasList">
@@ -174,7 +170,7 @@
                     <!-- Participación y Responsables -->
                     <div class="aprobacion-card">
                         <div class="aprobacion-header">
-                            <h2>👥 PARTICIPACIÓN Y RESPONSABLES</h2>
+                            <h2>Participación y responsables</h2>
                         </div>
                         <div class="aprobacion-body">
                             <div class="form-row">
@@ -210,12 +206,12 @@
 
                     <!-- Presupuesto -->
                     <div class="presupuesto-section">
-                        <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 5px;">
-                            💰 PLAN DE PRESUPUESTO 
+                        <h2 style="color: var(--color-primary); text-align: left; margin: 20px 0 5px;">
+                            Plan de presupuesto
                             <span style="font-weight: normal; font-size: 14px;">(Antes de la actividad)</span>
                         </h2>
-                        <h3 style="color: var(--color-primary); font-size: 14px; margin-bottom: 10px; text-align: center;">
-                            GASTOS ANTICIPADOS
+                        <h3 style="color: var(--color-primary); font-size: 14px; margin-bottom: 10px; text-align: left;">
+                            Gastos anticipados
                         </h3>
                         
                         <div class="tabla-rendicion-header" style="grid-template-columns: 100px 1fr 140px 50px;">
@@ -228,28 +224,25 @@
                         <div id="itemsPlan"></div>
 
                         <button type="button" class="btn-agregar-item no-print mt-small" id="btnAgregarGastoPlan">
-                            ➕ Agregar Gasto Anticipado
+                            Agregar gasto anticipado
                         </button>
 
                         <div class="presupuesto-total">
-                            <span>TOTAL DE GASTOS ANTICIPADOS</span>
+                            <span>Total de gastos anticipados</span>
                             <span id="totalPlan">0,00</span>
                         </div>
                     </div>
 
                     <!-- Botones de acción -->
                     <div class="action-buttons no-print mt-large">
-                        <button type="button" class="btn btn-primary" id="btnImprimirPlan">
-                            🖨️ Imprimir
+                        <button type="button" class="btn btn-primary" id="btnDescargarPDFPlan">
+                            Guardar PDF
                         </button>
-                        <button type="button" class="btn btn-secondary" id="btnDescargarPDFPlan">
-                            📄 Descargar PDF
+                        <button type="button" class="btn btn-whatsapp" id="btnWhatsappPlan">
+                            Enviar por WhatsApp
                         </button>
-                        <button type="submit" class="btn btn-success">
-                            💾 Guardar en Navegador
-                        </button>
-                        <button type="button" class="btn btn-danger" id="btnEliminarDatos" title="Eliminar datos guardados">
-                            🗑️ Eliminar Datos
+                        <button type="button" class="btn btn-secondary" id="btnImprimirPlan">
+                            Imprimir
                         </button>
                     </div>
                 </form>
@@ -263,13 +256,13 @@
             <div class="card">
                 
                 <div class="institutional-header">
-                    <h1>RENDICIÓN DE CUENTAS</h1>
+                    <h1>Rendición de cuentas</h1>
                     <p class="subtitle">La Iglesia de Jesucristo de los Santos de los Últimos Días</p>
                 </div>
                 
                 <div class="aprobacion-card">
                     <div class="aprobacion-header">
-                        <h2>📌 DATOS DE LA ACTIVIDAD</h2>
+                        <h2>Datos de la actividad</h2>
                     </div>
                     <div class="aprobacion-body">
                         <div class="form-row">
@@ -316,7 +309,7 @@
                 </div>
 
                 <div class="nota-rendicion">
-                    <strong>⚠️ NOTA IMPORTANTE:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de <strong>7 días</strong> después de concluida la actividad. Los fondos no utilizados deben ser devueltos inmediatamente.
+                    <strong>Nota importante:</strong> La persona quien firma será responsable de presentar los comprobantes de gastos dentro de un plazo máximo de <strong>7 días</strong> después de concluida la actividad. Los fondos no utilizados deben ser devueltos inmediatamente.
                 </div>
 
                 <div class="form-row">
@@ -345,8 +338,8 @@
 
                 <!-- Gastos actuales -->
                 <div class="presupuesto-section">
-                    <h2 style="color: var(--color-primary); text-align: center; margin: 20px 0 10px;">
-                        💳 GASTOS ACTUALES
+                    <h2 style="color: var(--color-primary); text-align: left; margin: 20px 0 10px;">
+                        Gastos actuales
                     </h2>
                     
                     <div class="tabla-rendicion-header" style="grid-template-columns: 110px 1.5fr 110px 1.5fr 110px 50px;">
@@ -361,7 +354,7 @@
                     <div id="itemsRendicion"></div>
 
                     <button type="button" class="btn-agregar-item no-print" id="btnAgregarGasto">
-                        ➕ Agregar Gasto
+                        Agregar gasto
                     </button>
 
                     <div class="presupuesto-total">
@@ -370,11 +363,14 @@
                     </div>
                     
                     <div class="action-buttons no-print mt-large">
-                        <button type="button" class="btn btn-primary" id="btnImprimirRendicion">
-                            🖨️ Imprimir
-                        </button>
                         <button type="button" class="btn btn-secondary" id="btnDescargarPDFRendicion">
-                            📄 Descargar PDF
+                            Guardar PDF
+                        </button>
+                        <button type="button" class="btn btn-whatsapp" id="btnWhatsappRendicion">
+                            Enviar por WhatsApp
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btnImprimirRendicion">
+                            Imprimir
                         </button>
                     </div>
                 </div>
@@ -383,6 +379,7 @@
         
     </main>
     
-    <script src="js/app.js"></script>
+    <script src="assets/js/pdf.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>
