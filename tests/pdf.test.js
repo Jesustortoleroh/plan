@@ -52,6 +52,19 @@ test('renders structured report sections and budget tables', async () => {
     assert.match(pdf, /0\.000 0\.380 0\.518 rg/);
 });
 
+test('repeats budget table headers when a report spans pages', async () => {
+    const pdf = await createPdfBlob([
+        'Plan de actividad',
+        'La Iglesia',
+        'Plan de presupuesto',
+        'Cantidad | Descripción | Importe',
+        ...Array.from({ length: 60 }, (_, index) => `${index + 1} | Material ${index + 1} | Bs. 10.00`)
+    ]).text();
+
+    assert.match(pdf, /\/Count [2-9]\d*/);
+    assert.ok((pdf.match(/Cantidad/g) || []).length >= 2);
+});
+
 test('rejects invalid PDF input instead of producing an empty document', () => {
     assert.throws(() => createPdfBlob('texto'), TypeError);
     assert.throws(() => createPdfBlob(['valido', null]), TypeError);
