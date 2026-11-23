@@ -17,7 +17,7 @@ La interfaz usa una paleta neutra con azul de acento y una presentación tipogr�
 - 📄 Descargar las planillas como PDF
 - 🟢 Compartir el PDF por WhatsApp desde dispositivos compatibles
 - 🖨️ Imprimir la planilla directamente
-- ✅ Valida los campos de la rendición antes de descargar, compartir o imprimir
+- ✅ Valida los campos del plan y la rendición antes de descargar, compartir o imprimir
 - 💾 Guarda y abre borradores JSON de forma explícita; no hay guardado automático
 - 🎨 Los botones de PDF, WhatsApp e impresión mantienen el mismo estilo y orden en ambas secciones
 - Los PDF de descarga y WhatsApp incluyen secciones, campos y tablas estructuradas

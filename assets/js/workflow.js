@@ -132,9 +132,43 @@
             return Number.isFinite(value) && value >= 0 ? Math.round(value * 100) / 100 : null;
         }
         const text = String(value === undefined || value === null ? '' : value).trim();
-        if (!/^\d+(?:[.,]\d{1,2})?$/.test(text)) return null;
-        const amount = Number(text.replace(',', '.'));
+        if (!/^(?:\d+(?:[.,]\d{0,2})?|[.,]\d{1,2})$/.test(text)) return null;
+        const normalized = text.replace(',', '.');
+        const amount = Number(normalized.startsWith('.') ? `0${normalized}` : normalized);
         return Number.isFinite(amount) ? Math.round(amount * 100) / 100 : null;
+    }
+
+    function validatePlanBudget(rows) {
+        const errors = [];
+        (Array.isArray(rows) ? rows : []).forEach((row, index) => {
+            const quantity = String(row.cantidad === undefined ? '' : row.cantidad).trim();
+            const description = String(row.descripcion || '').trim();
+            const rawAmount = String(row.importe === undefined ? '' : row.importe).trim();
+            const amount = parseMoney(rawAmount);
+            const hasData = Boolean(description || quantity ||
+                (rawAmount && (amount === null || amount > 0)));
+            if (!hasData) return;
+
+            if (!description) {
+                errors.push({
+                    field: `presupuesto.${index}.descripcion`,
+                    message: `Indique la descripción del gasto anticipado ${index + 1}.`
+                });
+            }
+            if (quantity && (!/^\d{1,4}$/.test(quantity) || Number(quantity) < 1 || Number(quantity) > 9999)) {
+                errors.push({
+                    field: `presupuesto.${index}.cantidad`,
+                    message: `La cantidad del gasto anticipado ${index + 1} debe ser un entero entre 1 y 9999.`
+                });
+            }
+            if (amount === null) {
+                errors.push({
+                    field: `presupuesto.${index}.importe`,
+                    message: `Ingrese un importe válido para el gasto anticipado ${index + 1}.`
+                });
+            }
+        });
+        return errors;
     }
 
     function copyPlanToRendition(plan, rendition, overwrite) {
@@ -242,6 +276,7 @@
         parseDraft,
         parseMoney,
         serializeDraft,
+        validatePlanBudget,
         validateRendition
     };
 }));

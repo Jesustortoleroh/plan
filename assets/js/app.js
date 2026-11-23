@@ -64,6 +64,13 @@ const CONFIG = {
 };
 let planVinculado = false;
 
+function fechaLocalIso(fecha = new Date()) {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // ==========================================
 // 1. NAVEGACIÓN Y MENÚ SUPERIOR
 // ==========================================
@@ -71,13 +78,19 @@ const btnHamburger = document.getElementById('hamburgerBtn');
 const topbarMenu = document.getElementById('menuNav');
 const navLinks = document.querySelectorAll('.nav-link');
 
+function establecerMenuAbierto(abierto) {
+    topbarMenu.classList.toggle('show', abierto);
+    btnHamburger.setAttribute('aria-expanded', String(abierto));
+    btnHamburger.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+}
+
 btnHamburger.addEventListener('click', () => {
-    topbarMenu.classList.toggle('show');
+    establecerMenuAbierto(!topbarMenu.classList.contains('show'));
 });
 
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.topbar') && topbarMenu.classList.contains('show')) {
-        topbarMenu.classList.remove('show');
+        establecerMenuAbierto(false);
     }
 });
 
@@ -87,7 +100,7 @@ navLinks.forEach(link => {
         mostrarSeccion(link.getAttribute('data-target'));
         
         if (window.innerWidth <= 768) {
-            topbarMenu.classList.remove('show');
+            establecerMenuAbierto(false);
         }
     });
 });
@@ -132,7 +145,7 @@ if (propositoTextarea && propositoCount) {
 // ==========================================
 document.addEventListener('input', function(e) {
     if (e.target.matches('.importe, .monto, .monto-formato')) {
-        let valor = e.target.value.replace(/[^0-9,.]/g, '');
+        let valor = e.target.value.replace(/[^0-9,.-]/g, '');
         if (valor !== e.target.value) {
             e.target.value = valor;
         }
@@ -164,7 +177,7 @@ function agregarFilaPlan(datos = {}) {
     fila.className = 'item-rendicion';
     fila.style.gridTemplateColumns = '100px 1fr 140px 50px';
     
-    const cantidad = sanitizarNumero(datos.cantidad, 0);
+    const cantidad = datos.cantidad === undefined || datos.cantidad === null ? '' : String(datos.cantidad);
     const concepto = escapeHtml(sanitizarTexto(datos.descripcion || datos.concepto || ''));
     const importeValor = WorkflowTools.parseMoney(datos.importe);
     const importe = importeValor === null ? '0.00' : importeValor.toFixed(2);
@@ -172,8 +185,8 @@ function agregarFilaPlan(datos = {}) {
     fila.innerHTML = `
         <div class="input-wrapper">
             <label class="mobile-label">Cantidad</label>
-            <input type="number" min="0" max="9999" value="${cantidad}" 
-                   class="cantidad" placeholder="Cant." 
+            <input type="number" min="1" max="9999" value="${escapeHtml(cantidad)}"
+                   class="cantidad" placeholder="1"
                    aria-label="Cantidad" inputmode="numeric">
         </div>
         <div class="input-wrapper">
@@ -402,22 +415,11 @@ function validarPlanActividad() {
         }
     }
 
-    leerFilasPlanCrudas().forEach((gasto, index) => {
-        const importe = WorkflowTools.parseMoney(gasto.importe);
-        const tieneDatos = gasto.descripcion.trim() ||
-            (gasto.cantidad.trim() && Number(gasto.cantidad) > 0) ||
-            (gasto.importe.trim() && (importe === null || importe > 0));
-        if (!tieneDatos) return;
-
-        const fila = itemsPlan.querySelectorAll('.item-rendicion')[index];
-        if (!gasto.descripcion.trim()) {
-            marcarError(fila.querySelector('.descripcion'));
-            errores.push(`Indique la descripción del gasto anticipado ${index + 1}.`);
-        }
-        if (importe === null) {
-            marcarError(fila.querySelector('.importe'));
-            errores.push(`Ingrese un importe válido para el gasto anticipado ${index + 1}.`);
-        }
+    const erroresPresupuesto = WorkflowTools.validatePlanBudget(leerFilasPlanCrudas());
+    erroresPresupuesto.forEach(error => {
+        const control = controlParaErrorPlan(error.field);
+        if (control) marcarError(control);
+        errores.push(error.message);
     });
     
     if (errores.length > 0) {
@@ -433,6 +435,13 @@ function validarPlanActividad() {
     }
     
     return true;
+}
+
+function controlParaErrorPlan(campo) {
+    const coincidencia = campo.match(/^presupuesto\.(\d+)\.(descripcion|cantidad|importe)$/);
+    if (!coincidencia) return null;
+    const fila = itemsPlan.querySelectorAll('.item-rendicion')[Number(coincidencia[1])];
+    return fila ? fila.querySelector(`.${coincidencia[2]}`) : null;
 }
 
 function controlParaErrorRendicion(campo) {
@@ -614,7 +623,7 @@ document.addEventListener('change', event => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = fechaLocalIso();
     if (!document.getElementById('pFecha').value) document.getElementById('pFecha').value = hoy;
     if (itemsPlan.children.length === 0) agregarFilaPlan();
     if (itemsRendicion.children.length === 0) agregarFilaRendicion();
@@ -847,7 +856,7 @@ function guardarBorrador() {
         const url = URL.createObjectURL(blob);
         const enlace = document.createElement('a');
         enlace.href = url;
-        enlace.download = `borrador-actividades-${new Date().toISOString().slice(0, 10)}.json`;
+        enlace.download = `borrador-actividades-${fechaLocalIso()}.json`;
         document.body.appendChild(enlace);
         enlace.click();
         enlace.remove();
@@ -867,8 +876,9 @@ function formularioTieneDatos() {
     if (campos.some(id => document.getElementById(id).value.trim())) return true;
     if (document.querySelector('input[name="meta"]:checked')) return true;
     if (leerFilasPlanCrudas().some(row =>
-        row.descripcion.trim() || (WorkflowTools.parseMoney(row.importe) || 0) > 0 ||
-        (row.cantidad.trim() && row.cantidad !== '0'))) return true;
+        row.descripcion.trim() || row.cantidad.trim() ||
+        WorkflowTools.parseMoney(row.importe) === null ||
+        (WorkflowTools.parseMoney(row.importe) || 0) > 0)) return true;
     return leerGastosRendicionCrudos().some(filaGastoTieneDatos);
 }
 
@@ -1118,7 +1128,7 @@ function crearArchivoPdf(tipo) {
 
 function nombrePdf(tipo) {
     const datos = tipo === 'plan' ? recolectarDatosPlan() : recolectarDatosRendicion();
-    const fecha = /^\d{4}-\d{2}-\d{2}$/.test(datos.fecha) ? datos.fecha : new Date().toISOString().split('T')[0];
+    const fecha = /^\d{4}-\d{2}-\d{2}$/.test(datos.fecha) ? datos.fecha : fechaLocalIso();
     return `${tipo === 'plan' ? 'plan-actividad' : 'rendicion-cuentas'}-${fecha}.pdf`;
 }
 

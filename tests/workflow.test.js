@@ -63,26 +63,51 @@ test('reports missing fields, malformed amounts, and incomplete expense rows', (
         gastos: [{ comprobante: '', concepto: '', fecha: '', proveedor: '', monto: '5.00' }]
     });
 
-    test('requires a positive amount when a rendition expense has a concept', () => {
-        const errors = WorkflowTools.validateRendition({
-            estaca: 'Estaca Norte',
-            barrio: 'Barrio Centro',
-            organizacion: 'Primaria',
-            fecha: '2026-11-23',
-            asistentes: '4',
-            monto: '10.00',
-            gastos: [{ comprobante: '', concepto: 'Transporte', fecha: '', proveedor: '', monto: '0.00' }]
-        });
-
-        assert.deepEqual(errors.map(error => error.field), ['gastos.0.monto']);
-    });
-
     assert.deepEqual(errors.map(error => error.field), [
         'estaca',
         'fecha',
         'asistentes',
         'monto',
         'gastos.0.concepto'
+    ]);
+});
+
+test('requires a positive amount when a rendition expense has a concept', () => {
+    const errors = WorkflowTools.validateRendition({
+        estaca: 'Estaca Norte',
+        barrio: 'Barrio Centro',
+        organizacion: 'Primaria',
+        fecha: '2026-11-23',
+        asistentes: '4',
+        monto: '10.00',
+        gastos: [{ comprobante: '', concepto: 'Transporte', fecha: '', proveedor: '', monto: '0.00' }]
+    });
+
+    assert.deepEqual(errors.map(error => error.field), ['gastos.0.monto']);
+});
+
+test('parses valid comma and dot decimals but rejects negative and malformed amounts', () => {
+    assert.equal(WorkflowTools.parseMoney('.5'), 0.5);
+    assert.equal(WorkflowTools.parseMoney(',5'), 0.5);
+    assert.equal(WorkflowTools.parseMoney('12,30'), 12.3);
+    assert.equal(WorkflowTools.parseMoney('-12.30'), null);
+    assert.equal(WorkflowTools.parseMoney('12.345'), null);
+});
+
+test('validates completed plan budget rows and ignores the empty starter row', () => {
+    const errors = WorkflowTools.validatePlanBudget([
+        { cantidad: '', descripcion: '', importe: '0.00' },
+        { cantidad: '', descripcion: 'Uso del salón', importe: '0.00' },
+        { cantidad: '0', descripcion: 'Agua', importe: '-2.00' },
+        { cantidad: '1.5', descripcion: '', importe: 'inválido' }
+    ]);
+
+    assert.deepEqual(errors.map(error => error.field), [
+        'presupuesto.2.cantidad',
+        'presupuesto.2.importe',
+        'presupuesto.3.descripcion',
+        'presupuesto.3.cantidad',
+        'presupuesto.3.importe'
     ]);
 });
 
